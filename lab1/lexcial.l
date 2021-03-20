@@ -12,7 +12,8 @@ digit [0-9]
      }
 "/*" { return MULTI_LINE_NOTES_BEGIN; }
 "*/" { return MULTI_LINE_NOTES_END; }
-[\t\r\n ] { }
+\n { yycolumn = 1; }
+[\t\r] { }
 ";" { return SEMI; }
 "," {  return COMMA; }
 "=" { return ASSIGNOP; }
