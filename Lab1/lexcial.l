@@ -6,7 +6,10 @@ letter [a-zA-Z]
 digit [0-9]
 %option yylineno
 %%
-\/\/[^\n]* { return SINGLE_LINE_NOTES; }
+"//" {  
+	char c=input();
+	while(c!='\n') c=input();       
+     }
 "/*" { return MULTI_LINE_NOTES_BEGIN; }
 "*/" { return MULTI_LINE_NOTES_END; }
 [\t\r\n ] { }
