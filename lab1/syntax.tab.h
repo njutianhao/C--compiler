@@ -73,7 +73,15 @@ extern int yydebug;
     WHILE = 283,
     INT = 284,
     FLOAT = 285,
-    ID = 286
+    ID = 286,
+    L = 287,
+    LE = 288,
+    G = 289,
+    GE = 290,
+    EQ = 291,
+    NEQ = 292,
+    SUB = 293,
+    LOWER_THAN_ELSE = 294
   };
 #endif
 
@@ -88,7 +96,7 @@ union YYSTYPE
     float type_float;
     double type_double;
 
-#line 92 "syntax.tab.h" /* yacc.c:1909  */
+#line 100 "syntax.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

@@ -29,6 +29,16 @@
 %token <type_float> FLOAT 
 %token ID
 
+%right ASSIGNOP
+%left AND OR 
+%left L LE G GE EQ NEQ /*TODO:differ RELOP */
+%left PLUS SUB /*TODO:differ sub and minus*/
+%left STAR DIV
+%right MINUS NOT
+%left LP RP LB RB DOT
+
+%nonassoc LOWER_THAN_ELSE
+%nonassoc ELSE
 
 %%
 Program : ExtDefList
@@ -73,8 +83,8 @@ StmtList : Stmt StmtList
 Stmt : Exp SEMI
     | CompSt
     | RETURN Exp SEMI
-    | IF LP Exp RP Stmt
-    | IF LP Exp RP Stmt ELSE Stmt
+    | IF LP Exp RP Stmt %prec LOWER_THAN_ELSE
+    | IF LP Exp RP Stmt ELSE Stmt 
     | WHILE LP Exp RP Stmt
     ;
 
