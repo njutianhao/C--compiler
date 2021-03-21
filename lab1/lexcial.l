@@ -10,8 +10,18 @@ digit [0-9]
 	char c=input();
 	while(c!='\n') c=input();       
      }
-"/*" { return MULTI_LINE_NOTES_BEGIN; }
-"*/" { return MULTI_LINE_NOTES_END; }
+"/*" {
+	char c=input();
+	char perc=c;
+	while(perc!='*' && c!='/'){
+		if(c==EOF){
+			printf("Error type A at line %d:Missing */",yylineno);
+			break;
+		}
+		perc=c;
+		c=input();
+	}
+     }
 \n { yycolumn = 1; }
 [\t\r] { }
 ";" { return SEMI; }
@@ -38,9 +48,9 @@ digit [0-9]
 (if) { return IF; }
 (else) { return ELSE; }
 (while) { return WHILE; }
-([1-9]{digit}*)|(0) { return INT; }
-((([1-9]{digit}*)|(0))(\.)({digit}+)) { return FLOAT; }
-({letter}|(_))({letter}|{digit}|_)* { return ID; }
+([1-9]{digit}*)|(0) { yylval.type_int=atoi(yytext); return INT; }
+((([1-9]{digit}*)|(0))(\.)({digit}+)) { yylval.type_float=atof(yytext); return FLOAT; }
+({letter}|(_))({letter}|{digit}|_)* { ylval.type_str=yytext; return ID; }
 . { printf("Error type A at line %d:Mysterious characters \'%s\'\n",yylineno,yytext); }
 %%
 

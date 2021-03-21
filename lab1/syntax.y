@@ -12,6 +12,7 @@
     int type_int;
     float type_float;
     double type_double;
+    char * type_str;
 }
 
 %token MULTI_LINE_NOTES_BEGIN MULTI_LINE_NOTES_END
@@ -27,7 +28,7 @@
 %token IF ELSE WHILE 
 %token <type_int> INT
 %token <type_float> FLOAT 
-%token ID
+%token <type_str> ID
 
 %right ASSIGNOP
 %left AND OR 
