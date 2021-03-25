@@ -39,10 +39,28 @@
         struct ListNode *head;
     };
     void insert(struct GrammarTree *t1,struct GrammarTree *t2){
-        struct ListNode *old_head = t1->head;
+        if(t1->head == NULL)
+        {
+            t1->head = (struct ListNode*)malloc(sizeof(struct ListNode));
+            t1->head->val = t2;
+            t1->head->next = NULL;
+        }
+        else
+        {
+            struct ListNode *l = t1->head;
+            while(l->next != NULL)
+            {
+                l = l->next;
+            }
+            l->next =(struct ListNode*)malloc(sizeof(struct ListNode));
+            l = l->next;
+            l->val = t2;
+            l->next =  NULL;
+        }
+        /*struct ListNode *old_head = t1->head;
         t1->head =(struct ListNode *)malloc(sizeof(struct ListNode));
         t1->head->val = t2;
-        t1->head->next = old_head;
+        t1->head->next = old_head;*/
     }
     struct GrammarTree *root;
     void __DFS(struct GrammarTree *n,int depth){
@@ -249,10 +267,12 @@ Specifier : TYPE {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree)
         $$.t->type = Specifier; 
         $$.t->line = @$.first_line; 
         $$.t->head = NULL;
+        char *tmp = $1.str;
         $1.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
         $1.t->type = TYPE;
         $1.t->line = @1.first_line;
         $1.t->head = NULL;
+        $1.t->val.str = tmp;
         insert($$.t,$1.t);}
     | StructSpecifier {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
         $$.t->type = Specifier; 
