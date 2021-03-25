@@ -1,11 +1,35 @@
+%locations
 %{
     #include<stdio.h>
-    int yycolumn = 1;
-    #define YY_USER_ACTION \
-    yylloc.first_line = yylloc.last_line = yylineno; \
-    yylloc.first_column = yycolumn; \
-    yylloc.last_column = yycolumn + yyleng - 1; \
-    yycolumn += yyleng;
+    #include"lex.yy.c"
+    enum RELOP{
+        L = 0,LE,G,GE
+    };
+    union TreeVal{
+        int i;
+        float f;
+        char c;
+        char *str;
+        enum RELOP r;
+    };
+    struct GrammarTree;
+    struct ListNode{
+        struct GrammarTree *val;
+        struct ListNode *next;
+    };
+    struct GrammarTree{
+        int line;
+        int column;
+        union TreeVal val;
+        enum yytokentype type;
+        struct ListNode *head;
+    };
+    void insert(struct GrammarTree *t1,struct GrammarTree *t2){
+        struct ListNode *old_head = t1->head;
+        t1->head =(struct ListNode *)malloc(sizeof(struct ListNode));
+        t1->head->val = t2;
+        t1->head->next = old_head;
+    }
 %}
 
 %union{
@@ -15,24 +39,24 @@
     char * type_str;
 }
 
-%token MULTI_LINE_NOTES_BEGIN MULTI_LINE_NOTES_END
-%token SEMI COMMA
-%token ASSIGNOP RELOP 
-%token PLUS MINUS STAR DIV
-%token AND OR NOT
-%token DOT
-%token TYPE
-%token LP RP LB RB LC RC 
-%token STRUCT
-%token RETURN
-%token IF ELSE WHILE 
-%token <type_int> INT
-%token <type_float> FLOAT 
-%token <type_str> ID
+%token <GrammarTree> MULTI_LINE_NOTES_BEGIN MULTI_LINE_NOTES_END
+%token <GrammarTree> SEMI COMMA
+%token <GrammarTree> ASSIGNOP RELOP 
+%token <GrammarTree> PLUS MINUS STAR DIV
+%token <GrammarTree> AND OR NOT
+%token <GrammarTree> DOT
+%token <GrammarTree> TYPE
+%token <GrammarTree> LP RP LB RB LC RC 
+%token <GrammarTree> STRUCT
+%token <GrammarTree> RETURN
+%token <GrammarTree> IF ELSE WHILE 
+%token <GrammarTree> INT
+%token <GrammarTree> FLOAT 
+%token <GrammarTree> ID
 
 %right ASSIGNOP
 %left AND OR 
-%left L LE G GE EQ NEQ /*TODO:differ RELOP */
+%left RELOP
 %left PLUS SUB /*TODO:differ sub and minus*/
 %left STAR DIV
 %right MINUS NOT

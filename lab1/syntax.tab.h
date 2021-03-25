@@ -74,14 +74,8 @@ extern int yydebug;
     INT = 284,
     FLOAT = 285,
     ID = 286,
-    L = 287,
-    LE = 288,
-    G = 289,
-    GE = 290,
-    EQ = 291,
-    NEQ = 292,
-    SUB = 293,
-    LOWER_THAN_ELSE = 294
+    SUB = 287,
+    LOWER_THAN_ELSE = 288
   };
 #endif
 
@@ -90,13 +84,14 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 11 "syntax.y" /* yacc.c:1909  */
+#line 35 "./syntax.y" /* yacc.c:1909  */
 
     int type_int;
     float type_float;
     double type_double;
+    char * type_str;
 
-#line 100 "syntax.tab.h" /* yacc.c:1909  */
+#line 95 "./syntax.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -104,9 +99,23 @@ typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_DECLARED 1
 #endif
 
+/* Location type.  */
+#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
+typedef struct YYLTYPE YYLTYPE;
+struct YYLTYPE
+{
+  int first_line;
+  int first_column;
+  int last_line;
+  int last_column;
+};
+# define YYLTYPE_IS_DECLARED 1
+# define YYLTYPE_IS_TRIVIAL 1
+#endif
+
 
 extern YYSTYPE yylval;
-
+extern YYLTYPE yylloc;
 int yyparse (void);
 
 #endif /* !YY_YY_SYNTAX_TAB_H_INCLUDED  */
