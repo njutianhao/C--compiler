@@ -1,6 +1,12 @@
 %{
 	#include"syntax.tab.h"
-
+	#include<string.h>
+	#define L 1
+	#define LE 2
+	#define G 3
+	#define GE 4
+	#define EQ 5
+	#define NEQ 6
     int yycolumn = 1;
     #define YY_USER_ACTION \
     yylloc.first_line = yylloc.last_line = yylineno; \
@@ -32,8 +38,31 @@ digit [0-9]
 [\t\r ] { }
 ";" { return SEMI; }
 "," {  return COMMA; }
+">=" {
+	yylval.type_treenode.i = GE;
+	return RELOP;
+}
+"<=" {
+	yylval.type_treenode.i = LE;
+	return RELOP;
+}
+"==" {
+	yylval.type_treenode.i = EQ;
+	return RELOP;
+}
+"!=" {
+	yylval.type_treenode.i = NEQ;
+	return RELOP;
+}
+">" {
+	yylval.type_treenode.i = G;
+	return RELOP;
+}
+"<" {
+	yylval.type_treenode.i = L;
+	return RELOP;
+}
 "=" { return ASSIGNOP; }
-">"|"<"|">="|"<="|"=="|"!=" { return RELOP; }
 "+" { return PLUS; }
 "-" { return MINUS; }
 "*" { return STAR; }
@@ -54,9 +83,9 @@ digit [0-9]
 (if) { return IF; }
 (else) { return ELSE; }
 (while) { return WHILE; }
-([1-9]{digit}*)|(0) { yylval.type_int=atoi(yytext); return INT; }
-((([1-9]{digit}*)|(0))(\.)({digit}+)) { yylval.type_float=atof(yytext); return FLOAT; }
-({letter}|(_))({letter}|{digit}|_)* { yylval.type_str=yytext; return ID; }
+([1-9]{digit}*)|(0) { yylval.type_treenode.i=atoi(yytext); return INT; }
+((([1-9]{digit}*)|(0))(\.)({digit}+)) { yylval.type_treenode.f=atof(yytext); return FLOAT; }
+({letter}|(_))({letter}|{digit}|_)* { yylval.type_treenode.str=yytext; return ID; }
 . { printf("Error type A at line %d:Mysterious characters \'%s\'\n",yylineno,yytext); }
 %%
 

@@ -10,5 +10,6 @@ int main(int argc,char** argv){
 	}
 	yyrestart(f);
 	yyparse();
+	print_tree();
 	return 0;
 }
