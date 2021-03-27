@@ -1,0 +1,30 @@
+struct number
+{
+    int i;
+    float j;
+    int a[2];
+}
+
+int main()
+{
+    number num;
+    num.i=2;
+    num.j=0.75;
+    num.a[0]=3;
+    if(num.a[0]>=2 && num.i>0)  //useless
+    {
+	num.a[1]=4+2*i;
+        /*
+	TO DO ...
+	add all
+	*/
+    }
+    else{
+	num.i=0;
+    }
+    while(num.a[0]>1)
+    {
+	num.a[0]=num.i-1;
+    }
+    return 0;
+}

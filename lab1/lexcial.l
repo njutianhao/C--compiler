@@ -20,16 +20,19 @@ digit [0-9]
 %%
 "//" {  
 	char c=input();
-	while(c!='\n') c=input();       
+	while(c!='\n') c=input(); 
+	yycolumn=1;      
      }
 "/*" {
+	int lineno= yylineno;
 	char c=input();
 	char perc=c;
 	while(perc!='*' && c!='/'){
 		if(c==EOF){
-			printf("Error type A at line %d:Missing */",yylineno);
+			printf("Error type B at line %d:Ambiguous characters /*",lineno);
 			break;
 		}
+		if(c=='\n') yycolumn=1;
 		perc=c;
 		c=input();
 	}
@@ -96,7 +99,7 @@ digit [0-9]
 		yylval.type_treenode.str[i]=yytext[i];
 	return ID;
  }
-. { printf("Error type A at line %d:Mysterious characters \'%s\'\n",yylineno,yytext); }
+. { printf("Error type A at line %d:Mysterious characters \'%s\'.\n",yylineno,yytext); }
 %%
 
 
