@@ -9,6 +9,8 @@
 	#define NEQ 6
     int yycolumn = 1;
 	extern int HaveErrors;
+	extern struct ErrorNode* ErrorHead;
+	extern void insert_Error(char errorType,int linenumber,char* information);
     #define YY_USER_ACTION \
     yylloc.first_line = yylloc.last_line = yylineno; \
     yylloc.first_column = yycolumn; \
@@ -30,7 +32,8 @@ digit [0-9]
 	char perc=c;
 	while(perc!='*' || c!='/'){
 		if(c==EOF){
-			printf("Error type B at line %d:Ambiguous characters /*",lineno);
+			//printf("Error type B at line %d:Ambiguous characters /*",lineno);
+			insert_Error('B',lineno,"Ambiguous characters /*");
 			HaveErrors++;
 			break;
 		}
@@ -101,7 +104,8 @@ digit [0-9]
 		yylval.type_treenode.str[i]=yytext[i];
 	return ID;
  }
-. { printf("Error type A at line %d:Mysterious characters \'%s\'.\n",yylineno,yytext); HaveErrors++;}
+. { printf("Error type A at line %d:Mysterious characters \'%s\'.\n",yylineno,yytext);
+	HaveErrors++;}
 %%
 
 

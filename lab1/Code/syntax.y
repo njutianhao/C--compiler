@@ -28,6 +28,60 @@
         float f;
         char *str;
     };
+    struct ErrorNode{
+        int Linenumber;
+        char ErrorType;
+        char *Information;
+        struct ErrorNode* next;
+    };
+    struct ErrorNode *ErrorHead=NULL;
+    void print_Node(struct ErrorNode* node){
+        printf("Error Type %c at line %d:%s.\n",node->ErrorType,node->Linenumber,node->Information);
+    }
+    void print_Errors(){
+        if(HaveErrors==0) return;
+        struct ErrorNode* p=ErrorHead;
+        while(p!=NULL){
+            print_Node(p);
+            p=p->next;
+        }
+    }
+    void insert_Error(char errorType,int linenumber,char* information){
+        if(ErrorHead==NULL){
+            ErrorHead=(struct ErrorNode*)malloc(sizeof(struct ErrorNode));
+            ErrorHead->Linenumber=linenumber;
+            ErrorHead->ErrorType=errorType;
+            char* tmp=information;
+            ErrorHead->Information=tmp;
+            ErrorHead->next=NULL;
+        }
+        else{
+            struct ErrorNode* p=ErrorHead;
+            struct ErrorNode* q=(struct ErrorNode*)malloc(sizeof(struct ErrorNode));
+            q->Linenumber=linenumber;
+            q->ErrorType=errorType;
+            q->next=NULL;
+            char* tmp=information;
+            q->Information=tmp;
+            if(p->Linenumber>q->Linenumber){
+                q->next=ErrorHead;
+                ErrorHead=q;
+                return;
+            }
+            while(p!=NULL){
+                if(p->next==NULL && p->Linenumber<q->Linenumber){
+                    p->next=q;
+                    return;
+                }
+                if(p->Linenumber<=q->Linenumber && p->next->Linenumber>=q->Linenumber){
+                    q->next=p->next;
+                    p->next=q;
+                    return;
+                }
+                p=p->next;
+            }
+        }
+    }
     int HaveErrors=0;
     struct GrammarTree;
     struct ListNode{
@@ -260,7 +314,9 @@ ExtDef : Specifier ExtDecList SEMI {$$.t = (struct GrammarTree *)malloc(sizeof(s
         $$.t->line = @$.first_line; 
         $$.t->head = NULL;
         HaveErrors++;
-        printf("Error type B at line %d:Syntax error.\n",$$.t->line);
+        char *tmp="Syntax error";
+		insert_Error('B',$$.t->line,tmp);
+        //printf("Error type B at line %d:Syntax error.\n",$$.t->line);
     }  
     ;
 ExtDecList : VarDec {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
@@ -394,7 +450,9 @@ VarDec : ID {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
         $$.t->line = @$.first_line; 
         $$.t->head = NULL;
         HaveErrors++;
-        printf("Error type B at line %d:Wrong Definition.\n",$$.t->line);
+        char *tmp="Wrong Definition";
+		insert_Error('B',$$.t->line,tmp);
+        //printf("Error type B at line %d:Wrong Definition.\n",$$.t->line);
         }
     ;
 FunDec : ID LP VarList RP {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
@@ -446,7 +504,9 @@ FunDec : ID LP VarList RP {$$.t = (struct GrammarTree *)malloc(sizeof(struct Gra
         $$.t->line = @$.first_line; 
         $$.t->head = NULL; 
         HaveErrors=HaveErrors+1;
-        printf("Error type B at line %d:Wrong Function Definition.\n",$$.t->line);
+        char *tmp="Wrong Function Definition";
+		insert_Error('B',$$.t->line,tmp);
+        //printf("Error type B at line %d:Wrong Function Definition.\n",$$.t->line);
     }
     ;
 VarList : ParamDec COMMA VarList {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
@@ -606,7 +666,9 @@ Stmt : Exp SEMI {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree))
         $$.t->line = @$.first_line; 
         $$.t->head = NULL;
         HaveErrors++;
-        printf("Error type B at line %d:Wrong statement after \'if(...)\'.\n",$$.t->line); 
+        char *tmp="Wrong statement after if(...)";
+		insert_Error('B',$$.t->line,tmp);
+        //printf("Error type B at line %d:Wrong statement after \'if(...)\'.\n",$$.t->line); 
     }
     | WHILE error RP Stmt {
         $$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
@@ -614,7 +676,9 @@ Stmt : Exp SEMI {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree))
         $$.t->line = @$.first_line; 
         $$.t->head = NULL;
         HaveErrors++;
-        printf("Error type B at line %d:Unexpectd Expression.\n",$$.t->line);
+        char *tmp="Unexpectd Expression";
+		insert_Error('B',$$.t->line,tmp);
+        //printf("Error type B at line %d:Unexpectd Expression.\n",$$.t->line);
     }
     | Exp error {
         $$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
@@ -622,7 +686,9 @@ Stmt : Exp SEMI {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree))
         $$.t->line = @$.first_line; 
         $$.t->head = NULL;
         HaveErrors++;
-        printf("Error type B at line %d:Expected \';\'.\n",$$.t->line); 
+        char *tmp="Exexpectd \';\'";
+		insert_Error('B',$$.t->line,tmp);
+        //printf("Error type B at line %d:Expected \';\'.\n",$$.t->line); 
     }
 
     |RETURN Exp error{
@@ -631,7 +697,9 @@ Stmt : Exp SEMI {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree))
         $$.t->line = @$.first_line; 
         $$.t->head = NULL;
         HaveErrors++;
-        printf("Error type B at line %d:Expected \';\'.\n",$$.t->line);         
+        char *tmp="Exexpectd \';\'";
+		insert_Error('B',$$.t->line,tmp);
+        //printf("Error type B at line %d:Expected \';\'.\n",$$.t->line);         
     }
     ;
 DefList : Def DefList {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
@@ -650,7 +718,9 @@ DefList : Def DefList {$$.t = (struct GrammarTree *)malloc(sizeof(struct Grammar
         $$.t->line = @$.first_line; 
         $$.t->head = NULL;
         HaveErrors++;
-        printf("Error type B at line %d:Syntax error.\n",$$.t->line);   
+        char *tmp="Syntax error";
+		insert_Error('B',$$.t->line,tmp);
+        //printf("Error type B at line %d:Syntax error.\n",$$.t->line);   
     }
     ;
 Def : Specifier DecList SEMI {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
@@ -934,7 +1004,9 @@ Exp : Exp ASSIGNOP Exp {$$.t = (struct GrammarTree *)malloc(sizeof(struct Gramma
         $$.t->line = @$.first_line; 
         $$.t->head = NULL;
         HaveErrors++;
-        printf("Error type B at line %d:Unexpected operation after \'[\'.\n",$$.t->line);    
+        char* tmp="Unexpected operation after \'[\'";
+		insert_Error('B',$$.t->line,tmp);
+        //printf("Error type B at line %d:Unexpected operation after \'[\'.\n",$$.t->line);    
         }
     | ID LP error RP{
         $$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
@@ -942,7 +1014,9 @@ Exp : Exp ASSIGNOP Exp {$$.t = (struct GrammarTree *)malloc(sizeof(struct Gramma
         $$.t->line = @$.first_line; 
         $$.t->head = NULL;
         HaveErrors++;
-        printf("Error type B at line %d:Unexpected varlist after \'(\'.\n",$$.t->line); 
+        char *tmp="Unexpected varlist after \'(\'";
+		insert_Error('B',$$.t->line,tmp);
+        //printf("Error type B at line %d:Unexpected varlist after \'(\'.\n",$$.t->line); 
     }
     ;
 Args : Exp COMMA Args {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
