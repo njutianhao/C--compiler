@@ -32,7 +32,6 @@ digit [0-9]
 	char perc=c;
 	while(perc!='*' || c!='/'){
 		if(c==EOF){
-			//printf("Error type B at line %d:Ambiguous characters /*",lineno);
 			insert_Error('B',lineno,"Ambiguous characters /*");
 			HaveErrors++;
 			break;
