@@ -1,6 +1,7 @@
 %locations
 %{
     #include<stdio.h>
+    #include<stdarg.h>
     #include"lex.yy.c"
 	#define L 1
 	#define LE 2
@@ -16,13 +17,6 @@
         StmtList, Stmt, Exp, Def, DecList, Dec, Args,
         error
     };
-    char *token_map[] = {"Program","ExtDecList","ExtDef","Specifier","FunDec","CompSt",
-                         "VarDec","ExtDefList","StructSpecifier",
-                         "OptTag","DefList","Tag","VarList","ParamDec",
-                         "StmtList","Stmt","Exp","Def","DecList","Dec","Args","error"};
-    char *token2_map[] = {"SEMI","COMMA","ASSIGNOP","PLUS",
-                          "MINUS","STAR","DIV","AND","OR","NOT","DOT","TYPE","LP","RP","LB","RB" ,"LC","RC","STRUCT","RETURN",
-                          "IF","ELSE","WHILE","INT","FLOAT","ID","RELOP","SUB","LOWER_THAN_ELSE"};
     union TreeVal{
         int i;
         float f;
@@ -34,11 +28,6 @@
         char *Information;
         struct ErrorNode* next;
     };
-    struct ErrorNode *ErrorHead=NULL;
-    void print_Node(struct ErrorNode* node);
-    void print_Errors();
-    void insert_Error(char errorType,int linenumber,char* information);
-    int HaveErrors=0;
     struct GrammarTree;
     struct ListNode{
         struct GrammarTree *val;
@@ -50,10 +39,22 @@
         int type;
         struct ListNode *head;
     };
+    char *token_map[] = {"Program","ExtDecList","ExtDef","Specifier","FunDec","CompSt",
+                         "VarDec","ExtDefList","StructSpecifier",
+                         "OptTag","DefList","Tag","VarList","ParamDec",
+                         "StmtList","Stmt","Exp","Def","DecList","Dec","Args","error"};
+    char *token2_map[] = {"SEMI","COMMA","ASSIGNOP","PLUS",
+                          "MINUS","STAR","DIV","AND","OR","NOT","DOT","TYPE","LP","RP","LB","RB" ,"LC","RC","STRUCT","RETURN",
+                          "IF","ELSE","WHILE","INT","FLOAT","ID","RELOP","SUB","LOWER_THAN_ELSE"};
+    struct ErrorNode *ErrorHead=NULL;
+    int HaveErrors=0;
+    struct GrammarTree *root;
+    void print_Node(struct ErrorNode* node);
+    void print_Errors();
+    void insert_Error(char errorType,int linenumber,char* information);
     void insert(struct GrammarTree *t1,struct GrammarTree *t2);
     struct GrammarTree *createnode(int type,int line,void *value);
-    void insertall(struct GrammarTree *t1,struct GrammarTree *t2,...);
-    struct GrammarTree *root;
+    void insertall(struct GrammarTree *parent,int num,...);
     void __DFS(struct GrammarTree *n,int depth);
     void print_tree();
 %}
@@ -106,31 +107,25 @@
 %%
 Program : ExtDefList {
         $$.t = createnode(Program,@$.first_line,NULL);
-        insert($$.t,$1.t);
+        insertall($$.t,1,$1.t);
         root = $$.t;}
     ; 
 ExtDefList : ExtDef ExtDefList {
         $$.t = createnode(ExtDefList,@$.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);}
+        insertall($$.t,2,$1.t,$2.t);}
     | {$$.t = createnode(ExtDefList,@$.first_line,NULL);}
     ;
 ExtDef : Specifier ExtDecList SEMI {
         $$.t = createnode(ExtDef,@$.first_line,NULL);
         $3.t = createnode(SEMI,@3.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
+        insertall($$.t,3,$1.t,$2.t,$3.t);}
     | Specifier SEMI {
         $$.t = createnode(ExtDef,@$.first_line,NULL);
         $2.t = createnode(SEMI,@2.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);}
+        insertall($$.t,2,$1.t,$2.t);}
     | Specifier FunDec CompSt {
         $$.t = createnode(ExtDef,@$.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);} 
+        insertall($$.t,3,$1.t,$2.t,$3.t);} 
     |Specifier error{
         $$.t = createnode(error,@$.first_line,NULL);
         HaveErrors++;
@@ -140,59 +135,49 @@ ExtDef : Specifier ExtDecList SEMI {
     ;
 ExtDecList : VarDec {
         $$.t = createnode(ExtDecList,@$.first_line,NULL);
-        insert($$.t,$1.t);}
+        insertall($$.t,1,$1.t);}
     | VarDec COMMA ExtDecList {
         $$.t = createnode(ExtDecList,@$.first_line,NULL);
         $2.t = createnode(COMMA,@2.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
+        insertall($$.t,3,$1.t,$2.t,$3.t);}
     ;
 
 Specifier : TYPE {
         $$.t = createnode(Specifier,@$.first_line,NULL);
         $1.t = createnode(TYPE,@1.first_line,(void *)&$1.str);
-        insert($$.t,$1.t);}
+        insertall($$.t,1,$1.t);}
     | StructSpecifier {$$.t = createnode(Specifier,@$.first_line,NULL);
-        insert($$.t,$1.t);}
+        insertall($$.t,1,$1.t);}
     ;
 StructSpecifier : STRUCT OptTag LC DefList RC {
         $$.t = createnode(StructSpecifier,@$.first_line,NULL);
         $1.t = createnode(STRUCT,@1.first_line,NULL);
         $3.t = createnode(LC,@3.first_line,NULL);
         $5.t = createnode(RC,@5.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);
-        insert($$.t,$4.t);
-        insert($$.t,$5.t);}
+        insertall($$.t,5,$1.t,$2.t,$3.t,$4.t,$5.t);}
     | STRUCT Tag { 
         $$.t = createnode(StructSpecifier,@$.first_line,NULL);
         $1.t = createnode(STRUCT,@1.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);}
+        insertall($$.t,2,$1.t,$2.t);}
     ;
 OptTag : ID {
         $$.t = createnode(OptTag,@$.first_line,NULL);
         $1.t = createnode(ID,@1.first_line,(void *)&$1.str);
-        insert($$.t,$1.t);}
+        insertall($$.t,1,$1.t);}
     |  {$$.t = createnode(OptTag,@$.first_line,NULL);}
     ;
 Tag : ID {$$.t = createnode(Tag,@$.first_line,NULL);
         $1.t = createnode(ID,@1.first_line,(void *)&$1.str);
-        insert($$.t,$1.t);}
+        insertall($$.t,1,$1.t);}
 
 VarDec : ID {$$.t = createnode(VarDec,@$.first_line,NULL);
         $1.t = createnode(ID,@1.first_line,(void *)&$1.str);
-        insert($$.t,$1.t);}
+        insertall($$.t,1,$1.t);}
     | VarDec LB INT RB {$$.t = createnode(VarDec,@$.first_line,NULL);
         $2.t = createnode(LB,@2.first_line,NULL);
         $3.t = createnode(INT,@3.first_line,(void *)&$3.i);
         $4.t = createnode(RB,@4.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);
-        insert($$.t,$4.t);}
+        insertall($$.t,4,$1.t,$2.t,$3.t,$4.t);}
     | VarDec error RB {$$.t = createnode(VarDec,@$.first_line,NULL);
         HaveErrors++;
         char *tmp="Wrong Definition";
@@ -204,17 +189,12 @@ FunDec : ID LP VarList RP {$$.t = createnode(FunDec,@$.first_line,NULL);
         $1.t = createnode(ID,@1.first_line,(void *)&$1.str);
         $2.t = createnode(LP,@2.first_line,NULL);
         $4.t = createnode(RP,@4.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);
-        insert($$.t,$4.t);}
+        insertall($$.t,4,$1.t,$2.t,$3.t,$4.t);}
     | ID LP RP {$$.t = createnode(FunDec,@$.first_line,NULL);
         $1.t = createnode(ID,@1.first_line,(void *)&$1.str);
         $2.t = createnode(LP,@2.first_line,NULL);
         $3.t = createnode(RP,@3.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
+        insertall($$.t,3,$1.t,$2.t,$3.t);}
     |ID LP error RP{
         $$.t = createnode(FunDec,@$.first_line,NULL);
         HaveErrors=HaveErrors+1;
@@ -225,71 +205,47 @@ FunDec : ID LP VarList RP {$$.t = createnode(FunDec,@$.first_line,NULL);
     ;
 VarList : ParamDec COMMA VarList {$$.t = createnode(VarList,@$.first_line,NULL);
         $2.t = createnode(COMMA,@2.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
+        insertall($$.t,3,$1.t,$2.t,$3.t);}
     | ParamDec {$$.t = createnode(VarList,@$.first_line,NULL);
-        insert($$.t,$1.t);}
+        insertall($$.t,1,$1.t);}
     ;
 ParamDec : Specifier VarDec {$$.t = createnode(ParamDec,@$.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);}
+        insertall($$.t,2,$1.t,$2.t);}
     ;
 CompSt : LC DefList StmtList RC {$$.t = createnode(CompSt,@$.first_line,NULL);
         $1.t = createnode(LC,@1.first_line,NULL);
         $4.t = createnode(RC,@4.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);
-        insert($$.t,$4.t);}
+        insertall($$.t,4,$1.t,$2.t,$3.t,$4.t);}
     ;
 StmtList : Stmt StmtList {$$.t = createnode(StmtList,@$.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);}
+        insertall($$.t,2,$1.t,$2.t);}
     | {$$.t = createnode(StmtList,@$.first_line,NULL);}
     ;
 Stmt : Exp SEMI {$$.t = createnode(Stmt,@$.first_line,NULL);
         $2.t = createnode(SEMI,@2.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);}
+        insertall($$.t,2,$1.t,$2.t);}
     | CompSt {$$.t = createnode(Stmt,@$.first_line,NULL);
         insert($$.t,$1.t);}
     | RETURN Exp SEMI {$$.t = createnode(Stmt,@$.first_line,NULL);
         $1.t = createnode(RETURN,@1.first_line,NULL);
         $3.t = createnode(SEMI,@3.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
+        insertall($$.t,3,$1.t,$2.t,$3.t);}
     | IF LP Exp RP Stmt %prec LOWER_THAN_ELSE {$$.t = createnode(Stmt,@$.first_line,NULL);
         $1.t = createnode(IF,@1.first_line,NULL);
         $2.t = createnode(LP,@2.first_line,NULL);
         $4.t = createnode(RP,@4.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);
-        insert($$.t,$4.t);
-        insert($$.t,$5.t);}
+        insertall($$.t,5,$1.t,$2.t,$3.t,$4.t,$5.t);}
     | IF LP Exp RP Stmt ELSE Stmt {$$.t = createnode(Stmt,@$.first_line,NULL);
         $1.t = createnode(IF,@1.first_line,NULL);
         $2.t = createnode(LP,@2.first_line,NULL);
         $4.t = createnode(RP,@4.first_line,NULL);
         $6.t = createnode(ELSE,@6.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);
-        insert($$.t,$4.t);
-        insert($$.t,$5.t);
-        insert($$.t,$6.t);
-        insert($$.t,$7.t);}
+        insertall($$.t,7,$1.t,$2.t,$3.t,$4.t,$5.t,$6.t,$7.t);}
     | WHILE LP Exp RP Stmt {$$.t = createnode(Stmt,@$.first_line,NULL);
         $1.t = createnode(WHILE,@1.first_line,NULL);
         $2.t = createnode(LP,@2.first_line,NULL);
         $4.t = createnode(RP,@4.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);
-        insert($$.t,$4.t);
-        insert($$.t,$5.t);}
+        insertall($$.t,5,$1.t,$2.t,$3.t,$4.t,$5.t);}
     | IF LP Exp RP error ELSE Stmt {
         $$.t = createnode(Stmt,@$.first_line,NULL);
         HaveErrors++;
@@ -321,8 +277,7 @@ Stmt : Exp SEMI {$$.t = createnode(Stmt,@$.first_line,NULL);
     }
     ;
 DefList : Def DefList {$$.t = createnode(DefList,@$.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);}
+        insertall($$.t,2,$1.t,$2.t);}
     | {$$.t = createnode(DefList,@$.first_line,NULL);}
     | error SEMI{
         $$.t = createnode(DefList,@$.first_line,NULL);
@@ -334,117 +289,81 @@ DefList : Def DefList {$$.t = createnode(DefList,@$.first_line,NULL);
     ;
 Def : Specifier DecList SEMI {$$.t = createnode(Def,@$.first_line,NULL);
         $3.t = createnode(SEMI,@3.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
+        insertall($$.t,3,$1.t,$2.t,$3.t);}
 DecList : Dec {$$.t = createnode(DecList,@$.first_line,NULL);
-        insert($$.t,$1.t);}
+        insertall($$.t,1,$1.t);}
     | Dec COMMA DecList {$$.t = createnode(DecList,@$.first_line,NULL);
         $2.t = createnode(COMMA,@2.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
+        insertall($$.t,3,$1.t,$2.t,$3.t);}
     ;
 Dec : VarDec {$$.t = createnode(Dec,@$.first_line,NULL);
-        insert($$.t,$1.t);}
+        insertall($$.t,1,$1.t);}
     | VarDec ASSIGNOP Exp {$$.t = createnode(Dec,@$.first_line,NULL);
         $2.t = createnode(ASSIGNOP,@2.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
+        insertall($$.t,3,$1.t,$2.t,$3.t);}
     ;
 
 Exp : Exp ASSIGNOP Exp {$$.t = createnode(Exp,@$.first_line,NULL);
         $2.t = createnode(ASSIGNOP,@2.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
+        insertall($$.t,3,$1.t,$2.t,$3.t);}
     | Exp AND Exp {$$.t = createnode(Exp,@$.first_line,NULL);
         $2.t = createnode(AND,@2.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
+        insertall($$.t,3,$1.t,$2.t,$3.t);}
     | Exp OR Exp {$$.t = createnode(Exp,@$.first_line,NULL);
         $2.t = createnode(OR,@2.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
+        insertall($$.t,3,$1.t,$2.t,$3.t);}
     | Exp RELOP Exp {$$.t = createnode(Exp,@$.first_line,NULL);
         $2.t = createnode(RELOP,@2.first_line,(void *)&$2.i);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
+        insertall($$.t,3,$1.t,$2.t,$3.t);}
     | Exp PLUS Exp {$$.t = createnode(Exp,@$.first_line,NULL);
         $2.t = createnode(PLUS,@2.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
+        insertall($$.t,3,$1.t,$2.t,$3.t);}
     | Exp MINUS Exp %prec SUB{$$.t = createnode(Exp,@$.first_line,NULL);
         $2.t = createnode(SUB,@2.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
+        insertall($$.t,3,$1.t,$2.t,$3.t);}
     | Exp STAR Exp {$$.t = createnode(Exp,@$.first_line,NULL);
         $2.t = createnode(STAR,@2.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
+        insertall($$.t,3,$1.t,$2.t,$3.t);}
     | Exp DIV Exp {$$.t = createnode(Exp,@$.first_line,NULL);
         $2.t = createnode(DIV,@2.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
+        insertall($$.t,3,$1.t,$2.t,$3.t);}
     | LP Exp RP {$$.t = createnode(Exp,@$.first_line,NULL);
         $1.t = createnode(LP,@1.first_line,NULL);
         $3.t = createnode(RP,@3.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
+        insertall($$.t,3,$1.t,$2.t,$3.t);}
     | MINUS Exp{$$.t = createnode(Exp,@$.first_line,NULL);
         $1.t = createnode(MINUS,@1.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);}
+        insertall($$.t,2,$1.t,$2.t);}
     | NOT Exp {$$.t = createnode(Exp,@$.first_line,NULL);
         $1.t = createnode(NOT,@1.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);}
+        insertall($$.t,2,$1.t,$2.t);}
     | ID LP Args RP {$$.t = createnode(Exp,@$.first_line,NULL);
         $1.t = createnode(ID,@1.first_line,(void *)&$1.str);
         $2.t = createnode(LP,@2.first_line,NULL);
         $4.t = createnode(RP,@4.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);
-        insert($$.t,$4.t);}
+        insertall($$.t,4,$1.t,$2.t,$3.t,$4.t);}
     | ID LP RP {$$.t = createnode(Exp,@$.first_line,NULL);
         $1.t = createnode(ID,@1.first_line,(void *)&$1.str);
         $2.t = createnode(LP,@2.first_line,NULL);
         $3.t = createnode(RP,@3.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
+        insertall($$.t,3,$1.t,$2.t,$3.t);}
     | Exp LB Exp RB {$$.t = createnode(Exp,@$.first_line,NULL);
         $2.t = createnode(LB,@2.first_line,NULL);
         $4.t = createnode(RB,@4.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);
-        insert($$.t,$4.t);}
+        insertall($$.t,4,$1.t,$2.t,$3.t,$4.t);}
     | Exp DOT ID {$$.t = createnode(Exp,@$.first_line,NULL);
         $2.t = createnode(DOT,@2.first_line,NULL);
         $3.t = createnode(ID,@3.first_line,(void *)&$3.str);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
+        insertall($$.t,3,$1.t,$2.t,$3.t);}
     | ID {$$.t = createnode(Exp,@$.first_line,NULL);
         $1.t = createnode(ID,@1.first_line,(void *)&$1.str);
-        insert($$.t,$1.t);}
+        insertall($$.t,1,$1.t);}
     | INT {$$.t = createnode(Exp,@$.first_line,NULL);
         $1.t = createnode(INT,@1.first_line,(void *)&$1.i);
-        insert($$.t,$1.t);}
+        insertall($$.t,1,$1.t);}
     | FLOAT {$$.t = createnode(Exp,@$.first_line,NULL);
         $1.t = createnode(FLOAT,@1.first_line,(void *)&$1.f);
-        insert($$.t,$1.t);}
+        insertall($$.t,1,$1.t);}
     | Exp LB error RB{
         $$.t = createnode(Exp,@$.first_line,NULL);
         HaveErrors++;
@@ -462,11 +381,9 @@ Exp : Exp ASSIGNOP Exp {$$.t = createnode(Exp,@$.first_line,NULL);
     ;
 Args : Exp COMMA Args {$$.t = createnode(Args,@$.first_line,NULL);
         $2.t = createnode(COMMA,@2.first_line,NULL);
-        insert($$.t,$1.t);
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
+        insertall($$.t,3,$1.t,$2.t,$3.t);}
     | Exp {$$.t = createnode(Args,@$.first_line,NULL);
-        insert($$.t,$1.t);}
+        insertall($$.t,1,$1.t);}
     ;
 %%
 
@@ -656,4 +573,15 @@ struct GrammarTree *createnode(int type,int line,void *value){
         res->val.f = *(float *)value;
     }
     return res;
+}
+
+void insertall(struct GrammarTree *parent,int num,...){
+    va_list ap;
+    va_start(ap,num);
+    for(int i = 0;i < num;i++)
+    {
+        struct GrammarTree *tmp = va_arg(ap,struct GrammarTree *);
+        insert(parent,tmp);
+    }
+    va_end(ap);
 }
