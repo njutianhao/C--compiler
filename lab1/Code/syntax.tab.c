@@ -115,7 +115,7 @@
         struct ListNode *head;
     };
     void insert(struct GrammarTree *t1,struct GrammarTree *t2);
-    struct GrammarTree *createnode(int type,int line);
+    struct GrammarTree *createnode(int type,int line,void *value);
     void insertall(struct GrammarTree *t1,struct GrammarTree *t2,...);
     struct GrammarTree *root;
     void __DFS(struct GrammarTree *n,int depth);
@@ -536,12 +536,12 @@ static const yytype_uint8 yytranslate[] =
 static const yytype_uint16 yyrline[] =
 {
        0,   107,   107,   112,   116,   118,   124,   129,   134,   141,
-     144,   152,   158,   161,   171,   176,   187,   192,   204,   215,
-     235,   245,   267,   288,   299,   310,   316,   323,   340,   346,
-     351,   361,   366,   381,   402,   429,   450,   460,   470,   481,
-     492,   498,   502,   513,   519,   524,   536,   541,   554,   565,
-     576,   587,   600,   611,   622,   633,   644,   659,   669,   679,
-     701,   722,   738,   755,   766,   777,   788,   798,   809,   820
+     144,   152,   156,   159,   169,   175,   179,   181,   185,   188,
+     196,   203,   211,   218,   226,   231,   234,   238,   246,   249,
+     251,   255,   257,   263,   272,   284,   293,   300,   307,   315,
+     323,   326,   327,   335,   340,   342,   348,   350,   357,   362,
+     367,   372,   377,   382,   387,   392,   397,   403,   407,   411,
+     419,   426,   433,   439,   442,   445,   448,   455,   463,   468
 };
 #endif
 
@@ -1520,7 +1520,7 @@ yyreduce:
         case 2:
 #line 107 "./syntax.y" /* yacc.c:1646  */
     {
-        (yyval.type_treenode).t = createnode(Program,(yyloc).first_line);
+        (yyval.type_treenode).t = createnode(Program,(yyloc).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);
         root = (yyval.type_treenode).t;}
 #line 1527 "./syntax.tab.c" /* yacc.c:1646  */
@@ -1529,7 +1529,7 @@ yyreduce:
   case 3:
 #line 112 "./syntax.y" /* yacc.c:1646  */
     {
-        (yyval.type_treenode).t = createnode(ExtDefList,(yyloc).first_line);
+        (yyval.type_treenode).t = createnode(ExtDefList,(yyloc).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
 #line 1536 "./syntax.tab.c" /* yacc.c:1646  */
@@ -1537,15 +1537,15 @@ yyreduce:
 
   case 4:
 #line 116 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = createnode(ExtDefList,(yyloc).first_line);}
+    {(yyval.type_treenode).t = createnode(ExtDefList,(yyloc).first_line,NULL);}
 #line 1542 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
 #line 118 "./syntax.y" /* yacc.c:1646  */
     {
-        (yyval.type_treenode).t = createnode(ExtDef,(yyloc).first_line);
-        (yyvsp[0].type_treenode).t = createnode(SEMI,(yylsp[0]).first_line);
+        (yyval.type_treenode).t = createnode(ExtDef,(yyloc).first_line,NULL);
+        (yyvsp[0].type_treenode).t = createnode(SEMI,(yylsp[0]).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
@@ -1555,8 +1555,8 @@ yyreduce:
   case 6:
 #line 124 "./syntax.y" /* yacc.c:1646  */
     {
-        (yyval.type_treenode).t = createnode(ExtDef,(yyloc).first_line);
-        (yyvsp[0].type_treenode).t = createnode(SEMI,(yylsp[0]).first_line);
+        (yyval.type_treenode).t = createnode(ExtDef,(yyloc).first_line,NULL);
+        (yyvsp[0].type_treenode).t = createnode(SEMI,(yylsp[0]).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
 #line 1563 "./syntax.tab.c" /* yacc.c:1646  */
@@ -1565,7 +1565,7 @@ yyreduce:
   case 7:
 #line 129 "./syntax.y" /* yacc.c:1646  */
     {
-        (yyval.type_treenode).t = createnode(ExtDef,(yyloc).first_line);
+        (yyval.type_treenode).t = createnode(ExtDef,(yyloc).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
@@ -1575,7 +1575,7 @@ yyreduce:
   case 8:
 #line 134 "./syntax.y" /* yacc.c:1646  */
     {
-        (yyval.type_treenode).t = createnode(error,(yyloc).first_line);
+        (yyval.type_treenode).t = createnode(error,(yyloc).first_line,NULL);
         HaveErrors++;
         char *tmp="Syntax error";
 		insert_Error('B',(yyval.type_treenode).t->line,tmp);
@@ -1586,7 +1586,7 @@ yyreduce:
   case 9:
 #line 141 "./syntax.y" /* yacc.c:1646  */
     {
-        (yyval.type_treenode).t = createnode(ExtDecList,(yyloc).first_line);
+        (yyval.type_treenode).t = createnode(ExtDecList,(yyloc).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
 #line 1592 "./syntax.tab.c" /* yacc.c:1646  */
     break;
@@ -1594,8 +1594,8 @@ yyreduce:
   case 10:
 #line 144 "./syntax.y" /* yacc.c:1646  */
     {
-        (yyval.type_treenode).t = createnode(ExtDecList,(yyloc).first_line);
-        (yyvsp[-1].type_treenode).t = createnode(COMMA,(yylsp[-1]).first_line);
+        (yyval.type_treenode).t = createnode(ExtDecList,(yyloc).first_line,NULL);
+        (yyvsp[-1].type_treenode).t = createnode(COMMA,(yylsp[-1]).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
@@ -1605,956 +1605,601 @@ yyreduce:
   case 11:
 #line 152 "./syntax.y" /* yacc.c:1646  */
     {
-        (yyval.type_treenode).t = createnode(Specifier,(yyloc).first_line);
-        char *tmp = (yyvsp[0].type_treenode).str;
-        (yyvsp[0].type_treenode).t = createnode(TYPE,(yylsp[0]).first_line);
-        (yyvsp[0].type_treenode).t->val.str = tmp;
+        (yyval.type_treenode).t = createnode(Specifier,(yyloc).first_line,NULL);
+        (yyvsp[0].type_treenode).t = createnode(TYPE,(yylsp[0]).first_line,(void *)&(yyvsp[0].type_treenode).str);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1614 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1612 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 158 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = createnode(Specifier,(yyloc).first_line);
+#line 156 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Specifier,(yyloc).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1621 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1619 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 161 "./syntax.y" /* yacc.c:1646  */
+#line 159 "./syntax.y" /* yacc.c:1646  */
     {
-        (yyval.type_treenode).t = createnode(StructSpecifier,(yyloc).first_line);
-        (yyvsp[-4].type_treenode).t = createnode(STRUCT,(yylsp[-4]).first_line);
-        (yyvsp[-2].type_treenode).t = createnode(LC,(yylsp[-2]).first_line);
-        (yyvsp[0].type_treenode).t = createnode(RC,(yylsp[0]).first_line);
+        (yyval.type_treenode).t = createnode(StructSpecifier,(yyloc).first_line,NULL);
+        (yyvsp[-4].type_treenode).t = createnode(STRUCT,(yylsp[-4]).first_line,NULL);
+        (yyvsp[-2].type_treenode).t = createnode(LC,(yylsp[-2]).first_line,NULL);
+        (yyvsp[0].type_treenode).t = createnode(RC,(yylsp[0]).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-4].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[-3].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1636 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1634 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 171 "./syntax.y" /* yacc.c:1646  */
-    { (yyval.type_treenode).t = createnode(StructSpecifier,(yyloc).first_line);
-        (yyvsp[-1].type_treenode).t = createnode(STRUCT,(yylsp[-1]).first_line);
+#line 169 "./syntax.y" /* yacc.c:1646  */
+    { 
+        (yyval.type_treenode).t = createnode(StructSpecifier,(yyloc).first_line,NULL);
+        (yyvsp[-1].type_treenode).t = createnode(STRUCT,(yylsp[-1]).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1645 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1644 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 176 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = OptTag; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        char *tmp = (yyvsp[0].type_treenode).str;
-        (yyvsp[0].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[0].type_treenode).t->type = ID;
-        (yyvsp[0].type_treenode).t->line = (yylsp[0]).first_line;
-        (yyvsp[0].type_treenode).t->head = NULL;
-        (yyvsp[0].type_treenode).t->val.str = tmp;
+#line 175 "./syntax.y" /* yacc.c:1646  */
+    {
+        (yyval.type_treenode).t = createnode(OptTag,(yyloc).first_line,NULL);
+        (yyvsp[0].type_treenode).t = createnode(ID,(yylsp[0]).first_line,(void *)&(yyvsp[0].type_treenode).str);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1661 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1653 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 187 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = OptTag; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;}
-#line 1670 "./syntax.tab.c" /* yacc.c:1646  */
+#line 179 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(OptTag,(yyloc).first_line,NULL);}
+#line 1659 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 192 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Tag; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        char *tmp = (yyvsp[0].type_treenode).str;
-        (yyvsp[0].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[0].type_treenode).t->type = ID;
-        (yyvsp[0].type_treenode).t->line = (yylsp[0]).first_line;
-        (yyvsp[0].type_treenode).t->head = NULL;
-        (yyvsp[0].type_treenode).t->val.str = tmp;
+#line 181 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Tag,(yyloc).first_line,NULL);
+        (yyvsp[0].type_treenode).t = createnode(ID,(yylsp[0]).first_line,(void *)&(yyvsp[0].type_treenode).str);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1686 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1667 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 204 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = VarDec; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        char *tmp = (yyvsp[0].type_treenode).str;
-        (yyvsp[0].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[0].type_treenode).t->type = ID;
-        (yyvsp[0].type_treenode).t->line = (yylsp[0]).first_line;
-        (yyvsp[0].type_treenode).t->head = NULL;
-        (yyvsp[0].type_treenode).t->val.str = tmp;
+#line 185 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(VarDec,(yyloc).first_line,NULL);
+        (yyvsp[0].type_treenode).t = createnode(ID,(yylsp[0]).first_line,(void *)&(yyvsp[0].type_treenode).str);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1702 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1675 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 215 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = VarDec; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+#line 188 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(VarDec,(yyloc).first_line,NULL);
+        (yyvsp[-2].type_treenode).t = createnode(LB,(yylsp[-2]).first_line,NULL);
+        (yyvsp[-1].type_treenode).t = createnode(INT,(yylsp[-1]).first_line,(void *)&(yyvsp[-1].type_treenode).i);
+        (yyvsp[0].type_treenode).t = createnode(RB,(yylsp[0]).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-3].type_treenode).t);
-        (yyvsp[-2].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-2].type_treenode).t->type = LB;
-        (yyvsp[-2].type_treenode).t->line = (yylsp[-2]).first_line;
-        (yyvsp[-2].type_treenode).t->head = NULL;
         insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        (yyvsp[-1].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-1].type_treenode).t->type = INT;
-        (yyvsp[-1].type_treenode).t->line = (yylsp[-1]).first_line;
-        (yyvsp[-1].type_treenode).t->head = NULL;
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        (yyvsp[0].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[0].type_treenode).t->type = RB;
-        (yyvsp[0].type_treenode).t->line = (yylsp[0]).first_line;
-        (yyvsp[0].type_treenode).t->head = NULL;
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1727 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1688 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 235 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = error; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+#line 196 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(VarDec,(yyloc).first_line,NULL);
         HaveErrors++;
         char *tmp="Wrong Definition";
 		insert_Error('B',(yyval.type_treenode).t->line,tmp);
         //printf("Error type B at line %d:Wrong Definition.\n",$$.t->line);
         }
-#line 1741 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1699 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 245 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = FunDec; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        char *tmp = (yyvsp[-3].type_treenode).str;
-        (yyvsp[-3].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-3].type_treenode).t->type = ID;
-        (yyvsp[-3].type_treenode).t->line = (yylsp[-3]).first_line;
-        (yyvsp[-3].type_treenode).t->head = NULL;
-        (yyvsp[-3].type_treenode).t->val.str = tmp;
+#line 203 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(FunDec,(yyloc).first_line,NULL);
+        (yyvsp[-3].type_treenode).t = createnode(ID,(yylsp[-3]).first_line,(void *)&(yyvsp[-3].type_treenode).str);
+        (yyvsp[-2].type_treenode).t = createnode(LP,(yylsp[-2]).first_line,NULL);
+        (yyvsp[0].type_treenode).t = createnode(RP,(yylsp[0]).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-3].type_treenode).t);
-        (yyvsp[-2].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-2].type_treenode).t->type = LP;
-        (yyvsp[-2].type_treenode).t->line = (yylsp[-2]).first_line;
-        (yyvsp[-2].type_treenode).t->head = NULL;
         insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        (yyvsp[0].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[0].type_treenode).t->type = RP;
-        (yyvsp[0].type_treenode).t->line = (yylsp[0]).first_line;
-        (yyvsp[0].type_treenode).t->head = NULL;
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1768 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1712 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 267 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = FunDec; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        char *tmp = (yyvsp[-2].type_treenode).str;
-        (yyvsp[-2].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-2].type_treenode).t->type = ID;
-        (yyvsp[-2].type_treenode).t->line = (yylsp[-2]).first_line;
-        (yyvsp[-2].type_treenode).t->head = NULL;
-        (yyvsp[-2].type_treenode).t->val.str = tmp;
+#line 211 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(FunDec,(yyloc).first_line,NULL);
+        (yyvsp[-2].type_treenode).t = createnode(ID,(yylsp[-2]).first_line,(void *)&(yyvsp[-2].type_treenode).str);
+        (yyvsp[-1].type_treenode).t = createnode(LP,(yylsp[-1]).first_line,NULL);
+        (yyvsp[0].type_treenode).t = createnode(RP,(yylsp[0]).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        (yyvsp[-1].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-1].type_treenode).t->type = LP;
-        (yyvsp[-1].type_treenode).t->line = (yylsp[-1]).first_line;
-        (yyvsp[-1].type_treenode).t->head = NULL;
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        (yyvsp[0].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[0].type_treenode).t->type = RP;
-        (yyvsp[0].type_treenode).t->line = (yylsp[0]).first_line;
-        (yyvsp[0].type_treenode).t->head = NULL;
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1794 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1724 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 288 "./syntax.y" /* yacc.c:1646  */
+#line 218 "./syntax.y" /* yacc.c:1646  */
     {
-        (yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = error; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL; 
+        (yyval.type_treenode).t = createnode(FunDec,(yyloc).first_line,NULL);
         HaveErrors=HaveErrors+1;
         char *tmp="Wrong Function Definition";
 		insert_Error('B',(yyval.type_treenode).t->line,tmp);
         //printf("Error type B at line %d:Wrong Function Definition.\n",$$.t->line);
     }
-#line 1809 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1736 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 299 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = VarList; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+#line 226 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(VarList,(yyloc).first_line,NULL);
+        (yyvsp[-1].type_treenode).t = createnode(COMMA,(yylsp[-1]).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        (yyvsp[-1].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-1].type_treenode).t->type = COMMA;
-        (yyvsp[-1].type_treenode).t->line = (yylsp[-1]).first_line;
-        (yyvsp[-1].type_treenode).t->head = NULL;
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1825 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1746 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 310 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = VarList; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+#line 231 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(VarList,(yyloc).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1835 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1753 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 316 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = ParamDec; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+#line 234 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(ParamDec,(yyloc).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1846 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1761 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 323 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = CompSt; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        (yyvsp[-3].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-3].type_treenode).t->type = LC;
-        (yyvsp[-3].type_treenode).t->line = (yylsp[-3]).first_line;
-        (yyvsp[-3].type_treenode).t->head = NULL;
+#line 238 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(CompSt,(yyloc).first_line,NULL);
+        (yyvsp[-3].type_treenode).t = createnode(LC,(yylsp[-3]).first_line,NULL);
+        (yyvsp[0].type_treenode).t = createnode(RC,(yylsp[0]).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-3].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        (yyvsp[0].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[0].type_treenode).t->type = RC;
-        (yyvsp[0].type_treenode).t->line = (yylsp[0]).first_line;
-        (yyvsp[0].type_treenode).t->head = NULL;
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1867 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1773 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 340 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = StmtList; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+#line 246 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(StmtList,(yyloc).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1878 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1781 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 346 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = StmtList; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;}
-#line 1887 "./syntax.tab.c" /* yacc.c:1646  */
+#line 249 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(StmtList,(yyloc).first_line,NULL);}
+#line 1787 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 351 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Stmt; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+#line 251 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Stmt,(yyloc).first_line,NULL);
+        (yyvsp[0].type_treenode).t = createnode(SEMI,(yylsp[0]).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        (yyvsp[0].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[0].type_treenode).t->type = SEMI;
-        (yyvsp[0].type_treenode).t->line = (yylsp[0]).first_line;
-        (yyvsp[0].type_treenode).t->head = NULL;
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1902 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1796 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 361 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Stmt; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+#line 255 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Stmt,(yyloc).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1912 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1803 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 366 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Stmt; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        (yyvsp[-2].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-2].type_treenode).t->type = RETURN;
-        (yyvsp[-2].type_treenode).t->line = (yylsp[-2]).first_line;
-        (yyvsp[-2].type_treenode).t->head = NULL;
+#line 257 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Stmt,(yyloc).first_line,NULL);
+        (yyvsp[-2].type_treenode).t = createnode(RETURN,(yylsp[-2]).first_line,NULL);
+        (yyvsp[0].type_treenode).t = createnode(SEMI,(yylsp[0]).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        (yyvsp[0].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[0].type_treenode).t->type = SEMI;
-        (yyvsp[0].type_treenode).t->line = (yylsp[0]).first_line;
-        (yyvsp[0].type_treenode).t->head = NULL;
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1932 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1814 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 381 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Stmt; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        (yyvsp[-4].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-4].type_treenode).t->type = IF;
-        (yyvsp[-4].type_treenode).t->line = (yylsp[-4]).first_line;
-        (yyvsp[-4].type_treenode).t->head = NULL;
+#line 263 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Stmt,(yyloc).first_line,NULL);
+        (yyvsp[-4].type_treenode).t = createnode(IF,(yylsp[-4]).first_line,NULL);
+        (yyvsp[-3].type_treenode).t = createnode(LP,(yylsp[-3]).first_line,NULL);
+        (yyvsp[-1].type_treenode).t = createnode(RP,(yylsp[-1]).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-4].type_treenode).t);
-        (yyvsp[-3].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-3].type_treenode).t->type = LP;
-        (yyvsp[-3].type_treenode).t->line = (yylsp[-3]).first_line;
-        (yyvsp[-3].type_treenode).t->head = NULL;
         insert((yyval.type_treenode).t,(yyvsp[-3].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        (yyvsp[-1].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-1].type_treenode).t->type = RP;
-        (yyvsp[-1].type_treenode).t->line = (yylsp[-1]).first_line;
-        (yyvsp[-1].type_treenode).t->head = NULL;
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1958 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1828 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 402 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Stmt; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        (yyvsp[-6].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-6].type_treenode).t->type = IF;
-        (yyvsp[-6].type_treenode).t->line = (yylsp[-6]).first_line;
-        (yyvsp[-6].type_treenode).t->head = NULL;
+#line 272 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Stmt,(yyloc).first_line,NULL);
+        (yyvsp[-6].type_treenode).t = createnode(IF,(yylsp[-6]).first_line,NULL);
+        (yyvsp[-5].type_treenode).t = createnode(LP,(yylsp[-5]).first_line,NULL);
+        (yyvsp[-3].type_treenode).t = createnode(RP,(yylsp[-3]).first_line,NULL);
+        (yyvsp[-1].type_treenode).t = createnode(ELSE,(yylsp[-1]).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-6].type_treenode).t);
-        (yyvsp[-5].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-5].type_treenode).t->type = LP;
-        (yyvsp[-5].type_treenode).t->line = (yylsp[-5]).first_line;
-        (yyvsp[-5].type_treenode).t->head = NULL;
         insert((yyval.type_treenode).t,(yyvsp[-5].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[-4].type_treenode).t);
-        (yyvsp[-3].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-3].type_treenode).t->type = RP;
-        (yyvsp[-3].type_treenode).t->line = (yylsp[-3]).first_line;
-        (yyvsp[-3].type_treenode).t->head = NULL;
         insert((yyval.type_treenode).t,(yyvsp[-3].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        (yyvsp[-1].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-1].type_treenode).t->type = ELSE;
-        (yyvsp[-1].type_treenode).t->line = (yylsp[-1]).first_line;
-        (yyvsp[-1].type_treenode).t->head = NULL;
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1990 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1845 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 429 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Stmt; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        (yyvsp[-4].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-4].type_treenode).t->type = WHILE;
-        (yyvsp[-4].type_treenode).t->line = (yylsp[-4]).first_line;
-        (yyvsp[-4].type_treenode).t->head = NULL;
+#line 284 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Stmt,(yyloc).first_line,NULL);
+        (yyvsp[-4].type_treenode).t = createnode(WHILE,(yylsp[-4]).first_line,NULL);
+        (yyvsp[-3].type_treenode).t = createnode(LP,(yylsp[-3]).first_line,NULL);
+        (yyvsp[-1].type_treenode).t = createnode(RP,(yylsp[-1]).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-4].type_treenode).t);
-        (yyvsp[-3].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-3].type_treenode).t->type = LP;
-        (yyvsp[-3].type_treenode).t->line = (yylsp[-3]).first_line;
-        (yyvsp[-3].type_treenode).t->head = NULL;
         insert((yyval.type_treenode).t,(yyvsp[-3].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        (yyvsp[-1].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-1].type_treenode).t->type = RP;
-        (yyvsp[-1].type_treenode).t->line = (yylsp[-1]).first_line;
-        (yyvsp[-1].type_treenode).t->head = NULL;
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2016 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1859 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 450 "./syntax.y" /* yacc.c:1646  */
+#line 293 "./syntax.y" /* yacc.c:1646  */
     {
-        (yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = error; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+        (yyval.type_treenode).t = createnode(Stmt,(yyloc).first_line,NULL);
         HaveErrors++;
         char *tmp="Wrong statement after if(...)";
 		insert_Error('B',(yyval.type_treenode).t->line,tmp);
         //printf("Error type B at line %d:Wrong statement after \'if(...)\'.\n",$$.t->line); 
     }
-#line 2031 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1871 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 460 "./syntax.y" /* yacc.c:1646  */
+#line 300 "./syntax.y" /* yacc.c:1646  */
     {
-        (yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = error; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+        (yyval.type_treenode).t = createnode(Stmt,(yyloc).first_line,NULL);
         HaveErrors++;
         char *tmp="Unexpectd Expression";
 		insert_Error('B',(yyval.type_treenode).t->line,tmp);
         //printf("Error type B at line %d:Unexpectd Expression.\n",$$.t->line);
     }
-#line 2046 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1883 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 470 "./syntax.y" /* yacc.c:1646  */
+#line 307 "./syntax.y" /* yacc.c:1646  */
     {
-        (yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = error; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+        (yyval.type_treenode).t = createnode(Stmt,(yyloc).first_line,NULL);
         HaveErrors++;
         char *tmp="Exexpectd \';\'";
 		insert_Error('B',(yyval.type_treenode).t->line,tmp);
         //printf("Error type B at line %d:Expected \';\'.\n",$$.t->line); 
     }
-#line 2061 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1895 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 481 "./syntax.y" /* yacc.c:1646  */
+#line 315 "./syntax.y" /* yacc.c:1646  */
     {
-        (yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = error; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+        (yyval.type_treenode).t = createnode(Stmt,(yyloc).first_line,NULL);
         HaveErrors++;
         char *tmp="Exexpectd \';\'";
 		insert_Error('B',(yyval.type_treenode).t->line,tmp);
         //printf("Error type B at line %d:Expected \';\'.\n",$$.t->line);         
     }
-#line 2076 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1907 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 492 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = DefList; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+#line 323 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(DefList,(yyloc).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2087 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1915 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 498 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = DefList; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;}
-#line 2096 "./syntax.tab.c" /* yacc.c:1646  */
+#line 326 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(DefList,(yyloc).first_line,NULL);}
+#line 1921 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 502 "./syntax.y" /* yacc.c:1646  */
+#line 327 "./syntax.y" /* yacc.c:1646  */
     {
-        (yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = error; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+        (yyval.type_treenode).t = createnode(DefList,(yyloc).first_line,NULL);
         HaveErrors++;
         char *tmp="Syntax error";
 		insert_Error('B',(yyval.type_treenode).t->line,tmp);
         //printf("Error type B at line %d:Syntax error.\n",$$.t->line);   
     }
-#line 2111 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1933 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 513 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Def; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+#line 335 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Def,(yyloc).first_line,NULL);
+        (yyvsp[0].type_treenode).t = createnode(SEMI,(yylsp[0]).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);}
-#line 2122 "./syntax.tab.c" /* yacc.c:1646  */
+        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
+#line 1943 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 519 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = DecList; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+#line 340 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(DecList,(yyloc).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2132 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1950 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 524 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = DecList; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+#line 342 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(DecList,(yyloc).first_line,NULL);
+        (yyvsp[-1].type_treenode).t = createnode(COMMA,(yylsp[-1]).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        (yyvsp[-1].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-1].type_treenode).t->type = COMMA;
-        (yyvsp[-1].type_treenode).t->line = (yylsp[-1]).first_line;
-        (yyvsp[-1].type_treenode).t->head = NULL;
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2148 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1960 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 536 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Dec; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+#line 348 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Dec,(yyloc).first_line,NULL);
+        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
+#line 1967 "./syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 47:
+#line 350 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Dec,(yyloc).first_line,NULL);
+        (yyvsp[-1].type_treenode).t = createnode(ASSIGNOP,(yylsp[-1]).first_line,NULL);
+        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
+#line 1977 "./syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 48:
+#line 357 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
+        (yyvsp[-1].type_treenode).t = createnode(ASSIGNOP,(yylsp[-1]).first_line,NULL);
+        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
+#line 1987 "./syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 49:
+#line 362 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
+        (yyvsp[-1].type_treenode).t = createnode(AND,(yylsp[-1]).first_line,NULL);
+        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
+#line 1997 "./syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 50:
+#line 367 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
+        (yyvsp[-1].type_treenode).t = createnode(OR,(yylsp[-1]).first_line,NULL);
+        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
+#line 2007 "./syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 51:
+#line 372 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
+        (yyvsp[-1].type_treenode).t = createnode(RELOP,(yylsp[-1]).first_line,(void *)&(yyvsp[-1].type_treenode).i);
+        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
+#line 2017 "./syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 52:
+#line 377 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
+        (yyvsp[-1].type_treenode).t = createnode(PLUS,(yylsp[-1]).first_line,NULL);
+        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
+#line 2027 "./syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 53:
+#line 382 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
+        (yyvsp[-1].type_treenode).t = createnode(SUB,(yylsp[-1]).first_line,NULL);
+        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
+#line 2037 "./syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 54:
+#line 387 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
+        (yyvsp[-1].type_treenode).t = createnode(STAR,(yylsp[-1]).first_line,NULL);
+        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
+#line 2047 "./syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 55:
+#line 392 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
+        (yyvsp[-1].type_treenode).t = createnode(DIV,(yylsp[-1]).first_line,NULL);
+        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
+#line 2057 "./syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 56:
+#line 397 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
+        (yyvsp[-2].type_treenode).t = createnode(LP,(yylsp[-2]).first_line,NULL);
+        (yyvsp[0].type_treenode).t = createnode(RP,(yylsp[0]).first_line,NULL);
+        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
+#line 2068 "./syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 57:
+#line 403 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
+        (yyvsp[-1].type_treenode).t = createnode(MINUS,(yylsp[-1]).first_line,NULL);
+        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
+#line 2077 "./syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 58:
+#line 407 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
+        (yyvsp[-1].type_treenode).t = createnode(NOT,(yylsp[-1]).first_line,NULL);
+        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
+#line 2086 "./syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 59:
+#line 411 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
+        (yyvsp[-3].type_treenode).t = createnode(ID,(yylsp[-3]).first_line,(void *)&(yyvsp[-3].type_treenode).str);
+        (yyvsp[-2].type_treenode).t = createnode(LP,(yylsp[-2]).first_line,NULL);
+        (yyvsp[0].type_treenode).t = createnode(RP,(yylsp[0]).first_line,NULL);
+        insert((yyval.type_treenode).t,(yyvsp[-3].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
+#line 2099 "./syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 60:
+#line 419 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
+        (yyvsp[-2].type_treenode).t = createnode(ID,(yylsp[-2]).first_line,(void *)&(yyvsp[-2].type_treenode).str);
+        (yyvsp[-1].type_treenode).t = createnode(LP,(yylsp[-1]).first_line,NULL);
+        (yyvsp[0].type_treenode).t = createnode(RP,(yylsp[0]).first_line,NULL);
+        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
+#line 2111 "./syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 61:
+#line 426 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
+        (yyvsp[-2].type_treenode).t = createnode(LB,(yylsp[-2]).first_line,NULL);
+        (yyvsp[0].type_treenode).t = createnode(RB,(yylsp[0]).first_line,NULL);
+        insert((yyval.type_treenode).t,(yyvsp[-3].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
+#line 2123 "./syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 62:
+#line 433 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
+        (yyvsp[-1].type_treenode).t = createnode(DOT,(yylsp[-1]).first_line,NULL);
+        (yyvsp[0].type_treenode).t = createnode(ID,(yylsp[0]).first_line,(void *)&(yyvsp[0].type_treenode).str);
+        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
+        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
+#line 2134 "./syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 63:
+#line 439 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
+        (yyvsp[0].type_treenode).t = createnode(ID,(yylsp[0]).first_line,(void *)&(yyvsp[0].type_treenode).str);
+        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
+#line 2142 "./syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 64:
+#line 442 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
+        (yyvsp[0].type_treenode).t = createnode(INT,(yylsp[0]).first_line,(void *)&(yyvsp[0].type_treenode).i);
+        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
+#line 2150 "./syntax.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 65:
+#line 445 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
+        (yyvsp[0].type_treenode).t = createnode(FLOAT,(yylsp[0]).first_line,(void *)&(yyvsp[0].type_treenode).f);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
 #line 2158 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
-  case 47:
-#line 541 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Dec; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        (yyvsp[-1].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-1].type_treenode).t->type = ASSIGNOP;
-        (yyvsp[-1].type_treenode).t->line = (yylsp[-1]).first_line;
-        (yyvsp[-1].type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2174 "./syntax.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 48:
-#line 554 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Exp; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        (yyvsp[-1].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-1].type_treenode).t->type = ASSIGNOP;
-        (yyvsp[-1].type_treenode).t->line = (yylsp[-1]).first_line;
-        (yyvsp[-1].type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2190 "./syntax.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 49:
-#line 565 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Exp; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        (yyvsp[-1].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-1].type_treenode).t->type = AND;
-        (yyvsp[-1].type_treenode).t->line = (yylsp[-1]).first_line;
-        (yyvsp[-1].type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2206 "./syntax.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 50:
-#line 576 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Exp; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        (yyvsp[-1].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-1].type_treenode).t->type = OR;
-        (yyvsp[-1].type_treenode).t->line = (yylsp[-1]).first_line;
-        (yyvsp[-1].type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2222 "./syntax.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 51:
-#line 587 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Exp; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        int tmp = (yyvsp[-1].type_treenode).i;
-        (yyvsp[-1].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-1].type_treenode).t->type = RELOP;
-        (yyvsp[-1].type_treenode).t->line = (yylsp[-1]).first_line;
-        (yyvsp[-1].type_treenode).t->head = NULL;
-        (yyvsp[-1].type_treenode).t->val.i = tmp;
-        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2240 "./syntax.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 52:
-#line 600 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Exp; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        (yyvsp[-1].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-1].type_treenode).t->type = PLUS;
-        (yyvsp[-1].type_treenode).t->line = (yylsp[-1]).first_line;
-        (yyvsp[-1].type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2256 "./syntax.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 53:
-#line 611 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Exp; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        (yyvsp[-1].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-1].type_treenode).t->type = SUB;
-        (yyvsp[-1].type_treenode).t->line = (yylsp[-1]).first_line;
-        (yyvsp[-1].type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2272 "./syntax.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 54:
-#line 622 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Exp; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        (yyvsp[-1].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-1].type_treenode).t->type = STAR;
-        (yyvsp[-1].type_treenode).t->line = (yylsp[-1]).first_line;
-        (yyvsp[-1].type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2288 "./syntax.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 55:
-#line 633 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Exp; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        (yyvsp[-1].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-1].type_treenode).t->type = DIV;
-        (yyvsp[-1].type_treenode).t->line = (yylsp[-1]).first_line;
-        (yyvsp[-1].type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2304 "./syntax.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 56:
-#line 644 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Exp; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        (yyvsp[-2].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-2].type_treenode).t->type = LP;
-        (yyvsp[-2].type_treenode).t->line = (yylsp[-2]).first_line;
-        (yyvsp[-2].type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        (yyvsp[0].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[0].type_treenode).t->type = RP;
-        (yyvsp[0].type_treenode).t->line = (yylsp[0]).first_line;
-        (yyvsp[0].type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2324 "./syntax.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 57:
-#line 659 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Exp; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        (yyvsp[-1].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-1].type_treenode).t->type = MINUS;
-        (yyvsp[-1].type_treenode).t->line = (yylsp[-1]).first_line;
-        (yyvsp[-1].type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2339 "./syntax.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 58:
-#line 669 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Exp; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        (yyvsp[-1].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-1].type_treenode).t->type = NOT;
-        (yyvsp[-1].type_treenode).t->line = (yylsp[-1]).first_line;
-        (yyvsp[-1].type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2354 "./syntax.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 59:
-#line 679 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Exp; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        char *tmp = (yyvsp[-3].type_treenode).str;
-        (yyvsp[-3].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-3].type_treenode).t->type = ID;
-        (yyvsp[-3].type_treenode).t->line = (yylsp[-3]).first_line;
-        (yyvsp[-3].type_treenode).t->head = NULL;
-        (yyvsp[-3].type_treenode).t->val.str = tmp;
-        insert((yyval.type_treenode).t,(yyvsp[-3].type_treenode).t);
-        (yyvsp[-2].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-2].type_treenode).t->type = LP;
-        (yyvsp[-2].type_treenode).t->line = (yylsp[-2]).first_line;
-        (yyvsp[-2].type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        (yyvsp[0].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[0].type_treenode).t->type = RP;
-        (yyvsp[0].type_treenode).t->line = (yylsp[0]).first_line;
-        (yyvsp[0].type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2381 "./syntax.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 60:
-#line 701 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Exp; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        char *tmp = (yyvsp[-2].type_treenode).str;
-        (yyvsp[-2].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-2].type_treenode).t->type = ID;
-        (yyvsp[-2].type_treenode).t->line = (yylsp[-2]).first_line;
-        (yyvsp[-2].type_treenode).t->head = NULL;
-        (yyvsp[-2].type_treenode).t->val.str = tmp;
-        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        (yyvsp[-1].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-1].type_treenode).t->type = LP;
-        (yyvsp[-1].type_treenode).t->line = (yylsp[-1]).first_line;
-        (yyvsp[-1].type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        (yyvsp[0].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[0].type_treenode).t->type = RP;
-        (yyvsp[0].type_treenode).t->line = (yylsp[0]).first_line;
-        (yyvsp[0].type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2407 "./syntax.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 61:
-#line 722 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Exp; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-3].type_treenode).t);
-        (yyvsp[-2].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-2].type_treenode).t->type = LB;
-        (yyvsp[-2].type_treenode).t->line = (yylsp[-2]).first_line;
-        (yyvsp[-2].type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        (yyvsp[0].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[0].type_treenode).t->type = RB;
-        (yyvsp[0].type_treenode).t->line = (yylsp[0]).first_line;
-        (yyvsp[0].type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2428 "./syntax.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 62:
-#line 738 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Exp; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        char *tmp = (yyvsp[0].type_treenode).str;
-        (yyvsp[-1].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-1].type_treenode).t->type = DOT;
-        (yyvsp[-1].type_treenode).t->line = (yylsp[-1]).first_line;
-        (yyvsp[-1].type_treenode).t->head = NULL;
-        insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
-        (yyvsp[0].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[0].type_treenode).t->type = ID;
-        (yyvsp[0].type_treenode).t->line = (yylsp[0]).first_line;
-        (yyvsp[0].type_treenode).t->head = NULL;
-        (yyvsp[0].type_treenode).t->val.str = tmp;
-        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2450 "./syntax.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 63:
-#line 755 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Exp; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        char *tmp = (yyvsp[0].type_treenode).str;
-        (yyvsp[0].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[0].type_treenode).t->type = ID;
-        (yyvsp[0].type_treenode).t->line = (yylsp[0]).first_line;
-        (yyvsp[0].type_treenode).t->head = NULL;
-        (yyvsp[0].type_treenode).t->val.str = tmp;
-        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2466 "./syntax.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 64:
-#line 766 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Exp; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        int tmp = (yyvsp[0].type_treenode).i;
-        (yyvsp[0].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[0].type_treenode).t->type = INT;
-        (yyvsp[0].type_treenode).t->line = (yylsp[0]).first_line;
-        (yyvsp[0].type_treenode).t->head = NULL;
-        (yyvsp[0].type_treenode).t->val.i = tmp;
-        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2482 "./syntax.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 65:
-#line 777 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Exp; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
-        float tmp = (yyvsp[0].type_treenode).f;
-        (yyvsp[0].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[0].type_treenode).t->type = FLOAT;
-        (yyvsp[0].type_treenode).t->line = (yylsp[0]).first_line;
-        (yyvsp[0].type_treenode).t->head = NULL;
-        (yyvsp[0].type_treenode).t->val.f = tmp;
-        insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2498 "./syntax.tab.c" /* yacc.c:1646  */
-    break;
-
   case 66:
-#line 788 "./syntax.y" /* yacc.c:1646  */
+#line 448 "./syntax.y" /* yacc.c:1646  */
     {
-        (yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = error; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+        (yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         HaveErrors++;
         char* tmp="Unexpected operation after \'[\'";
 		insert_Error('B',(yyval.type_treenode).t->line,tmp);
         //printf("Error type B at line %d:Unexpected operation after \'[\'.\n",$$.t->line);    
         }
-#line 2513 "./syntax.tab.c" /* yacc.c:1646  */
+#line 2170 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 798 "./syntax.y" /* yacc.c:1646  */
+#line 455 "./syntax.y" /* yacc.c:1646  */
     {
-        (yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = error; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+        (yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         HaveErrors++;
         char *tmp="Unexpected varlist after \'(\'";
 		insert_Error('B',(yyval.type_treenode).t->line,tmp);
         //printf("Error type B at line %d:Unexpected varlist after \'(\'.\n",$$.t->line); 
     }
-#line 2528 "./syntax.tab.c" /* yacc.c:1646  */
+#line 2182 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 809 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Args; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+#line 463 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Args,(yyloc).first_line,NULL);
+        (yyvsp[-1].type_treenode).t = createnode(COMMA,(yylsp[-1]).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[-2].type_treenode).t);
-        (yyvsp[-1].type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyvsp[-1].type_treenode).t->type = COMMA;
-        (yyvsp[-1].type_treenode).t->line = (yylsp[-1]).first_line;
-        (yyvsp[-1].type_treenode).t->head = NULL;
         insert((yyval.type_treenode).t,(yyvsp[-1].type_treenode).t);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2544 "./syntax.tab.c" /* yacc.c:1646  */
+#line 2192 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 820 "./syntax.y" /* yacc.c:1646  */
-    {(yyval.type_treenode).t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        (yyval.type_treenode).t->type = Args; 
-        (yyval.type_treenode).t->line = (yyloc).first_line; 
-        (yyval.type_treenode).t->head = NULL;
+#line 468 "./syntax.y" /* yacc.c:1646  */
+    {(yyval.type_treenode).t = createnode(Args,(yyloc).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2554 "./syntax.tab.c" /* yacc.c:1646  */
+#line 2199 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 2558 "./syntax.tab.c" /* yacc.c:1646  */
+#line 2203 "./syntax.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2789,7 +2434,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 826 "./syntax.y" /* yacc.c:1906  */
+#line 471 "./syntax.y" /* yacc.c:1906  */
 
 
 int yyerror(char* msg){
@@ -2960,10 +2605,22 @@ void print_tree(){
     if(HaveErrors==0)
         __DFS(root,0);
 }
-struct GrammarTree *createnode(int type,int line){
+struct GrammarTree *createnode(int type,int line,void *value){
     struct GrammarTree *res= (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
     res->type = type;
     res->line = line;
     res->head = NULL;
+    if(type == ID || type == TYPE)
+    {
+        res->val.str = *((char **)value);
+    }
+    else if(type == INT)
+    {
+        res->val.i = *((int *)value);
+    }
+    else if(type == FLOAT)
+    {
+        res->val.f = *(float *)value;
+    }
     return res;
 }

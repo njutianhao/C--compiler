@@ -51,7 +51,7 @@
         struct ListNode *head;
     };
     void insert(struct GrammarTree *t1,struct GrammarTree *t2);
-    struct GrammarTree *createnode(int type,int line);
+    struct GrammarTree *createnode(int type,int line,void *value);
     void insertall(struct GrammarTree *t1,struct GrammarTree *t2,...);
     struct GrammarTree *root;
     void __DFS(struct GrammarTree *n,int depth);
@@ -105,373 +105,207 @@
 
 %%
 Program : ExtDefList {
-        $$.t = createnode(Program,@$.first_line);
+        $$.t = createnode(Program,@$.first_line,NULL);
         insert($$.t,$1.t);
         root = $$.t;}
     ; 
 ExtDefList : ExtDef ExtDefList {
-        $$.t = createnode(ExtDefList,@$.first_line);
+        $$.t = createnode(ExtDefList,@$.first_line,NULL);
         insert($$.t,$1.t);
         insert($$.t,$2.t);}
-    | {$$.t = createnode(ExtDefList,@$.first_line);}
+    | {$$.t = createnode(ExtDefList,@$.first_line,NULL);}
     ;
 ExtDef : Specifier ExtDecList SEMI {
-        $$.t = createnode(ExtDef,@$.first_line);
-        $3.t = createnode(SEMI,@3.first_line);
+        $$.t = createnode(ExtDef,@$.first_line,NULL);
+        $3.t = createnode(SEMI,@3.first_line,NULL);
         insert($$.t,$1.t);
         insert($$.t,$2.t);
         insert($$.t,$3.t);}
     | Specifier SEMI {
-        $$.t = createnode(ExtDef,@$.first_line);
-        $2.t = createnode(SEMI,@2.first_line);
+        $$.t = createnode(ExtDef,@$.first_line,NULL);
+        $2.t = createnode(SEMI,@2.first_line,NULL);
         insert($$.t,$1.t);
         insert($$.t,$2.t);}
     | Specifier FunDec CompSt {
-        $$.t = createnode(ExtDef,@$.first_line);
+        $$.t = createnode(ExtDef,@$.first_line,NULL);
         insert($$.t,$1.t);
         insert($$.t,$2.t);
         insert($$.t,$3.t);} 
     |Specifier error{
-        $$.t = createnode(error,@$.first_line);
+        $$.t = createnode(error,@$.first_line,NULL);
         HaveErrors++;
         char *tmp="Syntax error";
 		insert_Error('B',$$.t->line,tmp);
     }  
     ;
 ExtDecList : VarDec {
-        $$.t = createnode(ExtDecList,@$.first_line);
+        $$.t = createnode(ExtDecList,@$.first_line,NULL);
         insert($$.t,$1.t);}
     | VarDec COMMA ExtDecList {
-        $$.t = createnode(ExtDecList,@$.first_line);
-        $2.t = createnode(COMMA,@2.first_line);
+        $$.t = createnode(ExtDecList,@$.first_line,NULL);
+        $2.t = createnode(COMMA,@2.first_line,NULL);
         insert($$.t,$1.t);
         insert($$.t,$2.t);
         insert($$.t,$3.t);}
     ;
 
 Specifier : TYPE {
-        $$.t = createnode(Specifier,@$.first_line);
-        char *tmp = $1.str;
-        $1.t = createnode(TYPE,@1.first_line);
-        $1.t->val.str = tmp;
+        $$.t = createnode(Specifier,@$.first_line,NULL);
+        $1.t = createnode(TYPE,@1.first_line,(void *)&$1.str);
         insert($$.t,$1.t);}
-    | StructSpecifier {$$.t = createnode(Specifier,@$.first_line);
+    | StructSpecifier {$$.t = createnode(Specifier,@$.first_line,NULL);
         insert($$.t,$1.t);}
     ;
 StructSpecifier : STRUCT OptTag LC DefList RC {
-        $$.t = createnode(StructSpecifier,@$.first_line);
-        $1.t = createnode(STRUCT,@1.first_line);
-        $3.t = createnode(LC,@3.first_line);
-        $5.t = createnode(RC,@5.first_line);
+        $$.t = createnode(StructSpecifier,@$.first_line,NULL);
+        $1.t = createnode(STRUCT,@1.first_line,NULL);
+        $3.t = createnode(LC,@3.first_line,NULL);
+        $5.t = createnode(RC,@5.first_line,NULL);
         insert($$.t,$1.t);
         insert($$.t,$2.t);
         insert($$.t,$3.t);
         insert($$.t,$4.t);
         insert($$.t,$5.t);}
-    | STRUCT Tag { $$.t = createnode(StructSpecifier,@$.first_line);
-        $1.t = createnode(STRUCT,@1.first_line);
+    | STRUCT Tag { 
+        $$.t = createnode(StructSpecifier,@$.first_line,NULL);
+        $1.t = createnode(STRUCT,@1.first_line,NULL);
         insert($$.t,$1.t);
         insert($$.t,$2.t);}
     ;
-OptTag : ID {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = OptTag; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        char *tmp = $1.str;
-        $1.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $1.t->type = ID;
-        $1.t->line = @1.first_line;
-        $1.t->head = NULL;
-        $1.t->val.str = tmp;
+OptTag : ID {
+        $$.t = createnode(OptTag,@$.first_line,NULL);
+        $1.t = createnode(ID,@1.first_line,(void *)&$1.str);
         insert($$.t,$1.t);}
-    |  {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = OptTag; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;}
+    |  {$$.t = createnode(OptTag,@$.first_line,NULL);}
     ;
-Tag : ID {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Tag; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        char *tmp = $1.str;
-        $1.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $1.t->type = ID;
-        $1.t->line = @1.first_line;
-        $1.t->head = NULL;
-        $1.t->val.str = tmp;
+Tag : ID {$$.t = createnode(Tag,@$.first_line,NULL);
+        $1.t = createnode(ID,@1.first_line,(void *)&$1.str);
         insert($$.t,$1.t);}
 
-VarDec : ID {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = VarDec; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        char *tmp = $1.str;
-        $1.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $1.t->type = ID;
-        $1.t->line = @1.first_line;
-        $1.t->head = NULL;
-        $1.t->val.str = tmp;
+VarDec : ID {$$.t = createnode(VarDec,@$.first_line,NULL);
+        $1.t = createnode(ID,@1.first_line,(void *)&$1.str);
         insert($$.t,$1.t);}
-    | VarDec LB INT RB {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = VarDec; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+    | VarDec LB INT RB {$$.t = createnode(VarDec,@$.first_line,NULL);
+        $2.t = createnode(LB,@2.first_line,NULL);
+        $3.t = createnode(INT,@3.first_line,(void *)&$3.i);
+        $4.t = createnode(RB,@4.first_line,NULL);
         insert($$.t,$1.t);
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = LB;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
         insert($$.t,$2.t);
-        $3.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $3.t->type = INT;
-        $3.t->line = @3.first_line;
-        $3.t->head = NULL;
         insert($$.t,$3.t);
-        $4.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $4.t->type = RB;
-        $4.t->line = @4.first_line;
-        $4.t->head = NULL;
         insert($$.t,$4.t);}
-    | VarDec error RB {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = error; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+    | VarDec error RB {$$.t = createnode(VarDec,@$.first_line,NULL);
         HaveErrors++;
         char *tmp="Wrong Definition";
 		insert_Error('B',$$.t->line,tmp);
         //printf("Error type B at line %d:Wrong Definition.\n",$$.t->line);
         }
     ;
-FunDec : ID LP VarList RP {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = FunDec; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        char *tmp = $1.str;
-        $1.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $1.t->type = ID;
-        $1.t->line = @1.first_line;
-        $1.t->head = NULL;
-        $1.t->val.str = tmp;
+FunDec : ID LP VarList RP {$$.t = createnode(FunDec,@$.first_line,NULL);
+        $1.t = createnode(ID,@1.first_line,(void *)&$1.str);
+        $2.t = createnode(LP,@2.first_line,NULL);
+        $4.t = createnode(RP,@4.first_line,NULL);
         insert($$.t,$1.t);
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = LP;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
         insert($$.t,$2.t);
         insert($$.t,$3.t);
-        $4.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $4.t->type = RP;
-        $4.t->line = @4.first_line;
-        $4.t->head = NULL;
         insert($$.t,$4.t);}
-    | ID LP RP {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = FunDec; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        char *tmp = $1.str;
-        $1.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $1.t->type = ID;
-        $1.t->line = @1.first_line;
-        $1.t->head = NULL;
-        $1.t->val.str = tmp;
+    | ID LP RP {$$.t = createnode(FunDec,@$.first_line,NULL);
+        $1.t = createnode(ID,@1.first_line,(void *)&$1.str);
+        $2.t = createnode(LP,@2.first_line,NULL);
+        $3.t = createnode(RP,@3.first_line,NULL);
         insert($$.t,$1.t);
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = LP;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
         insert($$.t,$2.t);
-        $3.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $3.t->type = RP;
-        $3.t->line = @3.first_line;
-        $3.t->head = NULL;
         insert($$.t,$3.t);}
     |ID LP error RP{
-        $$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = error; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL; 
+        $$.t = createnode(FunDec,@$.first_line,NULL);
         HaveErrors=HaveErrors+1;
         char *tmp="Wrong Function Definition";
 		insert_Error('B',$$.t->line,tmp);
         //printf("Error type B at line %d:Wrong Function Definition.\n",$$.t->line);
     }
     ;
-VarList : ParamDec COMMA VarList {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = VarList; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+VarList : ParamDec COMMA VarList {$$.t = createnode(VarList,@$.first_line,NULL);
+        $2.t = createnode(COMMA,@2.first_line,NULL);
         insert($$.t,$1.t);
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = COMMA;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
         insert($$.t,$2.t);
         insert($$.t,$3.t);}
-    | ParamDec {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = VarList; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+    | ParamDec {$$.t = createnode(VarList,@$.first_line,NULL);
         insert($$.t,$1.t);}
     ;
-ParamDec : Specifier VarDec {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = ParamDec; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+ParamDec : Specifier VarDec {$$.t = createnode(ParamDec,@$.first_line,NULL);
         insert($$.t,$1.t);
         insert($$.t,$2.t);}
     ;
-CompSt : LC DefList StmtList RC {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = CompSt; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        $1.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $1.t->type = LC;
-        $1.t->line = @1.first_line;
-        $1.t->head = NULL;
+CompSt : LC DefList StmtList RC {$$.t = createnode(CompSt,@$.first_line,NULL);
+        $1.t = createnode(LC,@1.first_line,NULL);
+        $4.t = createnode(RC,@4.first_line,NULL);
         insert($$.t,$1.t);
         insert($$.t,$2.t);
         insert($$.t,$3.t);
-        $4.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $4.t->type = RC;
-        $4.t->line = @4.first_line;
-        $4.t->head = NULL;
         insert($$.t,$4.t);}
     ;
-StmtList : Stmt StmtList {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = StmtList; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+StmtList : Stmt StmtList {$$.t = createnode(StmtList,@$.first_line,NULL);
         insert($$.t,$1.t);
         insert($$.t,$2.t);}
-    | {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = StmtList; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;}
+    | {$$.t = createnode(StmtList,@$.first_line,NULL);}
     ;
-Stmt : Exp SEMI {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Stmt; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+Stmt : Exp SEMI {$$.t = createnode(Stmt,@$.first_line,NULL);
+        $2.t = createnode(SEMI,@2.first_line,NULL);
         insert($$.t,$1.t);
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = SEMI;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
         insert($$.t,$2.t);}
-    | CompSt {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Stmt; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+    | CompSt {$$.t = createnode(Stmt,@$.first_line,NULL);
         insert($$.t,$1.t);}
-    | RETURN Exp SEMI {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Stmt; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        $1.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $1.t->type = RETURN;
-        $1.t->line = @1.first_line;
-        $1.t->head = NULL;
+    | RETURN Exp SEMI {$$.t = createnode(Stmt,@$.first_line,NULL);
+        $1.t = createnode(RETURN,@1.first_line,NULL);
+        $3.t = createnode(SEMI,@3.first_line,NULL);
         insert($$.t,$1.t);
         insert($$.t,$2.t);
-        $3.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $3.t->type = SEMI;
-        $3.t->line = @3.first_line;
-        $3.t->head = NULL;
         insert($$.t,$3.t);}
-    | IF LP Exp RP Stmt %prec LOWER_THAN_ELSE {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Stmt; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        $1.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $1.t->type = IF;
-        $1.t->line = @1.first_line;
-        $1.t->head = NULL;
+    | IF LP Exp RP Stmt %prec LOWER_THAN_ELSE {$$.t = createnode(Stmt,@$.first_line,NULL);
+        $1.t = createnode(IF,@1.first_line,NULL);
+        $2.t = createnode(LP,@2.first_line,NULL);
+        $4.t = createnode(RP,@4.first_line,NULL);
         insert($$.t,$1.t);
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = LP;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
         insert($$.t,$2.t);
         insert($$.t,$3.t);
-        $4.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $4.t->type = RP;
-        $4.t->line = @4.first_line;
-        $4.t->head = NULL;
         insert($$.t,$4.t);
         insert($$.t,$5.t);}
-    | IF LP Exp RP Stmt ELSE Stmt {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Stmt; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        $1.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $1.t->type = IF;
-        $1.t->line = @1.first_line;
-        $1.t->head = NULL;
+    | IF LP Exp RP Stmt ELSE Stmt {$$.t = createnode(Stmt,@$.first_line,NULL);
+        $1.t = createnode(IF,@1.first_line,NULL);
+        $2.t = createnode(LP,@2.first_line,NULL);
+        $4.t = createnode(RP,@4.first_line,NULL);
+        $6.t = createnode(ELSE,@6.first_line,NULL);
         insert($$.t,$1.t);
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = LP;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
         insert($$.t,$2.t);
         insert($$.t,$3.t);
-        $4.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $4.t->type = RP;
-        $4.t->line = @4.first_line;
-        $4.t->head = NULL;
         insert($$.t,$4.t);
         insert($$.t,$5.t);
-        $6.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $6.t->type = ELSE;
-        $6.t->line = @6.first_line;
-        $6.t->head = NULL;
         insert($$.t,$6.t);
         insert($$.t,$7.t);}
-    | WHILE LP Exp RP Stmt {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Stmt; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        $1.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $1.t->type = WHILE;
-        $1.t->line = @1.first_line;
-        $1.t->head = NULL;
+    | WHILE LP Exp RP Stmt {$$.t = createnode(Stmt,@$.first_line,NULL);
+        $1.t = createnode(WHILE,@1.first_line,NULL);
+        $2.t = createnode(LP,@2.first_line,NULL);
+        $4.t = createnode(RP,@4.first_line,NULL);
         insert($$.t,$1.t);
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = LP;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
         insert($$.t,$2.t);
         insert($$.t,$3.t);
-        $4.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $4.t->type = RP;
-        $4.t->line = @4.first_line;
-        $4.t->head = NULL;
         insert($$.t,$4.t);
         insert($$.t,$5.t);}
     | IF LP Exp RP error ELSE Stmt {
-        $$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = error; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+        $$.t = createnode(Stmt,@$.first_line,NULL);
         HaveErrors++;
         char *tmp="Wrong statement after if(...)";
 		insert_Error('B',$$.t->line,tmp);
         //printf("Error type B at line %d:Wrong statement after \'if(...)\'.\n",$$.t->line); 
     }
     | WHILE error RP Stmt {
-        $$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = error; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+        $$.t = createnode(Stmt,@$.first_line,NULL);
         HaveErrors++;
         char *tmp="Unexpectd Expression";
 		insert_Error('B',$$.t->line,tmp);
         //printf("Error type B at line %d:Unexpectd Expression.\n",$$.t->line);
     }
     | Exp error {
-        $$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = error; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+        $$.t = createnode(Stmt,@$.first_line,NULL);
         HaveErrors++;
         char *tmp="Exexpectd \';\'";
 		insert_Error('B',$$.t->line,tmp);
@@ -479,348 +313,159 @@ Stmt : Exp SEMI {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree))
     }
 
     |RETURN Exp error{
-        $$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = error; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+        $$.t = createnode(Stmt,@$.first_line,NULL);
         HaveErrors++;
         char *tmp="Exexpectd \';\'";
 		insert_Error('B',$$.t->line,tmp);
         //printf("Error type B at line %d:Expected \';\'.\n",$$.t->line);         
     }
     ;
-DefList : Def DefList {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = DefList; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+DefList : Def DefList {$$.t = createnode(DefList,@$.first_line,NULL);
         insert($$.t,$1.t);
         insert($$.t,$2.t);}
-    | {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = DefList; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;}
+    | {$$.t = createnode(DefList,@$.first_line,NULL);}
     | error SEMI{
-        $$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = error; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+        $$.t = createnode(DefList,@$.first_line,NULL);
         HaveErrors++;
         char *tmp="Syntax error";
 		insert_Error('B',$$.t->line,tmp);
         //printf("Error type B at line %d:Syntax error.\n",$$.t->line);   
     }
     ;
-Def : Specifier DecList SEMI {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Def; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+Def : Specifier DecList SEMI {$$.t = createnode(Def,@$.first_line,NULL);
+        $3.t = createnode(SEMI,@3.first_line,NULL);
         insert($$.t,$1.t);
-        insert($$.t,$2.t);}
-DecList : Dec {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = DecList; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+        insert($$.t,$2.t);
+        insert($$.t,$3.t);}
+DecList : Dec {$$.t = createnode(DecList,@$.first_line,NULL);
         insert($$.t,$1.t);}
-    | Dec COMMA DecList {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = DecList; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+    | Dec COMMA DecList {$$.t = createnode(DecList,@$.first_line,NULL);
+        $2.t = createnode(COMMA,@2.first_line,NULL);
         insert($$.t,$1.t);
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = COMMA;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
         insert($$.t,$2.t);
         insert($$.t,$3.t);}
     ;
-Dec : VarDec {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Dec; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+Dec : VarDec {$$.t = createnode(Dec,@$.first_line,NULL);
         insert($$.t,$1.t);}
-    | VarDec ASSIGNOP Exp {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Dec; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+    | VarDec ASSIGNOP Exp {$$.t = createnode(Dec,@$.first_line,NULL);
+        $2.t = createnode(ASSIGNOP,@2.first_line,NULL);
         insert($$.t,$1.t);
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = ASSIGNOP;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
         insert($$.t,$2.t);
         insert($$.t,$3.t);}
     ;
 
-Exp : Exp ASSIGNOP Exp {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Exp; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        insert($$.t,$1.t);
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = ASSIGNOP;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
-    | Exp AND Exp {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Exp; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        insert($$.t,$1.t);
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = AND;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
-    | Exp OR Exp {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Exp; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        insert($$.t,$1.t);
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = OR;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
-    | Exp RELOP Exp {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Exp; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        insert($$.t,$1.t);
-        int tmp = $2.i;
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = RELOP;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
-        $2.t->val.i = tmp;
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
-    | Exp PLUS Exp {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Exp; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        insert($$.t,$1.t);
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = PLUS;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
-    | Exp MINUS Exp %prec SUB{$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Exp; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        insert($$.t,$1.t);
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = SUB;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
-    | Exp STAR Exp {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Exp; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        insert($$.t,$1.t);
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = STAR;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
-    | Exp DIV Exp {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Exp; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        insert($$.t,$1.t);
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = DIV;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
-        insert($$.t,$2.t);
-        insert($$.t,$3.t);}
-    | LP Exp RP {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Exp; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        $1.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $1.t->type = LP;
-        $1.t->line = @1.first_line;
-        $1.t->head = NULL;
+Exp : Exp ASSIGNOP Exp {$$.t = createnode(Exp,@$.first_line,NULL);
+        $2.t = createnode(ASSIGNOP,@2.first_line,NULL);
         insert($$.t,$1.t);
         insert($$.t,$2.t);
-        $3.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $3.t->type = RP;
-        $3.t->line = @3.first_line;
-        $3.t->head = NULL;
         insert($$.t,$3.t);}
-    | MINUS Exp{$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Exp; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        $1.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $1.t->type = MINUS;
-        $1.t->line = @1.first_line;
-        $1.t->head = NULL;
+    | Exp AND Exp {$$.t = createnode(Exp,@$.first_line,NULL);
+        $2.t = createnode(AND,@2.first_line,NULL);
+        insert($$.t,$1.t);
+        insert($$.t,$2.t);
+        insert($$.t,$3.t);}
+    | Exp OR Exp {$$.t = createnode(Exp,@$.first_line,NULL);
+        $2.t = createnode(OR,@2.first_line,NULL);
+        insert($$.t,$1.t);
+        insert($$.t,$2.t);
+        insert($$.t,$3.t);}
+    | Exp RELOP Exp {$$.t = createnode(Exp,@$.first_line,NULL);
+        $2.t = createnode(RELOP,@2.first_line,(void *)&$2.i);
+        insert($$.t,$1.t);
+        insert($$.t,$2.t);
+        insert($$.t,$3.t);}
+    | Exp PLUS Exp {$$.t = createnode(Exp,@$.first_line,NULL);
+        $2.t = createnode(PLUS,@2.first_line,NULL);
+        insert($$.t,$1.t);
+        insert($$.t,$2.t);
+        insert($$.t,$3.t);}
+    | Exp MINUS Exp %prec SUB{$$.t = createnode(Exp,@$.first_line,NULL);
+        $2.t = createnode(SUB,@2.first_line,NULL);
+        insert($$.t,$1.t);
+        insert($$.t,$2.t);
+        insert($$.t,$3.t);}
+    | Exp STAR Exp {$$.t = createnode(Exp,@$.first_line,NULL);
+        $2.t = createnode(STAR,@2.first_line,NULL);
+        insert($$.t,$1.t);
+        insert($$.t,$2.t);
+        insert($$.t,$3.t);}
+    | Exp DIV Exp {$$.t = createnode(Exp,@$.first_line,NULL);
+        $2.t = createnode(DIV,@2.first_line,NULL);
+        insert($$.t,$1.t);
+        insert($$.t,$2.t);
+        insert($$.t,$3.t);}
+    | LP Exp RP {$$.t = createnode(Exp,@$.first_line,NULL);
+        $1.t = createnode(LP,@1.first_line,NULL);
+        $3.t = createnode(RP,@3.first_line,NULL);
+        insert($$.t,$1.t);
+        insert($$.t,$2.t);
+        insert($$.t,$3.t);}
+    | MINUS Exp{$$.t = createnode(Exp,@$.first_line,NULL);
+        $1.t = createnode(MINUS,@1.first_line,NULL);
         insert($$.t,$1.t);
         insert($$.t,$2.t);}
-    | NOT Exp {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Exp; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        $1.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $1.t->type = NOT;
-        $1.t->line = @1.first_line;
-        $1.t->head = NULL;
+    | NOT Exp {$$.t = createnode(Exp,@$.first_line,NULL);
+        $1.t = createnode(NOT,@1.first_line,NULL);
         insert($$.t,$1.t);
         insert($$.t,$2.t);}
-    | ID LP Args RP {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Exp; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        char *tmp = $1.str;
-        $1.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $1.t->type = ID;
-        $1.t->line = @1.first_line;
-        $1.t->head = NULL;
-        $1.t->val.str = tmp;
+    | ID LP Args RP {$$.t = createnode(Exp,@$.first_line,NULL);
+        $1.t = createnode(ID,@1.first_line,(void *)&$1.str);
+        $2.t = createnode(LP,@2.first_line,NULL);
+        $4.t = createnode(RP,@4.first_line,NULL);
         insert($$.t,$1.t);
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = LP;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
         insert($$.t,$2.t);
         insert($$.t,$3.t);
-        $4.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $4.t->type = RP;
-        $4.t->line = @4.first_line;
-        $4.t->head = NULL;
         insert($$.t,$4.t);}
-    | ID LP RP {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Exp; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        char *tmp = $1.str;
-        $1.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $1.t->type = ID;
-        $1.t->line = @1.first_line;
-        $1.t->head = NULL;
-        $1.t->val.str = tmp;
+    | ID LP RP {$$.t = createnode(Exp,@$.first_line,NULL);
+        $1.t = createnode(ID,@1.first_line,(void *)&$1.str);
+        $2.t = createnode(LP,@2.first_line,NULL);
+        $3.t = createnode(RP,@3.first_line,NULL);
         insert($$.t,$1.t);
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = LP;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
         insert($$.t,$2.t);
-        $3.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $3.t->type = RP;
-        $3.t->line = @3.first_line;
-        $3.t->head = NULL;
         insert($$.t,$3.t);}
-    | Exp LB Exp RB {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Exp; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+    | Exp LB Exp RB {$$.t = createnode(Exp,@$.first_line,NULL);
+        $2.t = createnode(LB,@2.first_line,NULL);
+        $4.t = createnode(RB,@4.first_line,NULL);
         insert($$.t,$1.t);
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = LB;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
         insert($$.t,$2.t);
         insert($$.t,$3.t);
-        $4.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $4.t->type = RB;
-        $4.t->line = @4.first_line;
-        $4.t->head = NULL;
         insert($$.t,$4.t);}
-    | Exp DOT ID {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Exp; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+    | Exp DOT ID {$$.t = createnode(Exp,@$.first_line,NULL);
+        $2.t = createnode(DOT,@2.first_line,NULL);
+        $3.t = createnode(ID,@3.first_line,(void *)&$3.str);
         insert($$.t,$1.t);
-        char *tmp = $3.str;
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = DOT;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
         insert($$.t,$2.t);
-        $3.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $3.t->type = ID;
-        $3.t->line = @3.first_line;
-        $3.t->head = NULL;
-        $3.t->val.str = tmp;
         insert($$.t,$3.t);}
-    | ID {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Exp; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        char *tmp = $1.str;
-        $1.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $1.t->type = ID;
-        $1.t->line = @1.first_line;
-        $1.t->head = NULL;
-        $1.t->val.str = tmp;
+    | ID {$$.t = createnode(Exp,@$.first_line,NULL);
+        $1.t = createnode(ID,@1.first_line,(void *)&$1.str);
         insert($$.t,$1.t);}
-    | INT {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Exp; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        int tmp = $1.i;
-        $1.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $1.t->type = INT;
-        $1.t->line = @1.first_line;
-        $1.t->head = NULL;
-        $1.t->val.i = tmp;
+    | INT {$$.t = createnode(Exp,@$.first_line,NULL);
+        $1.t = createnode(INT,@1.first_line,(void *)&$1.i);
         insert($$.t,$1.t);}
-    | FLOAT {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Exp; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
-        float tmp = $1.f;
-        $1.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $1.t->type = FLOAT;
-        $1.t->line = @1.first_line;
-        $1.t->head = NULL;
-        $1.t->val.f = tmp;
+    | FLOAT {$$.t = createnode(Exp,@$.first_line,NULL);
+        $1.t = createnode(FLOAT,@1.first_line,(void *)&$1.f);
         insert($$.t,$1.t);}
     | Exp LB error RB{
-        $$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = error; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+        $$.t = createnode(Exp,@$.first_line,NULL);
         HaveErrors++;
         char* tmp="Unexpected operation after \'[\'";
 		insert_Error('B',$$.t->line,tmp);
         //printf("Error type B at line %d:Unexpected operation after \'[\'.\n",$$.t->line);    
         }
     | ID LP error RP{
-        $$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = error; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+        $$.t = createnode(Exp,@$.first_line,NULL);
         HaveErrors++;
         char *tmp="Unexpected varlist after \'(\'";
 		insert_Error('B',$$.t->line,tmp);
         //printf("Error type B at line %d:Unexpected varlist after \'(\'.\n",$$.t->line); 
     }
     ;
-Args : Exp COMMA Args {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Args; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+Args : Exp COMMA Args {$$.t = createnode(Args,@$.first_line,NULL);
+        $2.t = createnode(COMMA,@2.first_line,NULL);
         insert($$.t,$1.t);
-        $2.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $2.t->type = COMMA;
-        $2.t->line = @2.first_line;
-        $2.t->head = NULL;
         insert($$.t,$2.t);
         insert($$.t,$3.t);}
-    | Exp {$$.t = (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
-        $$.t->type = Args; 
-        $$.t->line = @$.first_line; 
-        $$.t->head = NULL;
+    | Exp {$$.t = createnode(Args,@$.first_line,NULL);
         insert($$.t,$1.t);}
     ;
 %%
@@ -993,10 +638,22 @@ void print_tree(){
     if(HaveErrors==0)
         __DFS(root,0);
 }
-struct GrammarTree *createnode(int type,int line){
+struct GrammarTree *createnode(int type,int line,void *value){
     struct GrammarTree *res= (struct GrammarTree *)malloc(sizeof(struct GrammarTree));
     res->type = type;
     res->line = line;
     res->head = NULL;
+    if(type == ID || type == TYPE)
+    {
+        res->val.str = *((char **)value);
+    }
+    else if(type == INT)
+    {
+        res->val.i = *((int *)value);
+    }
+    else if(type == FLOAT)
+    {
+        res->val.f = *(float *)value;
+    }
     return res;
 }
