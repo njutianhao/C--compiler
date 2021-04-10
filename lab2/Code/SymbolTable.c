@@ -73,6 +73,16 @@ FieldList insert_FieldList(FieldList head,FieldList ptr)
     head=ptr;
     return head;
 }
+//FieldList是否有该名称的变量
+int FieldList_repeat(FieldList head,char* name)
+{
+    FieldList temp=head;
+    for(;temp!=NULL;temp=temp->next)
+    {
+        if(strcmp(temp->name,name)==0) return 1;
+    }
+    return 0;
+}
 
 Type create_Structure_Type(FieldList head,char* struct_Name)
 {
