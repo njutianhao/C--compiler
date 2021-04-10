@@ -2,6 +2,7 @@
 #define GRAMMARTREE_H
 #include<stdio.h>
 #include<stdarg.h>
+#include"SymbolTable.h"
 #include<stdlib.h>
 #define L 1
 #define LE 2
@@ -22,6 +23,11 @@ union TreeVal{
     float f;
     char *str;
 };
+union SDDVal{
+    Type t;
+    char *str;
+    FieldList f;
+}
 struct GrammarTree;
 struct ListNode{
     struct GrammarTree *val;
@@ -30,8 +36,8 @@ struct ListNode{
 struct GrammarTree{
     int line;
     union TreeVal val;
-    union TreeVal syn;
-    union TreeVal inh;
+    union SDDVal syn;
+    union SDDVal inh;
     int type;
     struct ListNode *head;
 };
