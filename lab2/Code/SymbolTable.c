@@ -293,3 +293,17 @@ int same(Type A,Type B)
 enum KIND getKind(Type type){
     return type->kind;
 }
+
+enum KIND getKindwithName(char* name){
+    unsigned int number=hash_pjw(name);
+    struct TableNode* p=SymbolTable[number];
+    for(;p!=NULL;p=p->next)
+    {
+       if(strcmp(p->name,name)==0)
+       {
+           return p->type->kind;
+       }
+    }
+    printf("Unknown varaible name.\n");
+    exit(0);
+}
