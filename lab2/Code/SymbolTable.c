@@ -18,7 +18,7 @@ unsigned int hash_pjw(char* name)
     return val;
 }
 //插入新的节点
-void insert_Node(Type type_in,char* name)
+void insert_Node(Type type_in,char* name,int if_def)
 {
     struct TableNode* temp=(struct TableNode*)malloc(sizeof(struct TableNode));
     unsigned int hashnum=hash_pjw(name);
@@ -26,6 +26,7 @@ void insert_Node(Type type_in,char* name)
     temp->type=type_in;
     strcpy(temp->name,name);
     temp->next=NULL;
+    temp->ifdef=if_def;
     if(SymbolTable[hashnum]==NULL) SymbolTable[hashnum]=temp;
     else
     {
@@ -82,17 +83,16 @@ Type create_Structure_Type(FieldList head,char* struct_Name)
     return temp;
 }
 //创建function type类型
-Type create_Function_Type(Type returntype,FieldList List,int if_def)
+Type create_Function_Type(Type returntype,FieldList List)
 {
     Type temp=(Type)malloc(sizeof(struct Type_));
     temp->kind=FUNCTION;
-    temp->u.function.ifdef=if_def;
     temp->u.function.returnType=returntype;
     temp->u.function.paramlist=List;
     return temp;
 }
-//函数声明后又定义该函数,返回0为正常定义,返回1为存在重复定义,-1为未查询到函数
-int  def_func(char* name)
+//声明后又定义,返回0为正常定义,返回1为存在重复定义,-1为未查询到
+int Define(char* name)
 {
     unsigned int hashnum=hash_pjw(name);
     struct TableNode* p=SymbolTable[hashnum];
@@ -100,31 +100,40 @@ int  def_func(char* name)
     {
        if(strcmp(p->name,name)==0)
        {
-           if(p->type->u.function.ifdef==1) return 1;
-           else {p->type->u.function.ifdef=1; return 0;}
+           if(p->ifdef==1) return 1;
+           else 
+           {
+               p->ifdef=1;
+               return 0;
+           }
        }
     }
     return -1;
 }
-
-//根据名字查询节点
-struct TableNode* search_with_name(char* Name)
+//检查是否定义,-1代表未查询到
+int if_define(char* name)
 {
-    struct TableNode* temp=NULL;
+    unsigned int hashnum=hash_pjw(name);
+    struct TableNode* p=SymbolTable[hashnum];
+    for(;p!=NULL;p=p->next)
+    {
+       if(strcmp(p->name,name)==0) return p->ifdef;
+    }
+    return -1;    
+}
+//根据名字查询节点
+Type search_with_name(char* Name)
+{
     unsigned int number=hash_pjw(Name);
     struct TableNode* p=SymbolTable[number];
     for(;p!=NULL;p=p->next)
     {
        if(strcmp(p->name,Name)==0)
        {
-           temp=(struct TableNode*)malloc(sizeof(struct TableNode));
-           strcpy(temp->name,p->name);
-           temp->next=NULL;
-           temp->type=p->type;
-           return temp;
+           return p->type;
        }
     }
-    return temp;
+    return NULL;
 }
 //对于没有name的结构体只能根据type查找,返回是否存在等价structure
 /*int search_struct_with_type(Type type_in)
