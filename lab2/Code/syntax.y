@@ -73,6 +73,10 @@ ExtDef : Specifier ExtDecList SEMI {
     | Specifier FunDec CompSt {
         $$.t = createnode(ExtDef,@$.first_line,NULL);
         insertall($$.t,3,$1.t,$2.t,$3.t);} 
+    | Specifier FunDec SEMI {
+        $$.t = createnode(ExtDef,@$.first_line,NULL);
+        $3.t = createnode(SEMI,@3.first_line,NULL);
+        insertall($$.t,3,$1.t,$2.t,$3.t);}
     |Specifier error{
         $$.t = createnode(error,@$.first_line,NULL);
         char *tmp="Syntax error";

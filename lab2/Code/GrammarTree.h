@@ -27,7 +27,7 @@ union SDDVal{
     Type t;
     char *str;
     FieldList f;
-}
+};
 struct GrammarTree;
 struct ListNode{
     struct GrammarTree *val;
@@ -62,6 +62,26 @@ struct GrammarTree *createnode(int type,int line,void *value);
 void insertall(struct GrammarTree *parent,int num,...);
 void __DFS(struct GrammarTree *n,int depth);
 void print_tree();
+
+
+
+int try_insert(Type type_in,int line,char* name);
+struct GrammarTree *get_child(struct GrammarTree *node,int index);
 void SDT();
 void SDT_DFS(struct GrammarTree *node);
+void handle_ExtDefList(struct GrammarTree *node);
+void handle_ExtDef(struct GrammarTree *node);
+int handle_Specifier(struct GrammarTree *node);
+int handle_StructSpecifier(struct GrammarTree *node);
+void handle_OptTag(struct GrammarTree *node);
+void handle_VarList(struct GrammarTree *node);
+void handle_DefList(struct GrammarTree *node);
+void handle_Def(struct GrammarTree *node);
+void handle_DecList(struct GrammarTree *node);
+int handle_Dec(struct GrammarTree *node);
+int handle_VarDec(struct GrammarTree *node);
+int handle_FunDec(struct GrammarTree *node);
+void handle_CompSt(struct GrammarTree *node);
+void handle_ID(struct GrammarTree *node);
+void handle_Exp(struct GrammarTree *node);
 #endif

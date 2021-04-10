@@ -38,12 +38,13 @@ void SDT(){
 }
 
 void SDT_DFS(struct GrammarTree *node){
+    struct ListNode *p;
     switch(node->type){
         case ExtDefList: handle_ExtDefList(node);break;
         case DefList:handle_DefList(node);break;
         case Exp:handle_Exp(node);break;
         default :
-            ListNode *p = node->head;
+            p = node->head;
             while(p != NULL)
             {
                 SDT_DFS(p->val);
@@ -62,6 +63,7 @@ void handle_ExtDefList(struct GrammarTree *node){
 void handle_ExtDef(struct GrammarTree *node){
     struct GrammarTree *tmp1 = get_child(node,1);
     struct GrammarTree *tmp2 = get_child(node,2);
+    struct GrammarTree *tmp3 = get_child(node,3);
     int res = handle_Specifier(tmp1);
     if(res == 0)
         return ;
@@ -70,7 +72,7 @@ void handle_ExtDef(struct GrammarTree *node){
         case FunDec:
             if(handle_FunDec(tmp2) == 0)
                 return ;
-            handle_CompSt(get_child(node,3));
+            handle_CompSt(tmp3);
         case ExtDecList:;
 
     }
@@ -140,23 +142,6 @@ void handle_OptTag(struct GrammarTree *node){
         printf("wrong in handle_OptTag\n");
         exit(0);
     }
-}
-
-int handle_FunDec(struct GrammarTree *node){
-    struct GrammarTree *tmp = get_child(node,1);
-    if(handle_ID(tmp) == 0)
-        return 0;
-    tmp = get_child(node,3);
-    if(tmp->type == VarList)
-        handle_VarList(tmp);
-}
-
-void handle_ID(struct GrammarTree *node){
-    node->syn.str = node->val.str;
-}
-
-void handle_VarList(struct GrammarTree *node){
-
 }
 
 void handle_DefList(struct GrammarTree *node){
@@ -242,6 +227,33 @@ int handle_VarDec(struct GrammarTree *node){
     }
 }
 
+int handle_FunDec(struct GrammarTree *node){
+    struct GrammarTree *tmp = get_child(node,1);
+    struct GrammarTree *tmp2 = get_child(node,3);
+    FieldList f = NULL;
+    handle_ID(tmp);
+    if(tmp2->type == VarList)
+    {
+        handle_VarList(tmp2);
+        f = tmp2->syn.f;
+    }
+    
+}
+
+void handle_CompSt(struct GrammarTree *node){
+    ;
+}
+
+void handle_ID(struct GrammarTree *node){
+    node->syn.str = node->val.str;
+}
+
+void handle_VarList(struct GrammarTree *node){
+
+}
+
 void handle_Exp(struct GrammarTree *node){
 
 }
+
+//NOTE
