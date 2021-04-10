@@ -1,5 +1,5 @@
 #include"GrammarTree.h"
-#include"SymbleTable.h"
+#include"SymbolTable.h"
 
 /*struct GrammarTree *get_child(struct ListNode *head,int index){
     for(int i = 1;i < index;i++)

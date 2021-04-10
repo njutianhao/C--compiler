@@ -2,6 +2,7 @@
 #define GRAMMARTREE_H
 #include<stdio.h>
 #include<stdarg.h>
+#include<stdlib.h>
 #define L 1
 #define LE 2
 #define G 3
@@ -41,8 +42,8 @@ struct ErrorNode{
     struct ErrorNode* next;
 };
 struct GrammarTree *root;
-char *token_map[];
-char *token2_map[];
+extern char *token_map[];
+extern char *token2_map[];
 
 struct ErrorNode *ErrorHead;
 int HaveErrors;

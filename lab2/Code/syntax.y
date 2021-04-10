@@ -2,17 +2,8 @@
 %{
     #include<stdio.h>
     #include<stdarg.h>
-    #include"lex.yy.h"
+    #include"lex.yy.c"
     #include"GrammarTree.h"
-    char *token_map[] = {"Program","ExtDecList","ExtDef","Specifier","FunDec","CompSt",
-                        "VarDec","ExtDefList","StructSpecifier",
-                        "OptTag","DefList","Tag","VarList","ParamDec",
-                        "StmtList","Stmt","Exp","Def","DecList","Dec","Args","error"};
-    char *token2_map[] = {"SEMI","COMMA","ASSIGNOP","PLUS",
-                            "MINUS","STAR","DIV","AND","OR","NOT","DOT","TYPE","LP","RP","LB","RB" ,"LC","RC","STRUCT","RETURN",
-                            "IF","ELSE","WHILE","INT","FLOAT","ID","RELOP","SUB","LOWER_THAN_ELSE"};
-    struct ErrorNode *ErrorHead = NULL;
-    int HaveErrors=0;
 %}
 
 %union{
