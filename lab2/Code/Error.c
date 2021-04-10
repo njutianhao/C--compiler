@@ -10,6 +10,7 @@ void print_Errors(){
     }
 }
 void insert_Error(char* errorType,int linenumber,char* information){
+    HaveErrors++;
     if(ErrorHead==NULL){
         ErrorHead=(struct ErrorNode*)malloc(sizeof(struct ErrorNode));
         ErrorHead->Linenumber=linenumber;

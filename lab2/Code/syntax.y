@@ -75,7 +75,6 @@ ExtDef : Specifier ExtDecList SEMI {
         insertall($$.t,3,$1.t,$2.t,$3.t);} 
     |Specifier error{
         $$.t = createnode(error,@$.first_line,NULL);
-        HaveErrors++;
         char *tmp="Syntax error";
 		insert_Error("B",$$.t->line,tmp);
     }  
@@ -126,7 +125,7 @@ VarDec : ID {$$.t = createnode(VarDec,@$.first_line,NULL);
         $4.t = createnode(RB,@4.first_line,NULL);
         insertall($$.t,4,$1.t,$2.t,$3.t,$4.t);}
     | VarDec error RB {$$.t = createnode(VarDec,@$.first_line,NULL);
-        HaveErrors++;
+        
         char *tmp="Wrong Definition";
 		insert_Error("B",$$.t->line,tmp);
         //printf("Error type B at line %d:Wrong Definition.\n",$$.t->line);
@@ -144,7 +143,6 @@ FunDec : ID LP VarList RP {$$.t = createnode(FunDec,@$.first_line,NULL);
         insertall($$.t,3,$1.t,$2.t,$3.t);}
     |ID LP error RP{
         $$.t = createnode(FunDec,@$.first_line,NULL);
-        HaveErrors=HaveErrors+1;
         char *tmp="Wrong Function Definition";
 		insert_Error("B",$$.t->line,tmp);
         //printf("Error type B at line %d:Wrong Function Definition.\n",$$.t->line);
@@ -195,21 +193,18 @@ Stmt : Exp SEMI {$$.t = createnode(Stmt,@$.first_line,NULL);
         insertall($$.t,5,$1.t,$2.t,$3.t,$4.t,$5.t);}
     | IF LP Exp RP error ELSE Stmt {
         $$.t = createnode(Stmt,@$.first_line,NULL);
-        HaveErrors++;
         char *tmp="Wrong statement after if(...)";
 		insert_Error("B",$$.t->line,tmp);
         //printf("Error type B at line %d:Wrong statement after \'if(...)\'.\n",$$.t->line); 
     }
     | WHILE error RP Stmt {
         $$.t = createnode(Stmt,@$.first_line,NULL);
-        HaveErrors++;
         char *tmp="Unexpectd Expression";
 		insert_Error("B",$$.t->line,tmp);
         //printf("Error type B at line %d:Unexpectd Expression.\n",$$.t->line);
     }
     | Exp error {
         $$.t = createnode(Stmt,@$.first_line,NULL);
-        HaveErrors++;
         char *tmp="Exexpectd \';\'";
 		insert_Error("B",$$.t->line,tmp);
         //printf("Error type B at line %d:Expected \';\'.\n",$$.t->line); 
@@ -217,7 +212,6 @@ Stmt : Exp SEMI {$$.t = createnode(Stmt,@$.first_line,NULL);
 
     |RETURN Exp error{
         $$.t = createnode(Stmt,@$.first_line,NULL);
-        HaveErrors++;
         char *tmp="Exexpectd \';\'";
 		insert_Error("B",$$.t->line,tmp);
         //printf("Error type B at line %d:Expected \';\'.\n",$$.t->line);         
@@ -228,7 +222,6 @@ DefList : Def DefList {$$.t = createnode(DefList,@$.first_line,NULL);
     | {$$.t = createnode(DefList,@$.first_line,NULL);}
     | error SEMI{
         $$.t = createnode(DefList,@$.first_line,NULL);
-        HaveErrors++;
         char *tmp="Syntax error";
 		insert_Error("B",$$.t->line,tmp);
         //printf("Error type B at line %d:Syntax error.\n",$$.t->line);   
@@ -313,14 +306,12 @@ Exp : Exp ASSIGNOP Exp {$$.t = createnode(Exp,@$.first_line,NULL);
         insertall($$.t,1,$1.t);}
     | Exp LB error RB{
         $$.t = createnode(Exp,@$.first_line,NULL);
-        HaveErrors++;
         char* tmp="Unexpected operation after \'[\'";
 		insert_Error("B",$$.t->line,tmp);
         //printf("Error type B at line %d:Unexpected operation after \'[\'.\n",$$.t->line);    
         }
     | ID LP error RP{
         $$.t = createnode(Exp,@$.first_line,NULL);
-        HaveErrors++;
         char *tmp="Unexpected varlist after \'(\'";
 		insert_Error("B",$$.t->line,tmp);
         //printf("Error type B at line %d:Unexpected varlist after \'(\'.\n",$$.t->line); 
