@@ -39,7 +39,11 @@ Type create_Basic_Type(char* ifint)
     Type temp=(Type)malloc(sizeof(struct Type_));
     if(strcmp(ifint,"int")==0) temp->kind=BASIC_INT;
     else if(strcmp(ifint,"float")==0) temp->kind=BASIC_FLOAT;
-    else return NULL;
+    else 
+    {
+        printf("Unknown type: %s.\n",ifint);
+        exit(0);
+    }
     return temp;
 }
 //创建Array type类型
