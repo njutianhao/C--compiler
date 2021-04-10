@@ -3,7 +3,12 @@
 void initTable()
 {
     for(int i=0;i<TABLE_SIZE;i++)
+    {
         SymbolTable[i]=NULL;
+        StructTable[i]=NULL;
+        FunctionTable[i]=NULL;
+    }
+    headptr=NULL;
 }
 
 //hash函数
@@ -29,7 +34,7 @@ void insert_Node(Type type_in,char* name)
     temp->ifdef=0;
     if(type_in->kind==STRUCTURE)
     {
-        if(strcmp(type_in->u.structure.structName,name)==0)
+        if(name!=NULL && strcmp(type_in->u.structure.structName,name)==0)
         {
             if(StructTable[hashnum]==NULL) StructTable[hashnum]=temp;
             else
@@ -37,6 +42,14 @@ void insert_Node(Type type_in,char* name)
                 temp->next=StructTable[hashnum];
                 SymbolTable[hashnum]=temp;
             }
+        }
+    }
+    else if(type_in->kind==FUNCTION)
+    {
+        if(FunctionTable[hashnum]==NULL) FunctionTable[hashnum]=temp;
+        else{
+            temp->next=FunctionTable[hashnum];
+            FunctionTable[hashnum]=temp;
         }
     }
     if(SymbolTable[hashnum]==NULL) SymbolTable[hashnum]=temp;
@@ -110,19 +123,36 @@ Type create_Structure_Type(FieldList head,char* struct_Name)
     return temp;
 }
 //创建function type类型
-Type create_Function_Type(Type returntype,FieldList List)
+Type create_Function_Type(Type returntype,FieldList List,int declareline)
 {
     Type temp=(Type)malloc(sizeof(struct Type_));
     temp->kind=FUNCTION;
     temp->u.function.returnType=returntype;
     temp->u.function.paramlist=List;
+    temp->u.function.declare_line=declareline;
     return temp;
 }
-//声明后又定义,返回0为正常定义,返回1为存在重复定义,-1为未查询到
+
+//检查函数是否声明(存在),1表示存在
+Type if_declare(char* name)
+{
+    unsigned int hashnum=hash_pjw(name);
+    struct TableNode* p=FunctionTable[hashnum];
+    for(;p!=NULL;p=p->next)
+    {
+       if(strcmp(p->name,name)==0)
+       {
+           return p->type;
+       }
+    }
+    return NULL;
+}
+
+//函数声明后又定义,返回0为正常定义,返回1为存在重复定义,-1为未查询到
 int Define(char* name)
 {
     unsigned int hashnum=hash_pjw(name);
-    struct TableNode* p=SymbolTable[hashnum];
+    struct TableNode* p=FunctionTable[hashnum];
     for(;p!=NULL;p=p->next)
     {
        if(strcmp(p->name,name)==0)
@@ -141,7 +171,7 @@ int Define(char* name)
 int if_define(char* name)
 {
     unsigned int hashnum=hash_pjw(name);
-    struct TableNode* p=SymbolTable[hashnum];
+    struct TableNode* p=FunctionTable[hashnum];
     for(;p!=NULL;p=p->next)
     {
        if(strcmp(p->name,name)==0) return p->ifdef;
@@ -309,6 +339,34 @@ enum KIND getKindwithName(char* name){
            return p->type->kind;
        }
     }
+    p=FunctionTable[number];
+    for(;p!=NULL;p=p->next)
+    {
+        if(strcmp(p->name,name)==0){
+            return p->type->kind;
+        }
+    }
     printf("Unknown varaible name.\n");
     exit(0);
+}
+struct UndefinedFunction* get_undefined_function()
+{
+    for(int i=0;i<TABLE_SIZE;i++){
+        if(FunctionTable[i]!=NULL)
+        {
+            struct TableNode* p=FunctionTable[i];
+            for(;p!=NULL;p=p->next)
+            {
+                if(p->ifdef==0)
+                {
+                    struct UndefinedFunction* node=(struct UndefinedFunction*)malloc(sizeof(struct UndefinedFunction));
+                    strcpy(node->func_name,p->name);
+                    itoa(p->type->u.function.declare_line,node->line,10);
+                    node->next=headptr;
+                    headptr=node;                    
+                }
+            }
+        }
+    }
+    return headptr;
 }

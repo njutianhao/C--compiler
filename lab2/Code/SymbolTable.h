@@ -25,6 +25,7 @@ struct Type_
         } structure;
         struct 
         {
+            int declare_line;//函数声明所在行号
             Type returnType;//返回值类型
             FieldList paramlist;//参数列表
         } function;  
@@ -46,10 +47,17 @@ struct TableNode
     struct TableNode* next;//hash表下一个元素指针
 };
 
+struct UndefinedFunction
+{
+    char* line;
+    char* func_name;
+    struct UndefinedFunction* next;
+};
 
 struct TableNode* SymbolTable[TABLE_SIZE];//符号表
 struct TableNode* StructTable[TABLE_SIZE];//结构体表
-
+struct TableNode* FunctionTable[TABLE_SIZE];//函数表
+struct UndefinedFunction* headptr;
 
 void initTable();//初始化
 unsigned int hash_pjw(char* name);//hash函数
@@ -63,8 +71,9 @@ int name_exist(char* name);//某一变量、形参或者成员名是否已存在
 Type create_Basic_Type(char* ifint);//创建Basic type类型
 Type create_Array_Type(Type paratype,int size_in);//创建Array type类型
 Type create_Structure_Type(FieldList head,char* struct_Name);//创建Structure type类型
-Type create_Function_Type(Type returntype,FieldList List);//创建Funtion type类型,若为函数声明，if_def设置为0
-int  Define(char* name);//声明后又定义,返回0为正常定义,返回1为存在重复定义
+Type create_Function_Type(Type returntype,FieldList List,int declareline);//创建Funtion type类型
+Type if_declare(char* name);//检查函数是否声明(存在),1表示存在
+int Define(char* name);//声明后又定义,返回0为正常定义,返回1为存在重复定义
 int if_define(char* name);//检查是否定义
 
 FieldList new_FieldList(char* name_in,Type type_in);//创建一个FieldList节点
@@ -75,4 +84,7 @@ int same(Type A,Type B);//检查是否为同一类型，是则返回1,不是则�
 //int strict_array_same(Type A,Type B);//检查数组严格相等,返回值同same()
 enum KIND getKind(Type type);//type转KIND
 enum KIND getKindwithName(char* name);//根据名称获取kind
+
+struct UndefinedFunction* get_undefined_function();
+
 #endif
