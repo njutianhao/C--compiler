@@ -18,7 +18,7 @@ unsigned int hash_pjw(char* name)
     return val;
 }
 //插入新的节点
-void insert_Node(Type type_in,char* name,int if_def)
+void insert_Node(Type type_in,char* name)
 {
     struct TableNode* temp=(struct TableNode*)malloc(sizeof(struct TableNode));
     unsigned int hashnum=hash_pjw(name);
@@ -26,7 +26,7 @@ void insert_Node(Type type_in,char* name,int if_def)
     temp->type=type_in;
     strcpy(temp->name,name);
     temp->next=NULL;
-    temp->ifdef=if_def;
+    temp->ifdef=0;
     if(type_in->kind==STRUCTURE)
     {
         if(strcmp(type_in->u.structure.structName,name)==0)

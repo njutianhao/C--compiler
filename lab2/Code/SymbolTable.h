@@ -54,7 +54,7 @@ struct TableNode* StructTable[TABLE_SIZE];//结构体表
 void initTable();//初始化
 unsigned int hash_pjw(char* name);//hash函数
 
-void insert_Node(Type type_in,char* name,int if_def);//插入新的节点
+void insert_Node(Type type_in,char* name);//插入新的节点
 Type search_with_name(char* Name);//根据名字查询节点
 Type search_struct(char* Name);//根据名字查询结构体
 //int search_struct_with_type(Type type_in);//对于没有name的结构体只能根据type查找,返回是否存在等价structure,是为1，不是为0
