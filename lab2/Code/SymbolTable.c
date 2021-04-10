@@ -27,6 +27,18 @@ void insert_Node(Type type_in,char* name,int if_def)
     strcpy(temp->name,name);
     temp->next=NULL;
     temp->ifdef=if_def;
+    if(type_in->kind==STRUCTURE)
+    {
+        if(strcmp(type_in->u.structure.structName,name)==0)
+        {
+            if(StructTable[hashnum]==NULL) StructTable[hashnum]=temp;
+            else
+            {
+                temp->next=StructTable[hashnum];
+                SymbolTable[hashnum]=temp;
+            }
+        }
+    }
     if(SymbolTable[hashnum]==NULL) SymbolTable[hashnum]=temp;
     else
     {
@@ -145,6 +157,21 @@ Type search_with_name(char* Name)
     }
     return NULL;
 }
+//根据名字查询该名称结构体
+Type search_struct(char* Name)
+{
+    unsigned int number=hash_pjw(Name);
+    struct TableNode* p=StructTable[number];
+    for(;p!=NULL;p=p->next)
+    {
+       if(strcmp(p->name,Name)==0)
+       {
+           return p->type;
+       }
+    }
+    return NULL;
+}
+
 //对于没有name的结构体只能根据type查找,返回是否存在等价structure
 /*int search_struct_with_type(Type type_in)
 {
