@@ -1,6 +1,7 @@
 #ifndef GRAMMARTREE_H
 #define GRAMMARTREE_H
 #include<stdio.h>
+#include<stdarg.h>
 #define L 1
 #define LE 2
 #define G 3
@@ -20,12 +21,6 @@ union TreeVal{
     float f;
     char *str;
 };
-struct ErrorNode{
-    int Linenumber;
-    char* ErrorType;
-    char *Information;
-    struct ErrorNode* next;
-};
 struct GrammarTree;
 struct ListNode{
     struct GrammarTree *val;
@@ -39,14 +34,22 @@ struct GrammarTree{
     int type;
     struct ListNode *head;
 };
+struct ErrorNode{
+    int Linenumber;
+    char* ErrorType;
+    char *Information;
+    struct ErrorNode* next;
+};
+struct GrammarTree *root;
 char *token_map[];
 char *token2_map[];
+
 struct ErrorNode *ErrorHead;
 int HaveErrors;
-struct GrammarTree *root;
-void print_Node(struct ErrorNode* node);
 void print_Errors();
 void insert_Error(char*errorType,int linenumber,char* information);
+
+void print_Node(struct ErrorNode* node);
 void insert(struct GrammarTree *t1,struct GrammarTree *t2);
 struct GrammarTree *createnode(int type,int line,void *value);
 void insertall(struct GrammarTree *parent,int num,...);

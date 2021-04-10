@@ -1,8 +1,7 @@
 #include"GrammarTree.h"
-#include"syntax.tab.h"
 #include"SymbleTable.h"
 
-struct GrammarTree *get_child(struct ListNode *head,int index){
+/*struct GrammarTree *get_child(struct ListNode *head,int index){
     for(int i = 1;i < index;i++)
     {
         if(head == NULL)
@@ -39,31 +38,41 @@ void handle_ExtDefList(struct GrammarTree *node){
 }
 
 void handle_ExtDef(struct GrammarTree *node){
-    TYPE t = handle_Specifier(get_child(node->head,1));
+    Type t = handle_Specifier(get_child(node->head,1));
     struct GrammarTree *tmp = get_child(node->head,2);
     switch(tmp->type){
         case FunDec:
             handle_FunDec(t,tmp);
             handle_CompSt(get_child(node->head,3));
-        case ExtDecList:
+        case ExtDecList:;
 
     }
 }
 
-TYPE handle_Specifier(struct GrammarTree *node){
-
+Type handle_Specifier(struct GrammarTree *node){
+    switch(node->type){
+        case TYPE:;
+        case StructSpecifier:;
+    }
+    printf("wrong in handle_Specifier\n");
+    exit(0);
 }
 
-void handle_FunDec(TYPE t,struct GrammarTree *node){
+void handle_FunDec(Type t,struct GrammarTree *node){
     handle_ID(t,get_child(node->head,1));
-    node = get_child(node->head,3);
-    if(node->type == VarList)
-        handle_VarList(node);
+    struct GrammarTree *tmp = get_child(node->head,3);
+    if(tmp->type == VarList)
+        handle_VarList(tmp);
 }
 
-void handle_ID(TYPE t,struct GrammarTree *node){
-    
-    insert_Node(t,node->val.str);
+void handle_ID(Type t,struct GrammarTree *node){
+    if(name_exist(node->val.str) == 0)
+        insert_Node(t,node->val.str);
+    else
+    {
+        char *inf = strcat("Redefined variable \"",strcat(node->val.str,"\"."));
+        insert_Error('3',node->line,inf);
+    }
 }
 
 void handle_VarList(struct GrammarTree *node){
@@ -76,4 +85,4 @@ void handle_DefList(struct GrammarTree *node){
 
 void handle_Exp(struct GrammarTree *node){
 
-}
+}*/
