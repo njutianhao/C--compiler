@@ -1,9 +1,9 @@
-#include "SymbleTable.h"
+#include "SymbolTable.h"
 //初始化
 void initTable()
 {
     for(int i=0;i<TABLE_SIZE;i++)
-        SymbleTable[i]=NULL;
+        SymbolTable[i]=NULL;
 }
 
 //hash函数
@@ -26,11 +26,11 @@ void insert_Node(Type type_in,char* name)
     temp->type=type_in;
     strcpy(temp->name,name);
     temp->next=NULL;
-    if(SymbleTable[hashnum]==NULL) SymbleTable[hashnum]=temp;
+    if(SymbolTable[hashnum]==NULL) SymbolTable[hashnum]=temp;
     else
     {
-        temp->next=SymbleTable[hashnum];
-        SymbleTable[hashnum]=temp;
+        temp->next=SymbolTable[hashnum];
+        SymbolTable[hashnum]=temp;
     }
 }
 //创建Basic type类型
@@ -90,7 +90,7 @@ Type create_Function_Type(Type returntype,FieldList List,int if_def)
 int  def_func(char* name)
 {
     unsigned int hashnum=hash_pjw(name);
-    struct TableNode* p=SymbleTable[hashnum];
+    struct TableNode* p=SymbolTable[hashnum];
     for(;p!=NULL;p=p->next)
     {
        if(strcmp(p->name,name)==0)
@@ -107,7 +107,7 @@ struct TableNode* search_with_name(char* Name)
 {
     struct TableNode* temp=NULL;
     unsigned int number=hash_pjw(Name);
-    struct TableNode* p=SymbleTable[number];
+    struct TableNode* p=SymbolTable[number];
     for(;p!=NULL;p=p->next)
     {
        if(strcmp(p->name,Name)==0)
@@ -125,7 +125,7 @@ struct TableNode* search_with_name(char* Name)
 /*int search_struct_with_type(Type type_in)
 {
     unsigned int num=hash_pjw(NULL);
-    struct TableNode* p=SymbleTable[num];
+    struct TableNode* p=SymbolTable[num];
     for(;p!=NULL;p=p->next)
     {
         if(same(p->nodeType.type,type_in)==1) return 1;
@@ -136,7 +136,7 @@ struct TableNode* search_with_name(char* Name)
 int name_exist(char* name)
 {
     unsigned int hashnum=hash_pjw(name);
-    struct TableNode* p=SymbleTable[hashnum];
+    struct TableNode* p=SymbolTable[hashnum];
     for(;p!=NULL;p=p->next)
     {
         if(strcmp(p->name,name)==0) return 1;

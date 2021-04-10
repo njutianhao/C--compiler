@@ -1,5 +1,5 @@
-#ifndef SYMBLETABLE_H
-#define SYMBLETABLE_H
+#ifndef SYMBOLTABLE_H
+#define SYMBOLTABLE_H
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -47,7 +47,7 @@ struct TableNode
 };
 
 
-struct TableNode* SymbleTable[TABLE_SIZE];//符号表
+struct TableNode* SymbolTable[TABLE_SIZE];//符号表
 
 void initTable();//初始化
 unsigned int hash_pjw(char* name);//hash函数
