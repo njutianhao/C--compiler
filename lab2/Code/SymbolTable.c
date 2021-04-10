@@ -65,12 +65,12 @@ FieldList new_FieldList(char* name_in,Type type_in)
     return temp;
 }
 
-int insert_FieldList(FieldList head,FieldList ptr)
+FieldList insert_FieldList(FieldList head,FieldList ptr)
 {
-    if(ptr==NULL||ptr->next!=NULL) return -1;
+    if(ptr==NULL||ptr->next!=NULL) return head;
     ptr->next=head;
     head=ptr;
-    return 0;
+    return head;
 }
 
 Type create_Structure_Type(FieldList head,char* struct_Name)

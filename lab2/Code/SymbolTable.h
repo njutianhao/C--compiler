@@ -64,7 +64,7 @@ Type create_Function_Type(Type returntype,FieldList List,int if_def);//创建Fun
 int  def_func(char* name);//函数声明后又定义该函数,返回0为正常定义,返回1为存在重复定义
 
 FieldList new_FieldList(char* name_in,Type type_in);//创建一个FieldList节点
-int insert_FieldList(FieldList head,FieldList ptr);//向FieldList链表内插入节点
+FieldList insert_FieldList(FieldList head,FieldList ptr);//向FieldList链表内插入节点
 
 int same(Type A,Type B);//检查是否为同一类型，是则返回1,不是则返回0,异常则返回-1
 //int strict_array_same(Type A,Type B);//检查数组严格相等,返回值同same()
