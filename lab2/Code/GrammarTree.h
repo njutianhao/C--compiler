@@ -22,7 +22,7 @@ union TreeVal{
 };
 struct ErrorNode{
     int Linenumber;
-    char ErrorType;
+    char* ErrorType;
     char *Information;
     struct ErrorNode* next;
 };
@@ -46,7 +46,7 @@ int HaveErrors;
 struct GrammarTree *root;
 void print_Node(struct ErrorNode* node);
 void print_Errors();
-void insert_Error(char *errorType,int linenumber,char* information);
+void insert_Error(char*errorType,int linenumber,char* information);
 void insert(struct GrammarTree *t1,struct GrammarTree *t2);
 struct GrammarTree *createnode(int type,int line,void *value);
 void insertall(struct GrammarTree *parent,int num,...);

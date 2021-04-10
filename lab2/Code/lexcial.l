@@ -10,7 +10,7 @@
     int yycolumn = 1;
 	extern int HaveErrors;
 	extern struct ErrorNode* ErrorHead;
-	extern void insert_Error(char errorType,int linenumber,char* information);
+	extern void insert_Error(char* errorType,int linenumber,char* information);
     #define YY_USER_ACTION \
     yylloc.first_line = yylloc.last_line = yylineno; \
     yylloc.first_column = yycolumn; \

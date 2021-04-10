@@ -1,5 +1,5 @@
 #ifndef SYMBLETABLE_H
-#define SYMBLETALBE_H
+#define SYMBLETABLE_H
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -53,7 +53,7 @@ void initTable();//初始化
 unsigned int hash_pjw(char* name);//hash函数
 
 void insert_Node(Type type_in,char* name);//插入新的节点
-FieldList search_with_name(char* Name);//根据名字查询节点
+struct TableNode* search_with_name(char* Name);//根据名字查询节点
 //int search_struct_with_type(Type type_in);//对于没有name的结构体只能根据type查找,返回是否存在等价structure,是为1，不是为0
 int name_exist(char* name);//某一变量、形参或者成员名是否已存在,是则返回1,不是则返回0
 
