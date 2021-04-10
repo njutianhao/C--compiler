@@ -25,6 +25,7 @@ struct Type_
         } structure;
         struct 
         {
+            int ifdef;//是否定义
             Type returnType;//返回值类型
             FieldList paramlist;//参数列表
         } function;  
@@ -40,7 +41,8 @@ struct FieldList_
 
 struct TableNode
 {
-    struct FieldList_ nodeType;//节点存储的域信息
+    char* name;//变量或函数名
+    Type type;
     struct TableNode* next;//hash表下一个元素指针
 };
 
@@ -58,7 +60,8 @@ int name_exist(char* name);//某一变量、形参或者成员名是否已存在
 Type create_Basic_Type(int ifint);//创建Basic type类型,0表示int
 Type create_Array_Type(Type paratype,int size_in);//创建Array type类型
 Type create_Structure_Type(FieldList head,char* struct_Name);//创建Structure type类型
-Type create_Function_Type(Type returntype,FieldList List);//创建Funtion type类型
+Type create_Function_Type(Type returntype,FieldList List,int if_def);//创建Funtion type类型,若为函数声明，if_def设置为0
+int  def_func(char* name);//函数声明后又定义该函数,返回0为正常定义,返回1为存在重复定义
 
 FieldList new_FieldList(char* name_in,Type type_in);//创建一个FieldList节点
 int insert_FieldList(FieldList head,FieldList ptr);//向FieldList链表内插入节点

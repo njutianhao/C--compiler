@@ -23,9 +23,9 @@ void insert_Node(Type type_in,char* name)
     struct TableNode* temp=(struct TableNode*)malloc(sizeof(struct TableNode));
     unsigned int hashnum=hash_pjw(name);
     temp->next=NULL;
-    temp->nodeType.type=type_in;
-    strcpy(temp->nodeType.name,name);
-    temp->nodeType.next=NULL;
+    temp->type=type_in;
+    strcpy(temp->name,name);
+    temp->next=NULL;
     if(SymbleTable[hashnum]==NULL) SymbleTable[hashnum]=temp;
     else
     {
@@ -77,28 +77,45 @@ Type create_Structure_Type(FieldList head,char* struct_Name)
     return temp;
 }
 //创建function type类型
-Type create_Function_Type(Type returntype,FieldList List)
+Type create_Function_Type(Type returntype,FieldList List,int if_def)
 {
     Type temp=(Type)malloc(sizeof(struct Type_));
     temp->kind=FUNCTION;
+    temp->u.function.ifdef=if_def;
     temp->u.function.returnType=returntype;
     temp->u.function.paramlist=List;
     return temp;
 }
-//根据名字查询节点
-FieldList search_with_name(char* Name)
+//函数声明后又定义该函数,返回0为正常定义,返回1为存在重复定义,-1为未查询到函数
+int  def_func(char* name)
 {
-    FieldList temp=NULL;
+    unsigned int hashnum=hash_pjw(name);
+    struct TableNode* p=SymbleTable[hashnum];
+    for(;p!=NULL;p=p->next)
+    {
+       if(strcmp(p->name,name)==0)
+       {
+           if(p->type->u.function.ifdef==1) return 1;
+           else {p->type->u.function.ifdef=1; return 0;}
+       }
+    }
+    return -1;
+}
+
+//根据名字查询节点
+struct TableNode* search_with_name(char* Name)
+{
+    struct TableNode* temp=NULL;
     unsigned int number=hash_pjw(Name);
     struct TableNode* p=SymbleTable[number];
     for(;p!=NULL;p=p->next)
     {
-       if(strcmp(p->nodeType.name,Name)==0)
+       if(strcmp(p->name,Name)==0)
        {
            temp=(FieldList)malloc(sizeof(struct FieldList_));
-           strcpy(temp->name,p->nodeType.name);
+           strcpy(temp->name,p->name);
            temp->next=NULL;
-           temp->type=p->nodeType.type;
+           temp->type=p->type;
            return temp;
        }
     }
@@ -115,6 +132,17 @@ FieldList search_with_name(char* Name)
     }
     return 0;
 }*/
+//某一变量、形参或者成员名是否已存在,是则返回1,不是则返回0
+int name_exist(char* name)
+{
+    unsigned int hashnum=hash_pjw(name);
+    struct TableNode* p=SymbleTable[hashnum];
+    for(;p!=NULL;p=p->next)
+    {
+        if(strcmp(p->name,name)==0) return 1;
+    }
+    return 0;
+}
 
 //检查是否为同一类型，是则返回1，不是则返回0,异常则返回-1
 int same(Type A,Type B)
