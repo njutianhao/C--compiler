@@ -32,7 +32,7 @@ digit [0-9]
 	char perc=c;
 	while(perc!='*' || c!='/'){
 		if(c==EOF){
-			insert_Error('B',lineno,"Ambiguous characters /*");
+			insert_Error("B",lineno,"Ambiguous characters /*");
 			HaveErrors++;
 			break;
 		}

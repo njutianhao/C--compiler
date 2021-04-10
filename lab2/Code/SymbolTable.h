@@ -57,7 +57,7 @@ struct TableNode* search_with_name(char* Name);//根据名字查询节点
 //int search_struct_with_type(Type type_in);//对于没有name的结构体只能根据type查找,返回是否存在等价structure,是为1，不是为0
 int name_exist(char* name);//某一变量、形参或者成员名是否已存在,是则返回1,不是则返回0
 
-Type create_Basic_Type(int ifint);//创建Basic type类型,0表示int
+Type create_Basic_Type(char* ifint);//创建Basic type类型
 Type create_Array_Type(Type paratype,int size_in);//创建Array type类型
 Type create_Structure_Type(FieldList head,char* struct_Name);//创建Structure type类型
 Type create_Function_Type(Type returntype,FieldList List,int if_def);//创建Funtion type类型,若为函数声明，if_def设置为0

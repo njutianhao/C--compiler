@@ -34,11 +34,12 @@ void insert_Node(Type type_in,char* name)
     }
 }
 //创建Basic type类型
-Type create_Basic_Type(int ifint)//0表示int
+Type create_Basic_Type(char* ifint)
 {
     Type temp=(Type)malloc(sizeof(struct Type_));
-    if(ifint==0) temp->kind=BASIC_INT;
-    else temp->kind=BASIC_FLOAT;
+    if(strcmp(ifint,"int")==0) temp->kind=BASIC_INT;
+    else if(strcmp(ifint,"float")==0) temp->kind=BASIC_FLOAT;
+    else return NULL;
     return temp;
 }
 //创建Array type类型
@@ -112,7 +113,7 @@ struct TableNode* search_with_name(char* Name)
     {
        if(strcmp(p->name,Name)==0)
        {
-           temp=(FieldList)malloc(sizeof(struct FieldList_));
+           temp=(struct TableNode*)malloc(sizeof(struct TableNode));
            strcpy(temp->name,p->name);
            temp->next=NULL;
            temp->type=p->type;
