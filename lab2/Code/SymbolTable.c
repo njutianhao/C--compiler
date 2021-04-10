@@ -80,9 +80,14 @@ FieldList new_FieldList(char* name_in,Type type_in)
 
 FieldList insert_FieldList(FieldList head,FieldList ptr)
 {
-    if(ptr==NULL||ptr->next!=NULL) return head;
-    ptr->next=head;
-    head=ptr;
+    if(head==NULL) return ptr;
+    if(ptr==NULL) return head;
+    FieldList p=head;
+    while(p->next!=NULL)
+    {
+        p=p->next;
+    }
+    p->next=ptr;
     return head;
 }
 //FieldList是否有该名称的变量
