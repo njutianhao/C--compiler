@@ -3,60 +3,16 @@
     #include<stdio.h>
     #include<stdarg.h>
     #include"lex.yy.c"
-	#define L 1
-	#define LE 2
-	#define G 3
-	#define GE 4
-	#define EQ 5
-	#define NEQ 6
-    #define BASE_NUM 258
-    enum token{
-        Program = 0, ExtDecList, ExtDef, Specifier, FunDec, CompSt, 
-        VarDec, ExtDefList, StructSpecifier,
-        OptTag, DefList, Tag, VarList, ParamDec,
-        StmtList, Stmt, Exp, Def, DecList, Dec, Args,
-        error
-    };
-    union TreeVal{
-        int i;
-        float f;
-        char *str;
-    };
-    struct ErrorNode{
-        int Linenumber;
-        char ErrorType;
-        char *Information;
-        struct ErrorNode* next;
-    };
-    struct GrammarTree;
-    struct ListNode{
-        struct GrammarTree *val;
-        struct ListNode *next;
-    };
-    struct GrammarTree{
-        int line;
-        union TreeVal val;
-        int type;
-        struct ListNode *head;
-    };
+    #include"GrammarTree.h"
     char *token_map[] = {"Program","ExtDecList","ExtDef","Specifier","FunDec","CompSt",
-                         "VarDec","ExtDefList","StructSpecifier",
-                         "OptTag","DefList","Tag","VarList","ParamDec",
-                         "StmtList","Stmt","Exp","Def","DecList","Dec","Args","error"};
+                        "VarDec","ExtDefList","StructSpecifier",
+                        "OptTag","DefList","Tag","VarList","ParamDec",
+                        "StmtList","Stmt","Exp","Def","DecList","Dec","Args","error"};
     char *token2_map[] = {"SEMI","COMMA","ASSIGNOP","PLUS",
-                          "MINUS","STAR","DIV","AND","OR","NOT","DOT","TYPE","LP","RP","LB","RB" ,"LC","RC","STRUCT","RETURN",
-                          "IF","ELSE","WHILE","INT","FLOAT","ID","RELOP","SUB","LOWER_THAN_ELSE"};
-    struct ErrorNode *ErrorHead=NULL;
+                            "MINUS","STAR","DIV","AND","OR","NOT","DOT","TYPE","LP","RP","LB","RB" ,"LC","RC","STRUCT","RETURN",
+                            "IF","ELSE","WHILE","INT","FLOAT","ID","RELOP","SUB","LOWER_THAN_ELSE"};
+    struct ErrorNode *ErrorHead = NULL;
     int HaveErrors=0;
-    struct GrammarTree *root;
-    void print_Node(struct ErrorNode* node);
-    void print_Errors();
-    void insert_Error(char errorType,int linenumber,char* information);
-    void insert(struct GrammarTree *t1,struct GrammarTree *t2);
-    struct GrammarTree *createnode(int type,int line,void *value);
-    void insertall(struct GrammarTree *parent,int num,...);
-    void __DFS(struct GrammarTree *n,int depth);
-    void print_tree();
 %}
 
 %union{

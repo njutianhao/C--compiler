@@ -67,62 +67,18 @@
     #include<stdio.h>
     #include<stdarg.h>
     #include"lex.yy.c"
-	#define L 1
-	#define LE 2
-	#define G 3
-	#define GE 4
-	#define EQ 5
-	#define NEQ 6
-    #define BASE_NUM 258
-    enum token{
-        Program = 0, ExtDecList, ExtDef, Specifier, FunDec, CompSt, 
-        VarDec, ExtDefList, StructSpecifier,
-        OptTag, DefList, Tag, VarList, ParamDec,
-        StmtList, Stmt, Exp, Def, DecList, Dec, Args,
-        error
-    };
-    union TreeVal{
-        int i;
-        float f;
-        char *str;
-    };
-    struct ErrorNode{
-        int Linenumber;
-        char ErrorType;
-        char *Information;
-        struct ErrorNode* next;
-    };
-    struct GrammarTree;
-    struct ListNode{
-        struct GrammarTree *val;
-        struct ListNode *next;
-    };
-    struct GrammarTree{
-        int line;
-        union TreeVal val;
-        int type;
-        struct ListNode *head;
-    };
+    #include"GrammarTree.h"
     char *token_map[] = {"Program","ExtDecList","ExtDef","Specifier","FunDec","CompSt",
-                         "VarDec","ExtDefList","StructSpecifier",
-                         "OptTag","DefList","Tag","VarList","ParamDec",
-                         "StmtList","Stmt","Exp","Def","DecList","Dec","Args","error"};
+                        "VarDec","ExtDefList","StructSpecifier",
+                        "OptTag","DefList","Tag","VarList","ParamDec",
+                        "StmtList","Stmt","Exp","Def","DecList","Dec","Args","error"};
     char *token2_map[] = {"SEMI","COMMA","ASSIGNOP","PLUS",
-                          "MINUS","STAR","DIV","AND","OR","NOT","DOT","TYPE","LP","RP","LB","RB" ,"LC","RC","STRUCT","RETURN",
-                          "IF","ELSE","WHILE","INT","FLOAT","ID","RELOP","SUB","LOWER_THAN_ELSE"};
-    struct ErrorNode *ErrorHead=NULL;
+                            "MINUS","STAR","DIV","AND","OR","NOT","DOT","TYPE","LP","RP","LB","RB" ,"LC","RC","STRUCT","RETURN",
+                            "IF","ELSE","WHILE","INT","FLOAT","ID","RELOP","SUB","LOWER_THAN_ELSE"};
+    struct ErrorNode *ErrorHead = NULL;
     int HaveErrors=0;
-    struct GrammarTree *root;
-    void print_Node(struct ErrorNode* node);
-    void print_Errors();
-    void insert_Error(char errorType,int linenumber,char* information);
-    void insert(struct GrammarTree *t1,struct GrammarTree *t2);
-    struct GrammarTree *createnode(int type,int line,void *value);
-    void insertall(struct GrammarTree *parent,int num,...);
-    void __DFS(struct GrammarTree *n,int depth);
-    void print_tree();
 
-#line 126 "./syntax.tab.c" /* yacc.c:339  */
+#line 82 "./syntax.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -194,7 +150,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 62 "./syntax.y" /* yacc.c:355  */
+#line 18 "./syntax.y" /* yacc.c:355  */
 
     union {
         struct GrammarTree * t;
@@ -203,7 +159,7 @@ union YYSTYPE
         char *str;
     }type_treenode;
 
-#line 207 "./syntax.tab.c" /* yacc.c:355  */
+#line 163 "./syntax.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -234,7 +190,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 238 "./syntax.tab.c" /* yacc.c:358  */
+#line 194 "./syntax.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -536,13 +492,13 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   108,   108,   113,   116,   118,   122,   126,   129,   136,
-     139,   145,   149,   152,   158,   163,   167,   169,   173,   176,
-     181,   188,   193,   198,   206,   209,   212,   215,   220,   222,
-     224,   227,   229,   233,   238,   244,   249,   256,   263,   271,
-     279,   281,   282,   290,   293,   295,   299,   301,   306,   309,
-     312,   315,   318,   321,   324,   327,   330,   334,   337,   340,
-     345,   350,   354,   358,   361,   364,   367,   374,   382,   385
+       0,    64,    64,    69,    72,    74,    78,    82,    85,    92,
+      95,   101,   105,   108,   114,   119,   123,   125,   129,   132,
+     137,   144,   149,   154,   162,   165,   168,   171,   176,   178,
+     180,   183,   185,   189,   194,   200,   205,   212,   219,   227,
+     235,   237,   238,   246,   249,   251,   255,   257,   262,   265,
+     268,   271,   274,   277,   280,   283,   286,   290,   293,   296,
+     301,   306,   310,   314,   317,   320,   323,   330,   338,   341
 };
 #endif
 
@@ -1519,192 +1475,192 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 108 "./syntax.y" /* yacc.c:1646  */
+#line 64 "./syntax.y" /* yacc.c:1646  */
     {
         (yyval.type_treenode).t = createnode(Program,(yyloc).first_line,NULL);
         insertall((yyval.type_treenode).t,1,(yyvsp[0].type_treenode).t);
         root = (yyval.type_treenode).t;}
-#line 1528 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1484 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 113 "./syntax.y" /* yacc.c:1646  */
+#line 69 "./syntax.y" /* yacc.c:1646  */
     {
         (yyval.type_treenode).t = createnode(ExtDefList,(yyloc).first_line,NULL);
         insertall((yyval.type_treenode).t,2,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1536 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1492 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 116 "./syntax.y" /* yacc.c:1646  */
+#line 72 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(ExtDefList,(yyloc).first_line,NULL);}
-#line 1542 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1498 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 118 "./syntax.y" /* yacc.c:1646  */
+#line 74 "./syntax.y" /* yacc.c:1646  */
     {
         (yyval.type_treenode).t = createnode(ExtDef,(yyloc).first_line,NULL);
         (yyvsp[0].type_treenode).t = createnode(SEMI,(yylsp[0]).first_line,NULL);
         insertall((yyval.type_treenode).t,3,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1551 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1507 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 122 "./syntax.y" /* yacc.c:1646  */
+#line 78 "./syntax.y" /* yacc.c:1646  */
     {
         (yyval.type_treenode).t = createnode(ExtDef,(yyloc).first_line,NULL);
         (yyvsp[0].type_treenode).t = createnode(SEMI,(yylsp[0]).first_line,NULL);
         insertall((yyval.type_treenode).t,2,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1560 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1516 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 126 "./syntax.y" /* yacc.c:1646  */
+#line 82 "./syntax.y" /* yacc.c:1646  */
     {
         (yyval.type_treenode).t = createnode(ExtDef,(yyloc).first_line,NULL);
         insertall((yyval.type_treenode).t,3,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1568 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1524 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 129 "./syntax.y" /* yacc.c:1646  */
+#line 85 "./syntax.y" /* yacc.c:1646  */
     {
         (yyval.type_treenode).t = createnode(error,(yyloc).first_line,NULL);
         HaveErrors++;
         char *tmp="Syntax error";
 		insert_Error('B',(yyval.type_treenode).t->line,tmp);
     }
-#line 1579 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1535 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 136 "./syntax.y" /* yacc.c:1646  */
+#line 92 "./syntax.y" /* yacc.c:1646  */
     {
         (yyval.type_treenode).t = createnode(ExtDecList,(yyloc).first_line,NULL);
         insertall((yyval.type_treenode).t,1,(yyvsp[0].type_treenode).t);}
-#line 1587 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1543 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 139 "./syntax.y" /* yacc.c:1646  */
+#line 95 "./syntax.y" /* yacc.c:1646  */
     {
         (yyval.type_treenode).t = createnode(ExtDecList,(yyloc).first_line,NULL);
         (yyvsp[-1].type_treenode).t = createnode(COMMA,(yylsp[-1]).first_line,NULL);
         insertall((yyval.type_treenode).t,3,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1596 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1552 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 145 "./syntax.y" /* yacc.c:1646  */
+#line 101 "./syntax.y" /* yacc.c:1646  */
     {
         (yyval.type_treenode).t = createnode(Specifier,(yyloc).first_line,NULL);
         (yyvsp[0].type_treenode).t = createnode(TYPE,(yylsp[0]).first_line,(void *)&(yyvsp[0].type_treenode).str);
         insertall((yyval.type_treenode).t,1,(yyvsp[0].type_treenode).t);}
-#line 1605 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1561 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 149 "./syntax.y" /* yacc.c:1646  */
+#line 105 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Specifier,(yyloc).first_line,NULL);
         insertall((yyval.type_treenode).t,1,(yyvsp[0].type_treenode).t);}
-#line 1612 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1568 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 152 "./syntax.y" /* yacc.c:1646  */
+#line 108 "./syntax.y" /* yacc.c:1646  */
     {
         (yyval.type_treenode).t = createnode(StructSpecifier,(yyloc).first_line,NULL);
         (yyvsp[-4].type_treenode).t = createnode(STRUCT,(yylsp[-4]).first_line,NULL);
         (yyvsp[-2].type_treenode).t = createnode(LC,(yylsp[-2]).first_line,NULL);
         (yyvsp[0].type_treenode).t = createnode(RC,(yylsp[0]).first_line,NULL);
         insertall((yyval.type_treenode).t,5,(yyvsp[-4].type_treenode).t,(yyvsp[-3].type_treenode).t,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1623 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1579 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 158 "./syntax.y" /* yacc.c:1646  */
+#line 114 "./syntax.y" /* yacc.c:1646  */
     { 
         (yyval.type_treenode).t = createnode(StructSpecifier,(yyloc).first_line,NULL);
         (yyvsp[-1].type_treenode).t = createnode(STRUCT,(yylsp[-1]).first_line,NULL);
         insertall((yyval.type_treenode).t,2,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1632 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1588 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 163 "./syntax.y" /* yacc.c:1646  */
+#line 119 "./syntax.y" /* yacc.c:1646  */
     {
         (yyval.type_treenode).t = createnode(OptTag,(yyloc).first_line,NULL);
         (yyvsp[0].type_treenode).t = createnode(ID,(yylsp[0]).first_line,(void *)&(yyvsp[0].type_treenode).str);
         insertall((yyval.type_treenode).t,1,(yyvsp[0].type_treenode).t);}
-#line 1641 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1597 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 167 "./syntax.y" /* yacc.c:1646  */
+#line 123 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(OptTag,(yyloc).first_line,NULL);}
-#line 1647 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1603 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 169 "./syntax.y" /* yacc.c:1646  */
+#line 125 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Tag,(yyloc).first_line,NULL);
         (yyvsp[0].type_treenode).t = createnode(ID,(yylsp[0]).first_line,(void *)&(yyvsp[0].type_treenode).str);
         insertall((yyval.type_treenode).t,1,(yyvsp[0].type_treenode).t);}
-#line 1655 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1611 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 173 "./syntax.y" /* yacc.c:1646  */
+#line 129 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(VarDec,(yyloc).first_line,NULL);
         (yyvsp[0].type_treenode).t = createnode(ID,(yylsp[0]).first_line,(void *)&(yyvsp[0].type_treenode).str);
         insertall((yyval.type_treenode).t,1,(yyvsp[0].type_treenode).t);}
-#line 1663 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1619 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 176 "./syntax.y" /* yacc.c:1646  */
+#line 132 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(VarDec,(yyloc).first_line,NULL);
         (yyvsp[-2].type_treenode).t = createnode(LB,(yylsp[-2]).first_line,NULL);
         (yyvsp[-1].type_treenode).t = createnode(INT,(yylsp[-1]).first_line,(void *)&(yyvsp[-1].type_treenode).i);
         (yyvsp[0].type_treenode).t = createnode(RB,(yylsp[0]).first_line,NULL);
         insertall((yyval.type_treenode).t,4,(yyvsp[-3].type_treenode).t,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1673 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1629 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 181 "./syntax.y" /* yacc.c:1646  */
+#line 137 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(VarDec,(yyloc).first_line,NULL);
         HaveErrors++;
         char *tmp="Wrong Definition";
 		insert_Error('B',(yyval.type_treenode).t->line,tmp);
         //printf("Error type B at line %d:Wrong Definition.\n",$$.t->line);
         }
-#line 1684 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1640 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 188 "./syntax.y" /* yacc.c:1646  */
+#line 144 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(FunDec,(yyloc).first_line,NULL);
         (yyvsp[-3].type_treenode).t = createnode(ID,(yylsp[-3]).first_line,(void *)&(yyvsp[-3].type_treenode).str);
         (yyvsp[-2].type_treenode).t = createnode(LP,(yylsp[-2]).first_line,NULL);
         (yyvsp[0].type_treenode).t = createnode(RP,(yylsp[0]).first_line,NULL);
         insertall((yyval.type_treenode).t,4,(yyvsp[-3].type_treenode).t,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1694 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1650 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 193 "./syntax.y" /* yacc.c:1646  */
+#line 149 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(FunDec,(yyloc).first_line,NULL);
         (yyvsp[-2].type_treenode).t = createnode(ID,(yylsp[-2]).first_line,(void *)&(yyvsp[-2].type_treenode).str);
         (yyvsp[-1].type_treenode).t = createnode(LP,(yylsp[-1]).first_line,NULL);
         (yyvsp[0].type_treenode).t = createnode(RP,(yylsp[0]).first_line,NULL);
         insertall((yyval.type_treenode).t,3,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1704 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1660 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 198 "./syntax.y" /* yacc.c:1646  */
+#line 154 "./syntax.y" /* yacc.c:1646  */
     {
         (yyval.type_treenode).t = createnode(FunDec,(yyloc).first_line,NULL);
         HaveErrors=HaveErrors+1;
@@ -1712,110 +1668,110 @@ yyreduce:
 		insert_Error('B',(yyval.type_treenode).t->line,tmp);
         //printf("Error type B at line %d:Wrong Function Definition.\n",$$.t->line);
     }
-#line 1716 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1672 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 206 "./syntax.y" /* yacc.c:1646  */
+#line 162 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(VarList,(yyloc).first_line,NULL);
         (yyvsp[-1].type_treenode).t = createnode(COMMA,(yylsp[-1]).first_line,NULL);
         insertall((yyval.type_treenode).t,3,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1724 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1680 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 209 "./syntax.y" /* yacc.c:1646  */
+#line 165 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(VarList,(yyloc).first_line,NULL);
         insertall((yyval.type_treenode).t,1,(yyvsp[0].type_treenode).t);}
-#line 1731 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1687 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 212 "./syntax.y" /* yacc.c:1646  */
+#line 168 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(ParamDec,(yyloc).first_line,NULL);
         insertall((yyval.type_treenode).t,2,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1738 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1694 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 215 "./syntax.y" /* yacc.c:1646  */
+#line 171 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(CompSt,(yyloc).first_line,NULL);
         (yyvsp[-3].type_treenode).t = createnode(LC,(yylsp[-3]).first_line,NULL);
         (yyvsp[0].type_treenode).t = createnode(RC,(yylsp[0]).first_line,NULL);
         insertall((yyval.type_treenode).t,4,(yyvsp[-3].type_treenode).t,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1747 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1703 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 220 "./syntax.y" /* yacc.c:1646  */
+#line 176 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(StmtList,(yyloc).first_line,NULL);
         insertall((yyval.type_treenode).t,2,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1754 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1710 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 222 "./syntax.y" /* yacc.c:1646  */
+#line 178 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(StmtList,(yyloc).first_line,NULL);}
-#line 1760 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1716 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 224 "./syntax.y" /* yacc.c:1646  */
+#line 180 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Stmt,(yyloc).first_line,NULL);
         (yyvsp[0].type_treenode).t = createnode(SEMI,(yylsp[0]).first_line,NULL);
         insertall((yyval.type_treenode).t,2,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1768 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1724 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 227 "./syntax.y" /* yacc.c:1646  */
+#line 183 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Stmt,(yyloc).first_line,NULL);
         insert((yyval.type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1775 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1731 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 229 "./syntax.y" /* yacc.c:1646  */
+#line 185 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Stmt,(yyloc).first_line,NULL);
         (yyvsp[-2].type_treenode).t = createnode(RETURN,(yylsp[-2]).first_line,NULL);
         (yyvsp[0].type_treenode).t = createnode(SEMI,(yylsp[0]).first_line,NULL);
         insertall((yyval.type_treenode).t,3,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1784 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1740 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 233 "./syntax.y" /* yacc.c:1646  */
+#line 189 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Stmt,(yyloc).first_line,NULL);
         (yyvsp[-4].type_treenode).t = createnode(IF,(yylsp[-4]).first_line,NULL);
         (yyvsp[-3].type_treenode).t = createnode(LP,(yylsp[-3]).first_line,NULL);
         (yyvsp[-1].type_treenode).t = createnode(RP,(yylsp[-1]).first_line,NULL);
         insertall((yyval.type_treenode).t,5,(yyvsp[-4].type_treenode).t,(yyvsp[-3].type_treenode).t,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1794 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1750 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 238 "./syntax.y" /* yacc.c:1646  */
+#line 194 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Stmt,(yyloc).first_line,NULL);
         (yyvsp[-6].type_treenode).t = createnode(IF,(yylsp[-6]).first_line,NULL);
         (yyvsp[-5].type_treenode).t = createnode(LP,(yylsp[-5]).first_line,NULL);
         (yyvsp[-3].type_treenode).t = createnode(RP,(yylsp[-3]).first_line,NULL);
         (yyvsp[-1].type_treenode).t = createnode(ELSE,(yylsp[-1]).first_line,NULL);
         insertall((yyval.type_treenode).t,7,(yyvsp[-6].type_treenode).t,(yyvsp[-5].type_treenode).t,(yyvsp[-4].type_treenode).t,(yyvsp[-3].type_treenode).t,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1805 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1761 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 244 "./syntax.y" /* yacc.c:1646  */
+#line 200 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Stmt,(yyloc).first_line,NULL);
         (yyvsp[-4].type_treenode).t = createnode(WHILE,(yylsp[-4]).first_line,NULL);
         (yyvsp[-3].type_treenode).t = createnode(LP,(yylsp[-3]).first_line,NULL);
         (yyvsp[-1].type_treenode).t = createnode(RP,(yylsp[-1]).first_line,NULL);
         insertall((yyval.type_treenode).t,5,(yyvsp[-4].type_treenode).t,(yyvsp[-3].type_treenode).t,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1815 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1771 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 249 "./syntax.y" /* yacc.c:1646  */
+#line 205 "./syntax.y" /* yacc.c:1646  */
     {
         (yyval.type_treenode).t = createnode(Stmt,(yyloc).first_line,NULL);
         HaveErrors++;
@@ -1823,11 +1779,11 @@ yyreduce:
 		insert_Error('B',(yyval.type_treenode).t->line,tmp);
         //printf("Error type B at line %d:Wrong statement after \'if(...)\'.\n",$$.t->line); 
     }
-#line 1827 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1783 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 256 "./syntax.y" /* yacc.c:1646  */
+#line 212 "./syntax.y" /* yacc.c:1646  */
     {
         (yyval.type_treenode).t = createnode(Stmt,(yyloc).first_line,NULL);
         HaveErrors++;
@@ -1835,11 +1791,11 @@ yyreduce:
 		insert_Error('B',(yyval.type_treenode).t->line,tmp);
         //printf("Error type B at line %d:Unexpectd Expression.\n",$$.t->line);
     }
-#line 1839 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1795 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 263 "./syntax.y" /* yacc.c:1646  */
+#line 219 "./syntax.y" /* yacc.c:1646  */
     {
         (yyval.type_treenode).t = createnode(Stmt,(yyloc).first_line,NULL);
         HaveErrors++;
@@ -1847,11 +1803,11 @@ yyreduce:
 		insert_Error('B',(yyval.type_treenode).t->line,tmp);
         //printf("Error type B at line %d:Expected \';\'.\n",$$.t->line); 
     }
-#line 1851 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1807 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 271 "./syntax.y" /* yacc.c:1646  */
+#line 227 "./syntax.y" /* yacc.c:1646  */
     {
         (yyval.type_treenode).t = createnode(Stmt,(yyloc).first_line,NULL);
         HaveErrors++;
@@ -1859,24 +1815,24 @@ yyreduce:
 		insert_Error('B',(yyval.type_treenode).t->line,tmp);
         //printf("Error type B at line %d:Expected \';\'.\n",$$.t->line);         
     }
-#line 1863 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1819 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 279 "./syntax.y" /* yacc.c:1646  */
+#line 235 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(DefList,(yyloc).first_line,NULL);
         insertall((yyval.type_treenode).t,2,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1870 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1826 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 281 "./syntax.y" /* yacc.c:1646  */
+#line 237 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(DefList,(yyloc).first_line,NULL);}
-#line 1876 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1832 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 282 "./syntax.y" /* yacc.c:1646  */
+#line 238 "./syntax.y" /* yacc.c:1646  */
     {
         (yyval.type_treenode).t = createnode(DefList,(yyloc).first_line,NULL);
         HaveErrors++;
@@ -1884,200 +1840,200 @@ yyreduce:
 		insert_Error('B',(yyval.type_treenode).t->line,tmp);
         //printf("Error type B at line %d:Syntax error.\n",$$.t->line);   
     }
-#line 1888 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1844 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 290 "./syntax.y" /* yacc.c:1646  */
+#line 246 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Def,(yyloc).first_line,NULL);
         (yyvsp[0].type_treenode).t = createnode(SEMI,(yylsp[0]).first_line,NULL);
         insertall((yyval.type_treenode).t,3,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1896 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1852 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 293 "./syntax.y" /* yacc.c:1646  */
+#line 249 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(DecList,(yyloc).first_line,NULL);
         insertall((yyval.type_treenode).t,1,(yyvsp[0].type_treenode).t);}
-#line 1903 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1859 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 295 "./syntax.y" /* yacc.c:1646  */
+#line 251 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(DecList,(yyloc).first_line,NULL);
         (yyvsp[-1].type_treenode).t = createnode(COMMA,(yylsp[-1]).first_line,NULL);
         insertall((yyval.type_treenode).t,3,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1911 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1867 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 299 "./syntax.y" /* yacc.c:1646  */
+#line 255 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Dec,(yyloc).first_line,NULL);
         insertall((yyval.type_treenode).t,1,(yyvsp[0].type_treenode).t);}
-#line 1918 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1874 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 301 "./syntax.y" /* yacc.c:1646  */
+#line 257 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Dec,(yyloc).first_line,NULL);
         (yyvsp[-1].type_treenode).t = createnode(ASSIGNOP,(yylsp[-1]).first_line,NULL);
         insertall((yyval.type_treenode).t,3,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1926 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1882 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 306 "./syntax.y" /* yacc.c:1646  */
+#line 262 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         (yyvsp[-1].type_treenode).t = createnode(ASSIGNOP,(yylsp[-1]).first_line,NULL);
         insertall((yyval.type_treenode).t,3,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1934 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1890 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 309 "./syntax.y" /* yacc.c:1646  */
+#line 265 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         (yyvsp[-1].type_treenode).t = createnode(AND,(yylsp[-1]).first_line,NULL);
         insertall((yyval.type_treenode).t,3,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1942 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1898 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 312 "./syntax.y" /* yacc.c:1646  */
+#line 268 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         (yyvsp[-1].type_treenode).t = createnode(OR,(yylsp[-1]).first_line,NULL);
         insertall((yyval.type_treenode).t,3,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1950 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1906 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 315 "./syntax.y" /* yacc.c:1646  */
+#line 271 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         (yyvsp[-1].type_treenode).t = createnode(RELOP,(yylsp[-1]).first_line,(void *)&(yyvsp[-1].type_treenode).i);
         insertall((yyval.type_treenode).t,3,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1958 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1914 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 318 "./syntax.y" /* yacc.c:1646  */
+#line 274 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         (yyvsp[-1].type_treenode).t = createnode(PLUS,(yylsp[-1]).first_line,NULL);
         insertall((yyval.type_treenode).t,3,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1966 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1922 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 321 "./syntax.y" /* yacc.c:1646  */
+#line 277 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         (yyvsp[-1].type_treenode).t = createnode(SUB,(yylsp[-1]).first_line,NULL);
         insertall((yyval.type_treenode).t,3,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1974 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1930 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 324 "./syntax.y" /* yacc.c:1646  */
+#line 280 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         (yyvsp[-1].type_treenode).t = createnode(STAR,(yylsp[-1]).first_line,NULL);
         insertall((yyval.type_treenode).t,3,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1982 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1938 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 327 "./syntax.y" /* yacc.c:1646  */
+#line 283 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         (yyvsp[-1].type_treenode).t = createnode(DIV,(yylsp[-1]).first_line,NULL);
         insertall((yyval.type_treenode).t,3,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1990 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1946 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 330 "./syntax.y" /* yacc.c:1646  */
+#line 286 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         (yyvsp[-2].type_treenode).t = createnode(LP,(yylsp[-2]).first_line,NULL);
         (yyvsp[0].type_treenode).t = createnode(RP,(yylsp[0]).first_line,NULL);
         insertall((yyval.type_treenode).t,3,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 1999 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1955 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 334 "./syntax.y" /* yacc.c:1646  */
+#line 290 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         (yyvsp[-1].type_treenode).t = createnode(MINUS,(yylsp[-1]).first_line,NULL);
         insertall((yyval.type_treenode).t,2,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2007 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1963 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 337 "./syntax.y" /* yacc.c:1646  */
+#line 293 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         (yyvsp[-1].type_treenode).t = createnode(NOT,(yylsp[-1]).first_line,NULL);
         insertall((yyval.type_treenode).t,2,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2015 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1971 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 340 "./syntax.y" /* yacc.c:1646  */
+#line 296 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         (yyvsp[-3].type_treenode).t = createnode(ID,(yylsp[-3]).first_line,(void *)&(yyvsp[-3].type_treenode).str);
         (yyvsp[-2].type_treenode).t = createnode(LP,(yylsp[-2]).first_line,NULL);
         (yyvsp[0].type_treenode).t = createnode(RP,(yylsp[0]).first_line,NULL);
         insertall((yyval.type_treenode).t,4,(yyvsp[-3].type_treenode).t,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2025 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1981 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 345 "./syntax.y" /* yacc.c:1646  */
+#line 301 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         (yyvsp[-2].type_treenode).t = createnode(ID,(yylsp[-2]).first_line,(void *)&(yyvsp[-2].type_treenode).str);
         (yyvsp[-1].type_treenode).t = createnode(LP,(yylsp[-1]).first_line,NULL);
         (yyvsp[0].type_treenode).t = createnode(RP,(yylsp[0]).first_line,NULL);
         insertall((yyval.type_treenode).t,3,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2035 "./syntax.tab.c" /* yacc.c:1646  */
+#line 1991 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 350 "./syntax.y" /* yacc.c:1646  */
+#line 306 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         (yyvsp[-2].type_treenode).t = createnode(LB,(yylsp[-2]).first_line,NULL);
         (yyvsp[0].type_treenode).t = createnode(RB,(yylsp[0]).first_line,NULL);
         insertall((yyval.type_treenode).t,4,(yyvsp[-3].type_treenode).t,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2044 "./syntax.tab.c" /* yacc.c:1646  */
+#line 2000 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 354 "./syntax.y" /* yacc.c:1646  */
+#line 310 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         (yyvsp[-1].type_treenode).t = createnode(DOT,(yylsp[-1]).first_line,NULL);
         (yyvsp[0].type_treenode).t = createnode(ID,(yylsp[0]).first_line,(void *)&(yyvsp[0].type_treenode).str);
         insertall((yyval.type_treenode).t,3,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2053 "./syntax.tab.c" /* yacc.c:1646  */
+#line 2009 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 358 "./syntax.y" /* yacc.c:1646  */
+#line 314 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         (yyvsp[0].type_treenode).t = createnode(ID,(yylsp[0]).first_line,(void *)&(yyvsp[0].type_treenode).str);
         insertall((yyval.type_treenode).t,1,(yyvsp[0].type_treenode).t);}
-#line 2061 "./syntax.tab.c" /* yacc.c:1646  */
+#line 2017 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 361 "./syntax.y" /* yacc.c:1646  */
+#line 317 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         (yyvsp[0].type_treenode).t = createnode(INT,(yylsp[0]).first_line,(void *)&(yyvsp[0].type_treenode).i);
         insertall((yyval.type_treenode).t,1,(yyvsp[0].type_treenode).t);}
-#line 2069 "./syntax.tab.c" /* yacc.c:1646  */
+#line 2025 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 364 "./syntax.y" /* yacc.c:1646  */
+#line 320 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         (yyvsp[0].type_treenode).t = createnode(FLOAT,(yylsp[0]).first_line,(void *)&(yyvsp[0].type_treenode).f);
         insertall((yyval.type_treenode).t,1,(yyvsp[0].type_treenode).t);}
-#line 2077 "./syntax.tab.c" /* yacc.c:1646  */
+#line 2033 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 367 "./syntax.y" /* yacc.c:1646  */
+#line 323 "./syntax.y" /* yacc.c:1646  */
     {
         (yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         HaveErrors++;
@@ -2085,11 +2041,11 @@ yyreduce:
 		insert_Error('B',(yyval.type_treenode).t->line,tmp);
         //printf("Error type B at line %d:Unexpected operation after \'[\'.\n",$$.t->line);    
         }
-#line 2089 "./syntax.tab.c" /* yacc.c:1646  */
+#line 2045 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 374 "./syntax.y" /* yacc.c:1646  */
+#line 330 "./syntax.y" /* yacc.c:1646  */
     {
         (yyval.type_treenode).t = createnode(Exp,(yyloc).first_line,NULL);
         HaveErrors++;
@@ -2097,26 +2053,26 @@ yyreduce:
 		insert_Error('B',(yyval.type_treenode).t->line,tmp);
         //printf("Error type B at line %d:Unexpected varlist after \'(\'.\n",$$.t->line); 
     }
-#line 2101 "./syntax.tab.c" /* yacc.c:1646  */
+#line 2057 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 382 "./syntax.y" /* yacc.c:1646  */
+#line 338 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Args,(yyloc).first_line,NULL);
         (yyvsp[-1].type_treenode).t = createnode(COMMA,(yylsp[-1]).first_line,NULL);
         insertall((yyval.type_treenode).t,3,(yyvsp[-2].type_treenode).t,(yyvsp[-1].type_treenode).t,(yyvsp[0].type_treenode).t);}
-#line 2109 "./syntax.tab.c" /* yacc.c:1646  */
+#line 2065 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 385 "./syntax.y" /* yacc.c:1646  */
+#line 341 "./syntax.y" /* yacc.c:1646  */
     {(yyval.type_treenode).t = createnode(Args,(yyloc).first_line,NULL);
         insertall((yyval.type_treenode).t,1,(yyvsp[0].type_treenode).t);}
-#line 2116 "./syntax.tab.c" /* yacc.c:1646  */
+#line 2072 "./syntax.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 2120 "./syntax.tab.c" /* yacc.c:1646  */
+#line 2076 "./syntax.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2351,7 +2307,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 388 "./syntax.y" /* yacc.c:1906  */
+#line 344 "./syntax.y" /* yacc.c:1906  */
 
 
 int yyerror(char* msg){

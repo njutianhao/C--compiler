@@ -17,16 +17,18 @@
         StmtList, Stmt, Exp, Def, DecList, Dec, Args,
         error
     };
-    union TreeVal{
-        int i;
-        float f;
-        char *str;
-    };
+
     struct ErrorNode{
         int Linenumber;
         char ErrorType;
         char *Information;
         struct ErrorNode* next;
+    };
+
+    union TreeVal{
+        int i;
+        float f;
+        char *str;
     };
     struct GrammarTree;
     struct ListNode{
@@ -39,6 +41,7 @@
         int type;
         struct ListNode *head;
     };
+
     char *token_map[] = {"Program","ExtDecList","ExtDef","Specifier","FunDec","CompSt",
                          "VarDec","ExtDefList","StructSpecifier",
                          "OptTag","DefList","Tag","VarList","ParamDec",
@@ -46,9 +49,11 @@
     char *token2_map[] = {"SEMI","COMMA","ASSIGNOP","PLUS",
                           "MINUS","STAR","DIV","AND","OR","NOT","DOT","TYPE","LP","RP","LB","RB" ,"LC","RC","STRUCT","RETURN",
                           "IF","ELSE","WHILE","INT","FLOAT","ID","RELOP","SUB","LOWER_THAN_ELSE"};
+
     struct ErrorNode *ErrorHead=NULL;
     int HaveErrors=0;
     struct GrammarTree *root;
+
     void print_Node(struct ErrorNode* node);
     void print_Errors();
     void insert_Error(char errorType,int linenumber,char* information);
