@@ -65,6 +65,6 @@ int insert_FieldList(FieldList head,FieldList ptr);//向FieldList链表内插入
 
 int same(Type A,Type B);//检查是否为同一类型，是则返回1,不是则返回0,异常则返回-1
 //int strict_array_same(Type A,Type B);//检查数组严格相等,返回值同same()
-KIND getKind(Type type);//type转KIND
+enum KIND getKind(Type type);//type转KIND
 
 #endif
