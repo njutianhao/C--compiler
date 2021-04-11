@@ -285,17 +285,7 @@ Type search_function(char* Name)
     }
     return NULL;
 }
-//对于没有name的结构体只能根据type查找,返回是否存在等价structure
-/*int search_struct_with_type(Type type_in)
-{
-    unsigned int num=hash_pjw(NULL);
-    struct TableNode* p=SymbolTable[num];
-    for(;p!=NULL;p=p->next)
-    {
-        if(same(p->nodeType.type,type_in)==1) return 1;
-    }
-    return 0;
-}*/
+
 //某一变量、形参或者成员名是否已存在,是则返回1,不是则返回0
 int name_exist(char* name)
 {
@@ -390,18 +380,7 @@ int same(Type A,Type B)
 
 }
 
-//检查数组严格相等,返回值同same()
-/*int strict_array_same(Type A,Type B)
-{
-    if(A==NULL || B==NULL) return -1;
-    if(A->kind!=ARRAY || B->kind!=ARRAY) return -1;
-    if(A->u.array.size!=B->u.array.size) return 0;
-    Type elemA=A->u.array.elem;
-    Type elemB=B->u.array.elem;
-    if(elemA->kind!=elemB->kind) return 0;
-    if(elemA->kind==ARRAY) return strict_array_same(elemA,elemB);
-    else return same(elemA,elemB);
-}*/
+
 //type转KIND
 enum KIND getKind(Type type){
     return type->kind;
