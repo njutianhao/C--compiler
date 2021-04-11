@@ -26,23 +26,8 @@ struct GrammarTree *get_child(struct GrammarTree *node,int index){
 }
 
 void SDT(){
-    SDT_DFS(root);
-}
-
-void SDT_DFS(struct GrammarTree *node){
-    struct ListNode *p;
-    switch(node->type){
-        case ExtDefList: handle_ExtDefList(node);break;
-        case DefList:handle_DefList(node);break;
-        case Exp:handle_Exp(node);break;
-        default :
-            p = node->head;
-            while(p != NULL)
-            {
-                SDT_DFS(p->val);
-                p = p->next;
-            }
-    }
+    handle_ExtDefList(get_child(root,1));
+    check_func_not_defined();
 }
 
 void handle_ExtDefList(struct GrammarTree *node){
@@ -232,7 +217,7 @@ int handle_FunDec(struct GrammarTree *node){
         f = tmp2->syn.f;
     }
     node->syn = tmp->syn;
-    return try_insert(create_Function_Type(node->inh.t,f,tmp->line),tmp->line,tmp->syn.str);
+    return try_insert_Node(tmp->line,create_Function_Type(node->inh.t,f,tmp->line),tmp->syn.str);
 }
 
 void handle_CompSt(struct GrammarTree *node){
@@ -379,7 +364,8 @@ int handle_Exp(struct GrammarTree *node){
                 f = NULL;
                 switch(tmp3->type){
                     case Args:
-                        handle_Args(tmp3);
+                        if(handle_Args(tmp3) == 0)
+                            return 0;
                         f = tmp3->syn.f;
                         //NO break
                     case RP:
@@ -415,21 +401,40 @@ int handle_Exp(struct GrammarTree *node){
                         return 0;
                     node->syn = tmp->syn;
                     return 1;
-                case LB:if(handle_Exp(tmp) == 0 || handle_Exp(tmp3) == 0)
-                            return 0;
-                case DOT://TODO
+                case LB:
+                    if(handle_Exp(tmp) == 0 || handle_Exp(tmp3) == 0)
+                        return 0;
+                    if(check_array_type(tmp->line,tmp->syn.t) == 0)
+                        return 0;
+                    if(check_int_in_array(tmp3->line,tmp3->syn.t) == 0)
+                        return 0;
+                    node->syn.t = getLowerArray(tmp->syn.t);
+                    return 1;
+                case DOT:
+                    if(handle_Exp(tmp) == 0)
+                        return 0;
+                    handle_ID(tmp3);
+                    if(check_struct_type(tmp->line,tmp->syn.t) == 0)
+                        return 0;
+                    if(check_field_in_struct(tmp->line,tmp->syn.t,tmp3->syn.str) == 0)
+                        return 0;
+                    node->syn.t = getFieldType(tmp->syn.t,tmp3->syn.str);
+                    return 1;
             }
     }
 }
 
-void handle_Args(struct GrammarTree *node){
+int handle_Args(struct GrammarTree *node){
     struct GrammarTree *tmp = get_child(node,1);
     struct GrammarTree *tmp2 = get_child(node,3);
-    handle_Exp(tmp);
-    FieldList f = new_FieldList(NULL,tmp);
+    if(handle_Exp(tmp) == 0)
+        return 0;
+    FieldList f = new_FieldList(NULL,tmp->syn.t);
     node->syn.f = f;
     if(tmp2 != NULL){
-        handle_Args(tmp2);
+        if(handle_Args(tmp2) == 0)
+            return 0;
         node->syn.f = insert_FieldList(f,tmp2->syn.f);
     }
+    return 1;
 }

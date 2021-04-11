@@ -90,4 +90,9 @@ struct UndefinedFunction* get_undefined_function();
 char* generateStr(FieldList f);
 char *generateFuncStr(char *name);
 int isInt(Type type);
+int isArray(Type type);
+int isStruct(Type type);
+int isInStruct(Type t,char *name);
+Type getLowerArray(Type t);
+Type getFieldType(Type t,char *name);
 #endif

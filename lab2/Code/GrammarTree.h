@@ -78,4 +78,5 @@ void handle_StmtList(struct GrammarTree *node);
 int handle_Stmt(struct GrammarTree *node);
 void handle_ExtDecList(struct GrammarTree *node);
 int handle_Exp(struct GrammarTree *node);
+int handle_Args(struct GrammarTree *node);
 #endif

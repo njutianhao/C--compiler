@@ -536,3 +536,37 @@ char *generateFuncStr(char *name){
 int isInt(Type t){
     return getKind(t) == BASIC_INT;
 }
+
+int isArray(Type t){
+    return getKind(t) == ARRAY;
+}
+
+int isStruct(Type t){
+    return getKind(t) == STRUCTURE;
+}
+
+Type getLowerArray(Type t){
+    return t->u.array.elem;
+}
+
+int isInStruct(Type t,char *name){
+    FieldList f = t->u.structure.structmember;
+    while(f != NULL)
+    {
+        if(strcmp(f->name,name) == 0)
+            return 1;
+        f = f->next;
+    }
+    return 0;
+}
+
+Type getFieldType(Type t,char *name){
+    FieldList f = t->u.structure.structmember;
+    while(f != NULL)
+    {
+        if(strcmp(f->name,name) == 0)
+            return f->type;
+        f = f->next;
+    }
+    return NULL;
+}

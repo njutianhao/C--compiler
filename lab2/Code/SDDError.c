@@ -167,3 +167,62 @@ int check_use_var_as_func(int line,Type t,char *name){
         return 0;
     }
 }
+
+int check_array_type(int line,Type t){
+    if(isArray(t) == 0)
+    {
+        char *inf = "use [] to not an array.";
+        insert_Error("10",line,inf);
+        return 0;
+    }
+    else
+        return 1;
+}
+
+int check_struct_type(int line,Type t){
+    if(isStruct(t) == 0)
+    {
+        char *inf = "Illegal use of \".\".";
+        insert_Error("13",line,inf);
+        return 0;
+    }
+    else
+        return 1;
+}
+
+int check_int_in_array(int line,Type t){
+    if(isInt(t) == 0)
+    {
+        char *inf = "the Exp in [] is not an integer.";
+        insert_Error("12",line,inf);
+        return 0;
+    }
+    else
+        return 1;
+}
+
+int check_field_in_struct(int line,Type t,char *name){
+    if(isInStruct(t,name) == 0)
+    {
+        char *inf = strcat("Non-existent field \"",strcat(name,"\"."));
+        insert_Error("14",line,inf);
+        return 0;
+    }
+    else
+        return 1;
+}
+
+int check_func_not_defined(){
+    struct UndefinedFunction *p= get_undefined_function();
+    if(p == NULL)
+        return 1;
+    while(p != NULL)
+    {
+        char *name = p->func_name;
+        int line = p->line;
+        char *inf = strcat("Undefined function \"",strcat(name,"\"."));
+        insert_Error("18",line,inf);
+        p = p->next;
+    }
+    return 0;
+}
