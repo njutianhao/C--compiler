@@ -103,6 +103,16 @@ FieldList insert_FieldList(FieldList head,FieldList ptr)
     p->next=ptr;
     return head;
 }
+void free_FieldList(FieldList head)
+{
+    while(head != NULL)
+    {
+        FieldList temp = head->next;
+        free(head);
+        head = temp;
+    }
+}
+
 //FieldList是否有该名称的变量
 int FieldList_repeat(FieldList head,FieldList ptr)
 {

@@ -83,6 +83,7 @@ Type getListHeadType(FieldList head);
 
 FieldList new_FieldList(char* name_in,Type type_in);//创建一个FieldList节点
 FieldList insert_FieldList(FieldList head,FieldList ptr);//向FieldList链表内插入节点
+void free_FieldList(FieldList head);
 int FieldList_repeat(FieldList head,FieldList ptr);//FieldList是否有该名称的变量,1表示存在,0不存在
 
 int same(Type A,Type B);//检查是否为同一类型，是则返回1,不是则返回0,异常则返回-1
