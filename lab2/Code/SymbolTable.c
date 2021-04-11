@@ -449,12 +449,9 @@ struct UndefinedFunction* get_undefined_function()
     return headptr;
 }
 
-char* generateStr(char* funcName)
+char* generateStr(FieldList p)
 {
     char* str="(";
-    Type type=search_function(funcName);
-    if(type==NULL) return NULL;
-    FieldList p=type->u.function.paramlist;
     while(p!=NULL)
     {
         switch(p->type->kind)
@@ -527,4 +524,11 @@ char* generateStr(char* funcName)
         p=p->next;
     }
     return str;
+}
+
+char *generateFuncStr(char *name){
+    Type t = search_function(name);
+    char *str = generateStr(t->u.function.paramlist);
+    char *res = malloc(strlen(name) + strlen(str));
+    return strcat(strcpy(res,name),str);
 }
