@@ -12,7 +12,7 @@ int main(int argc,char** argv){
 	}
 	yyrestart(f);
 	yyparse();
-	print_tree();
+	SDT();
 	print_Errors();
 	return 0;
 }

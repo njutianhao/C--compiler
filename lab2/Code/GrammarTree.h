@@ -57,7 +57,6 @@ int is_leftval(struct GrammarTree *node);
 char *get_VarDec_name(struct GrammarTree *node);
 struct GrammarTree *get_child(struct GrammarTree *node,int index);
 void SDT();
-void SDT_DFS(struct GrammarTree *node);
 void handle_ExtDefList(struct GrammarTree *node);
 void handle_ExtDef(struct GrammarTree *node);
 int handle_Specifier(struct GrammarTree *node);
