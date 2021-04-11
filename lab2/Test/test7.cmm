@@ -1,5 +1,5 @@
-int minus_test(){
-    int i = 10;
-    i = i - 1;
-    i = -i;
+int main()
+{
+    float j;
+    10 + j;
 }

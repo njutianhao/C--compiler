@@ -345,7 +345,7 @@ int handle_Exp(struct GrammarTree *node){
             return 1;
         case ID:
             handle_ID(tmp);
-            if(tmp3->type == NULL)
+            if(tmp3 == NULL)
             {
                 t = search_with_name(tmp->syn.str);
                 if(check_undefined_var(tmp->line,t,tmp->syn.str) == 0)

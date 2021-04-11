@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#define TABLE_SIZE 0x3fff
+#define TABLE_SIZE 0xfff
 
 typedef struct Type_* Type;
 typedef struct FieldList_* FieldList;
