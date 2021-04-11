@@ -79,6 +79,7 @@ int if_define(char* name);//检查是否定义
 int check_paralist(char* funcName,FieldList head);//检查函数实参和形参类型匹配
 int check_return(char* funcName,Type returntype);//返回值类型匹配
 Type getReturnType(char* funcName);//获取返回值类型
+Type getListHeadType(FieldList head);
 
 FieldList new_FieldList(char* name_in,Type type_in);//创建一个FieldList节点
 FieldList insert_FieldList(FieldList head,FieldList ptr);//向FieldList链表内插入节点

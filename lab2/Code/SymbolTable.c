@@ -227,6 +227,11 @@ Type getReturnType(char* funcName)
     }
     return functype->u.function.returnType;
 }
+Type getListHeadType(FieldList head)
+{
+    if(head!=NULL) return head->type;
+    return NULL;
+}
 
 //根据名字查询节点
 Type search_with_name(char* Name)
