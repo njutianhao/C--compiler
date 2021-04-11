@@ -1,5 +1,6 @@
 #include"GrammarTree.h"
 #include"syntax.tab.h"
+#include"Error.h"
 char *token_map[] = {"Program","ExtDecList","ExtDef","Specifier","FunDec","CompSt",
                     "VarDec","ExtDefList","StructSpecifier",
                     "OptTag","DefList","Tag","VarList","ParamDec",
@@ -7,9 +8,6 @@ char *token_map[] = {"Program","ExtDecList","ExtDef","Specifier","FunDec","CompS
 char *token2_map[] = {"SEMI","COMMA","ASSIGNOP","PLUS",
                         "MINUS","STAR","DIV","AND","OR","NOT","DOT","TYPE","LP","RP","LB","RB" ,"LC","RC","STRUCT","RETURN",
                         "IF","ELSE","WHILE","INT","FLOAT","ID","RELOP","SUB","LOWER_THAN_ELSE"};
-void print_Node(struct ErrorNode* node){
-    printf("Error Type %s at line %d:%s.\n",node->ErrorType,node->Linenumber,node->Information);
-}
 void insert(struct GrammarTree *t1,struct GrammarTree *t2){
     if(t1->head == NULL)
     {

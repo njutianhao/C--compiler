@@ -539,6 +539,7 @@ char *yytext;
 #line 2 "./lexcial.l"
 	#include"syntax.tab.h"
 	#include<string.h>
+	#include"Error.h"
 	#define L 1
 	#define LE 2
 	#define G 3
@@ -546,15 +547,12 @@ char *yytext;
 	#define EQ 5
 	#define NEQ 6
     int yycolumn = 1;
-	extern int HaveErrors;
-	extern struct ErrorNode* ErrorHead;
-	extern void insert_Error(char* errorType,int linenumber,char* information);
     #define YY_USER_ACTION \
     yylloc.first_line = yylloc.last_line = yylineno; \
     yylloc.first_column = yycolumn; \
     yylloc.last_column = yycolumn + yyleng - 1; \
     yycolumn += yyleng;
-#line 558 "./lex.yy.c"
+#line 556 "./lex.yy.c"
 
 #define INITIAL 0
 
@@ -772,9 +770,9 @@ YY_DECL
 		}
 
 	{
-#line 23 "./lexcial.l"
+#line 21 "./lexcial.l"
 
-#line 778 "./lex.yy.c"
+#line 776 "./lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -843,7 +841,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 24 "./lexcial.l"
+#line 22 "./lexcial.l"
 {  
 	char c=input();
 	while(c!='\n') c=input(); 
@@ -852,7 +850,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 29 "./lexcial.l"
+#line 27 "./lexcial.l"
 {
 	int lineno= yylineno;
 	char c=input();
@@ -872,27 +870,27 @@ YY_RULE_SETUP
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 44 "./lexcial.l"
+#line 42 "./lexcial.l"
 { yycolumn = 1; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 45 "./lexcial.l"
+#line 43 "./lexcial.l"
 { }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 46 "./lexcial.l"
+#line 44 "./lexcial.l"
 { return SEMI; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 47 "./lexcial.l"
+#line 45 "./lexcial.l"
 {  return COMMA; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 48 "./lexcial.l"
+#line 46 "./lexcial.l"
 {
 	yylval.type_treenode.i = GE;
 	return RELOP;
@@ -900,7 +898,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 52 "./lexcial.l"
+#line 50 "./lexcial.l"
 {
 	yylval.type_treenode.i = LE;
 	return RELOP;
@@ -908,7 +906,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 56 "./lexcial.l"
+#line 54 "./lexcial.l"
 {
 	yylval.type_treenode.i = EQ;
 	return RELOP;
@@ -916,7 +914,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 60 "./lexcial.l"
+#line 58 "./lexcial.l"
 {
 	yylval.type_treenode.i = NEQ;
 	return RELOP;
@@ -924,7 +922,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 64 "./lexcial.l"
+#line 62 "./lexcial.l"
 {
 	yylval.type_treenode.i = G;
 	return RELOP;
@@ -932,7 +930,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 68 "./lexcial.l"
+#line 66 "./lexcial.l"
 {
 	yylval.type_treenode.i = L;
 	return RELOP;
@@ -940,52 +938,52 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 72 "./lexcial.l"
+#line 70 "./lexcial.l"
 { return ASSIGNOP; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 73 "./lexcial.l"
+#line 71 "./lexcial.l"
 { return PLUS; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 74 "./lexcial.l"
+#line 72 "./lexcial.l"
 { return MINUS; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 75 "./lexcial.l"
+#line 73 "./lexcial.l"
 { return STAR; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 76 "./lexcial.l"
+#line 74 "./lexcial.l"
 { return DIV; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 77 "./lexcial.l"
+#line 75 "./lexcial.l"
 { return AND; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 78 "./lexcial.l"
+#line 76 "./lexcial.l"
 { return OR; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 79 "./lexcial.l"
+#line 77 "./lexcial.l"
 { return DOT; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 80 "./lexcial.l"
+#line 78 "./lexcial.l"
 { return NOT; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 81 "./lexcial.l"
+#line 79 "./lexcial.l"
 { 
 	yylval.type_treenode.str=(char *)malloc(yyleng*sizeof(char)); 
 	for(int i=0;i<yyleng;i++)
@@ -995,72 +993,72 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 87 "./lexcial.l"
+#line 85 "./lexcial.l"
 { return LP; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 88 "./lexcial.l"
+#line 86 "./lexcial.l"
 { return RP; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 89 "./lexcial.l"
+#line 87 "./lexcial.l"
 { return LB; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 90 "./lexcial.l"
+#line 88 "./lexcial.l"
 { return RB; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 91 "./lexcial.l"
+#line 89 "./lexcial.l"
 { return LC; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 92 "./lexcial.l"
+#line 90 "./lexcial.l"
 { return RC; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 93 "./lexcial.l"
+#line 91 "./lexcial.l"
 { return STRUCT; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 94 "./lexcial.l"
+#line 92 "./lexcial.l"
 { return RETURN; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 95 "./lexcial.l"
+#line 93 "./lexcial.l"
 { return IF; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 96 "./lexcial.l"
+#line 94 "./lexcial.l"
 { return ELSE; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 97 "./lexcial.l"
+#line 95 "./lexcial.l"
 { return WHILE; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 98 "./lexcial.l"
+#line 96 "./lexcial.l"
 { yylval.type_treenode.i=atoi(yytext); return INT; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 99 "./lexcial.l"
+#line 97 "./lexcial.l"
 { yylval.type_treenode.f=atof(yytext); return FLOAT; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 100 "./lexcial.l"
+#line 98 "./lexcial.l"
 {
 	yylval.type_treenode.str=(char *)malloc(yyleng*sizeof(char)); 
 	for(int i=0;i<yyleng;i++)
@@ -1070,16 +1068,16 @@ YY_RULE_SETUP
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 106 "./lexcial.l"
+#line 104 "./lexcial.l"
 { printf("Error type A at line %d:Mysterious characters \'%s\'.\n",yylineno,yytext);
 	HaveErrors++;}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 108 "./lexcial.l"
+#line 106 "./lexcial.l"
 ECHO;
 	YY_BREAK
-#line 1083 "./lex.yy.c"
+#line 1081 "./lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2092,7 +2090,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 108 "./lexcial.l"
+#line 106 "./lexcial.l"
 
 
 

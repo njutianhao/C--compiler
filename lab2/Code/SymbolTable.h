@@ -87,7 +87,7 @@ int same(Type A,Type B);//检查是否为同一类型，是则返回1,不是则�
 enum KIND getKind(Type type);//type转KIND
 enum KIND getKindwithName(char* name);//根据名称获取kind
 struct UndefinedFunction* get_undefined_function();
-
 char* generateStr(FieldList f);
 char *generateFuncStr(char *name);
+int isInt(Type type);
 #endif

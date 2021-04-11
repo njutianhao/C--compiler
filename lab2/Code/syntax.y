@@ -4,6 +4,7 @@
     #include<stdarg.h>
     #include"lex.yy.c"
     #include"GrammarTree.h"
+    #include"Error.h"
 %}
 
 %union{

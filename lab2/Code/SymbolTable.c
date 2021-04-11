@@ -532,3 +532,7 @@ char *generateFuncStr(char *name){
     char *res = malloc(strlen(name) + strlen(str));
     return strcat(strcpy(res,name),str);
 }
+
+int isInt(Type t){
+    return getKind(t) == BASIC_INT;
+}

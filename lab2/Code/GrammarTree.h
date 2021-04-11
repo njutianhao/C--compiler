@@ -41,22 +41,10 @@ struct GrammarTree{
     int type;
     struct ListNode *head;
 };
-struct ErrorNode{
-    int Linenumber;
-    char* ErrorType;
-    char *Information;
-    struct ErrorNode* next;
-};
 struct GrammarTree *root;
 extern char *token_map[];
 extern char *token2_map[];
 
-struct ErrorNode *ErrorHead;
-int HaveErrors;
-void print_Errors();
-void insert_Error(char*errorType,int linenumber,char* information);
-
-void print_Node(struct ErrorNode* node);
 void insert(struct GrammarTree *t1,struct GrammarTree *t2);
 struct GrammarTree *createnode(int type,int line,void *value);
 void insertall(struct GrammarTree *parent,int num,...);
@@ -64,8 +52,9 @@ void __DFS(struct GrammarTree *n,int depth);
 void print_tree();
 
 
-
-int try_insert(Type type_in,int line,char* name);
+int instruct;
+int is_leftval(struct GrammarTree *node);
+char *get_VarDec_name(struct GrammarTree *node);
 struct GrammarTree *get_child(struct GrammarTree *node,int index);
 void SDT();
 void SDT_DFS(struct GrammarTree *node);
@@ -86,7 +75,7 @@ void handle_ID(struct GrammarTree *node);
 int handle_VarList(struct GrammarTree *node);
 int handle_ParamDec(struct GrammarTree *node);
 void handle_StmtList(struct GrammarTree *node);
-void handle_Stmt(struct GrammarTree *node);
+int handle_Stmt(struct GrammarTree *node);
 void handle_ExtDecList(struct GrammarTree *node);
 int handle_Exp(struct GrammarTree *node);
 #endif
