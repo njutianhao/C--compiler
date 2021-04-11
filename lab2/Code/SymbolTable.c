@@ -186,6 +186,10 @@ int if_define(char* name)
 int check_paralist(char* funcName,FieldList head)
 {
     Type functype=search_function(funcName);
+    if(functype==NULL){
+        printf("Unknown function.\n");
+        exit(0);
+    }
     int num1=0,num2=0;
     for(FieldList p=functype->u.function.paramlist;p!=NULL;p=p->next)
         num1++;
@@ -201,6 +205,27 @@ int check_paralist(char* funcName,FieldList head)
         ptr2=ptr2->next;
     }
     return 1;
+}
+//返回值类型匹配
+int check_return(char* funcName,Type returntype)
+{
+    Type functype=search_function(funcName);
+    if(functype==NULL){
+        printf("Unknown function.\n");
+        exit(0);
+    }
+    if(same(functype->u.function.returnType,returntype)==1) return 1;
+    return 0;
+}
+//获取返回值类型
+Type getReturnType(char* funcName)
+{
+    Type functype=search_function(funcName);
+    if(functype==NULL){
+        printf("Unknown function.\n");
+        exit(0);
+    }
+    return functype->u.function.returnType;
 }
 
 //根据名字查询节点
