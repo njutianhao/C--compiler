@@ -448,3 +448,83 @@ struct UndefinedFunction* get_undefined_function()
     }
     return headptr;
 }
+
+char* generateStr(char* funcName)
+{
+    char* str="(";
+    Type type=search_function(funcName);
+    if(type==NULL) return NULL;
+    FieldList p=type->u.function.paramlist;
+    while(p!=NULL)
+    {
+        switch(p->type->kind)
+        {
+            case BASIC_INT:
+            {
+                str=strcat(str,"int");
+                break;
+            }
+            case BASIC_FLOAT:
+            {
+                str=strcat(str,"float");
+                break;
+            }
+            case ARRAY:
+            {
+                Type temp=p->type;
+                int num=0;
+                while(temp->kind==ARRAY)
+                {
+                    temp=temp->u.array.elem;
+                    num++;
+                }
+                switch (temp->kind)
+                {
+                    case BASIC_INT:
+                    {
+                        str=strcat(str,"int ");
+                        for(int i=0;i<num;i++)
+                            str=strcat(str,"[]");
+                        break;
+                    }
+                    case BASIC_FLOAT:
+                    {
+                        str=strcat(str,"float ");
+                        for(int i=0;i<num;i++)
+                            str=strcat(str,"[]");
+                        break;
+                    }
+                    case STRUCTURE:
+                    {
+                        str=strcat(str,"struct ");
+                        str=strcat(str,temp->u.structure.structName);
+                        for(int i=0;i<num;i++)
+                            str=strcat(str,"[]");
+                        break;
+                    }
+                    case FUNCTION:
+                    {
+                        printf("paralist error!");
+                        exit(0);
+                    }
+                }
+                break;
+            }
+            case STRUCTURE:
+            {
+                str=strcat(str,"struct ");
+                str=strcat(str,p->type->u.structure.structName);
+                break;
+            }
+            case FUNCTION:
+            {
+                printf("paralist error!");
+                exit(0);
+            }
+        }
+        if(p->next!=NULL) str=strcat(str," , ");
+        else str=strcat(str,")");
+        p=p->next;
+    }
+    return str;
+}

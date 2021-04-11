@@ -73,7 +73,7 @@ Type create_Basic_Type(char* ifint);//创建Basic type类型
 Type create_Array_Type(Type paratype,int size_in);//创建Array type类型
 Type create_Structure_Type(FieldList head,char* struct_Name);//创建Structure type类型
 Type create_Function_Type(Type returntype,FieldList List,int declareline);//创建Funtion type类型
-Type if_declare(char* name);//检查函数是否声明(存在),1表示存在
+Type if_declare(char* name);//检查函数是否声明(存在)
 int Define(char* name);//声明后又定义,返回0为正常定义,返回1为存在重复定义
 int if_define(char* name);//检查是否定义
 int check_paralist(char* funcName,FieldList head);//检查函数实参和形参类型匹配
@@ -92,5 +92,5 @@ enum KIND getKind(Type type);//type转KIND
 enum KIND getKindwithName(char* name);//根据名称获取kind
 
 struct UndefinedFunction* get_undefined_function();
-
+char* generateStr(char* funcName);
 #endif
