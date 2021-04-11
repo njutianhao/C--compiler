@@ -104,12 +104,16 @@ FieldList insert_FieldList(FieldList head,FieldList ptr)
     return head;
 }
 //FieldList是否有该名称的变量
-int FieldList_repeat(FieldList head,char* name)
+int FieldList_repeat(FieldList head,FieldList ptr)
 {
-    FieldList temp=head;
-    for(;temp!=NULL;temp=temp->next)
+    FieldList tempHead=head;
+    FieldList tempPtr=ptr;
+    for(;tempHead!=NULL;tempHead=tempHead->next)
     {
-        if(strcmp(temp->name,name)==0) return 1;
+        for(;tempPtr!=NULL;tempPtr=tempPtr->next)
+        {
+            if(strcmp(tempHead->name,tempPtr->name)==0) return 1;
+        }
     }
     return 0;
 }
@@ -178,6 +182,9 @@ int if_define(char* name)
     }
     return -1;    
 }
+//检查函数实参和形参类型匹配
+int check_paralist(char* funcName,FieldList head);
+
 //根据名字查询节点
 Type search_with_name(char* Name)
 {
@@ -206,7 +213,20 @@ Type search_struct(char* Name)
     }
     return NULL;
 }
-
+//根据名字查询函数
+Type search_function(char* Name)
+{
+    unsigned int number=hash_pjw(Name);
+    struct TableNode* p=FunctionTable[number];
+    for(;p!=NULL;p=p->next)
+    {
+       if(strcmp(p->name,Name)==0)
+       {
+           return p->type;
+       }
+    }
+    return NULL;
+}
 //对于没有name的结构体只能根据type查找,返回是否存在等价structure
 /*int search_struct_with_type(Type type_in)
 {

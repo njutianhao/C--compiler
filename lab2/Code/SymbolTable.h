@@ -65,6 +65,7 @@ unsigned int hash_pjw(char* name);//hash函数
 void insert_Node(Type type_in,char* name);//插入新的节点
 Type search_with_name(char* Name);//根据名字查询节点
 Type search_struct(char* Name);//根据名字查询结构体
+Type search_function(char* Name);//根据名字查询函数
 //int search_struct_with_type(Type type_in);//对于没有name的结构体只能根据type查找,返回是否存在等价structure,是为1，不是为0
 int name_exist(char* name);//某一变量、形参或者成员名是否已存在,是则返回1,不是则返回0
 
@@ -75,10 +76,11 @@ Type create_Function_Type(Type returntype,FieldList List,int declareline);//创�
 Type if_declare(char* name);//检查函数是否声明(存在),1表示存在
 int Define(char* name);//声明后又定义,返回0为正常定义,返回1为存在重复定义
 int if_define(char* name);//检查是否定义
+int check_paralist(char* funcName,FieldList head);//检查函数实参和形参类型匹配
 
 FieldList new_FieldList(char* name_in,Type type_in);//创建一个FieldList节点
 FieldList insert_FieldList(FieldList head,FieldList ptr);//向FieldList链表内插入节点
-int FieldList_repeat(FieldList head,char* name);//FieldList是否有该名称的变量,1表示存在,0不存在
+int FieldList_repeat(FieldList head,FieldList ptr);//FieldList是否有该名称的变量,1表示存在,0不存在
 
 int same(Type A,Type B);//检查是否为同一类型，是则返回1,不是则返回0,异常则返回-1
 //int strict_array_same(Type A,Type B);//检查数组严格相等,返回值同same()
