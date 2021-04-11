@@ -183,7 +183,25 @@ int if_define(char* name)
     return -1;    
 }
 //检查函数实参和形参类型匹配
-int check_paralist(char* funcName,FieldList head);
+int check_paralist(char* funcName,FieldList head)
+{
+    Type functype=search_function(funcName);
+    int num1=0,num2=0;
+    for(FieldList p=functype->u.function.paramlist;p!=NULL;p=p->next)
+        num1++;
+    for(FieldList p=head;p!=NULL;p=p->next)
+        num2++;
+    if(num1!=num2) return 0;
+    FieldList ptr1=functype->u.function.paramlist;
+    FieldList ptr2=head;
+    while(ptr1!=NULL && ptr2!=NULL)
+    {
+        if(same(ptr1->type,ptr2->type)!=1) return 0;
+        ptr1=ptr1->next;
+        ptr2=ptr2->next;
+    }
+    return 1;
+}
 
 //根据名字查询节点
 Type search_with_name(char* Name)
