@@ -49,7 +49,7 @@ struct TableNode
 
 struct UndefinedFunction
 {
-    char* line;
+    int line;
     char* func_name;
     struct UndefinedFunction* next;
 };

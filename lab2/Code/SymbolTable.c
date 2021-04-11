@@ -439,7 +439,7 @@ struct UndefinedFunction* get_undefined_function()
                 {
                     struct UndefinedFunction* node=(struct UndefinedFunction*)malloc(sizeof(struct UndefinedFunction));
                     strcpy(node->func_name,p->name);
-                    itoa(p->type->u.function.declare_line,node->line,10);
+                    node->line=p->type->u.function.declare_line;
                     node->next=headptr;
                     headptr=node;                    
                 }
