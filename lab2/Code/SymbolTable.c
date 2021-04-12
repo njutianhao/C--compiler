@@ -29,10 +29,8 @@ void insert_Node(Type type_in,char* name)
     unsigned int hashnum=hash_pjw(name);
     temp->next=NULL;
     temp->type=type_in;
-    printf("gothere\n");
     temp->name=malloc(strlen(name));
     strcpy(temp->name,name);
-    printf("success!\n");
     temp->next=NULL;
     temp->ifdef=0;
     if(type_in->kind==STRUCTURE)
@@ -186,7 +184,7 @@ int Define(char* name)
     }
     return -1;
 }
-//检查是否定义,-1代表未查询到
+//检查是否定义,-1代表未查询到,
 int if_define(char* name)
 {
     unsigned int hashnum=hash_pjw(name);

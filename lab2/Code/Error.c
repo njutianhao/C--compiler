@@ -1,4 +1,5 @@
 #include "Error.h"
+#include <string.h>
 struct ErrorNode *ErrorHead = NULL;
 int HaveErrors=0;
 void print_Node(struct ErrorNode* node){
@@ -14,38 +15,20 @@ void print_Errors(){
 }
 void insert_Error(char* errorType,int linenumber,char* information){
     HaveErrors++;
-    if(ErrorHead==NULL){
-        ErrorHead=(struct ErrorNode*)malloc(sizeof(struct ErrorNode));
-        ErrorHead->Linenumber=linenumber;
-        ErrorHead->ErrorType=errorType;
-        char* tmp=information;
-        ErrorHead->Information=tmp;
-        ErrorHead->next=NULL;
+    struct ErrorNode* q=(struct ErrorNode*)malloc(sizeof(struct ErrorNode));
+    q->Linenumber=linenumber;
+    q->ErrorType=malloc(strlen(errorType));
+    strcpy(q->ErrorType,errorType);
+    q->Information=malloc(strlen(information));
+    strcpy(q->Information,information);
+    q->next=NULL;
+    struct ErrorNode* p=ErrorHead;
+    if(ErrorHead==NULL)
+    {
+        ErrorHead=q;
+        return;
     }
-    else{
-        struct ErrorNode* p=ErrorHead;
-        struct ErrorNode* q=(struct ErrorNode*)malloc(sizeof(struct ErrorNode));
-        q->Linenumber=linenumber;
-        q->ErrorType=errorType;
-        q->next=NULL;
-        char* tmp=information;
-        q->Information=tmp;
-        if(p->Linenumber>q->Linenumber){
-            q->next=ErrorHead;
-            ErrorHead=q;
-            return;
-        }
-        while(p!=NULL){
-            if(p->next==NULL && p->Linenumber<q->Linenumber){
-                p->next=q;
-                return;
-            }
-            if(p->Linenumber<=q->Linenumber && p->next->Linenumber>=q->Linenumber){
-                q->next=p->next;
-                p->next=q;
-                return;
-            }
-            p=p->next;
-        }
-    }
+    while(p->next!=NULL)
+        p=p->next;
+    p->next=q;
 }
