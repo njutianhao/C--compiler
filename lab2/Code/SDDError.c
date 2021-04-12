@@ -43,6 +43,7 @@ int try_Define(int line,char *name){
     }
     else
     {
+        printf("HAHA.\n");
         char *inf = strcat("Redefined function \"",strcat(name,"\"."));
         insert_Error("4",line,inf);
         return 0;

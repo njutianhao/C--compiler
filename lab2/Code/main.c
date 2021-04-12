@@ -1,7 +1,8 @@
 #include<stdio.h>
 #include"GrammarTree.h"
 #include"Error.h"
-
+extern int yyrestart(FILE *);
+extern int yyparse();
 int main(int argc,char** argv){
 	if(argc<=1) return 1;
 	FILE* f=fopen(argv[1],"r");
@@ -12,6 +13,11 @@ int main(int argc,char** argv){
 	}
 	yyrestart(f);
 	yyparse();
+	if(check_error()==1) 
+	{
+		print_Errors();
+		return 0;
+	}
 	SDT();
 	print_Errors();
 	return 0;

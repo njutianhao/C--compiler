@@ -29,7 +29,10 @@ void insert_Node(Type type_in,char* name)
     unsigned int hashnum=hash_pjw(name);
     temp->next=NULL;
     temp->type=type_in;
+    printf("gothere\n");
+    temp->name=malloc(strlen(name));
     strcpy(temp->name,name);
+    printf("success!\n");
     temp->next=NULL;
     temp->ifdef=0;
     if(type_in->kind==STRUCTURE)
@@ -86,6 +89,7 @@ FieldList new_FieldList(char* name_in,Type type_in)
 {
     FieldList temp=(FieldList)malloc(sizeof(struct FieldList_));
     temp->next=NULL;
+    temp->name=malloc(strlen(name_in));
     strcpy(temp->name,name_in);
     temp->type=type_in;
     return temp;
@@ -133,6 +137,7 @@ Type create_Structure_Type(FieldList head,char* struct_Name)
     Type temp=(Type)malloc(sizeof(struct Type_));
     temp->kind=STRUCTURE;
     temp->u.structure.structmember=head;
+    temp->u.structure.structName=malloc(strlen(struct_Name));
     strcpy(temp->u.structure.structName,struct_Name);
     return temp;
 }
@@ -417,6 +422,7 @@ struct UndefinedFunction* get_undefined_function()
                 if(p->ifdef==0)
                 {
                     struct UndefinedFunction* node=(struct UndefinedFunction*)malloc(sizeof(struct UndefinedFunction));
+                    node->func_name=malloc(strlen(p->name));
                     strcpy(node->func_name,p->name);
                     node->line=p->type->u.function.declare_line;
                     node->next=headptr;
@@ -437,12 +443,16 @@ char* generateStr(FieldList p)
         {
             case BASIC_INT:
             {
-                str=strcat(str,"int");
+                char*temp=malloc(sizeof(str)+sizeof("int"));
+                temp=strcat(str,"int");
+                str=temp;
                 break;
             }
             case BASIC_FLOAT:
             {
+                char*temp=malloc(sizeof(str)+sizeof("float"));
                 str=strcat(str,"float");
+                str=temp;
                 break;
             }
             case ARRAY:
@@ -458,24 +468,44 @@ char* generateStr(FieldList p)
                 {
                     case BASIC_INT:
                     {
-                        str=strcat(str,"int ");
+                        char* tmp=malloc(sizeof(str)+sizeof("int"));
+                        tmp=strcat(str,"int");
+                        str=tmp;                        
                         for(int i=0;i<num;i++)
-                            str=strcat(str,"[]");
+                        {
+                            tmp=malloc(sizeof(str)+sizeof("[]"));
+                            tmp=strcat(str,"[]");
+                            str=tmp;
+                        }
                         break;
                     }
                     case BASIC_FLOAT:
                     {
-                        str=strcat(str,"float ");
+                        char* tmp=malloc(sizeof(str)+sizeof("float"));
+                        tmp=strcat(str,"float");
+                        str=tmp;                        
                         for(int i=0;i<num;i++)
-                            str=strcat(str,"[]");
+                        {
+                            tmp=malloc(sizeof(str)+sizeof("[]"));
+                            tmp=strcat(str,"[]");
+                            str=tmp;
+                        }
                         break;
                     }
                     case STRUCTURE:
                     {
-                        str=strcat(str,"struct ");
-                        str=strcat(str,temp->u.structure.structName);
+                        char* tmp=malloc(sizeof(str)+sizeof("struct "));
+                        tmp=strcat(str,"struct ");
+                        str=tmp;
+                        tmp=malloc(sizeof(str)+strlen(temp->u.structure.structName));
+                        tmp=strcat(str,temp->u.structure.structName);
+                        str=tmp;
                         for(int i=0;i<num;i++)
-                            str=strcat(str,"[]");
+                        {
+                            tmp=malloc(sizeof(str)+sizeof("[]"));
+                            tmp=strcat(str,"[]");
+                            str=tmp;
+                        }
                         break;
                     }
                     case FUNCTION:
@@ -488,8 +518,12 @@ char* generateStr(FieldList p)
             }
             case STRUCTURE:
             {
-                str=strcat(str,"struct ");
-                str=strcat(str,p->type->u.structure.structName);
+                char* tmp=malloc(sizeof(str)+sizeof("struct "));
+                tmp=strcat(str,"struct ");
+                str=tmp;
+                tmp=malloc(sizeof(str)+strlen(p->type->u.structure.structName));
+                tmp=strcat(str,p->type->u.structure.structName);
+                str=tmp;
                 break;
             }
             case FUNCTION:
@@ -498,8 +532,18 @@ char* generateStr(FieldList p)
                 exit(0);
             }
         }
-        if(p->next!=NULL) str=strcat(str," , ");
-        else str=strcat(str,")");
+        if(p->next!=NULL) 
+        {
+            char* tmp=malloc(sizeof(str)+sizeof(" , "));
+            tmp=strcat(str," , ");
+            str=tmp;
+        }
+        else 
+        {
+            char* tmp=malloc(sizeof(str)+sizeof(")"));
+            tmp=strcat(str,")");
+            str=tmp;        
+        }
         p=p->next;
     }
     return str;

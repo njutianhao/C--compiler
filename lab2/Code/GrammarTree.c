@@ -1,6 +1,7 @@
 #include"GrammarTree.h"
 #include"syntax.tab.h"
 #include"Error.h"
+struct GrammarTree *root=NULL;
 char *token_map[] = {"Program","ExtDecList","ExtDef","Specifier","FunDec","CompSt",
                     "VarDec","ExtDefList","StructSpecifier",
                     "OptTag","DefList","Tag","VarList","ParamDec",
@@ -121,9 +122,13 @@ void __DFS(struct GrammarTree *n,int depth){
             return ;
     }
 }
+int check_error(){
+    if(HaveErrors==0 && root!=NULL)
+        return 0;
+    return 1;
+}
 void print_tree(){
-    if(HaveErrors==0)
-        __DFS(root,0);
+    __DFS(root,0);
 }
 struct GrammarTree *createnode(int type,int line,void *value){
     struct GrammarTree *res= (struct GrammarTree *)malloc(sizeof(struct GrammarTree));

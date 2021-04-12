@@ -50,8 +50,7 @@ struct GrammarTree *createnode(int type,int line,void *value);
 void insertall(struct GrammarTree *parent,int num,...);
 void __DFS(struct GrammarTree *n,int depth);
 void print_tree();
-
-
+int check_error();
 int instruct;
 int is_leftval(struct GrammarTree *node);
 char *get_VarDec_name(struct GrammarTree *node);

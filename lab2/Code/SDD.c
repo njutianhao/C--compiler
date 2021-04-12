@@ -26,6 +26,7 @@ struct GrammarTree *get_child(struct GrammarTree *node,int index){
 }
 
 void SDT(){
+    initTable();
     handle_ExtDefList(get_child(root,1));
     check_func_not_defined();
 }

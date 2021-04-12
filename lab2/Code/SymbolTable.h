@@ -3,11 +3,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#define TABLE_SIZE 0xfff
+#define TABLE_SIZE 0x3fff
 
 typedef struct Type_* Type;
 typedef struct FieldList_* FieldList;
-enum  KIND { BASIC_INT,BASIC_FLOAT, ARRAY, STRUCTURE ,FUNCTION};
+enum  KIND { BASIC_INT,BASIC_FLOAT, ARRAY, STRUCTURE ,FUNCTION};//kind的枚举类型
 struct Type_
 {
     enum KIND kind; 
