@@ -2,23 +2,8 @@
 int try_insert_Node(int line,Type type_in,char* name){
     if(getKind(type_in) == FUNCTION)
     {
-        Type t = search_function(name);
-        if(t == NULL)
-        {
-            insert_Node(type_in,name);
-            return 1;
-        }
-        else if(same(t,type_in) == 0)
-        {
-            char *s1 = "Inconsistent declaration of function \"";
-            char *s2 = "\"";
-            char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2));
-            char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
-            insert_Error("19",line,inf);
-            return 0;
-        }
-        else
-            return 1;
+        printf("wrong in try_insert_Node\n");
+        exit(0);
     }
     else if(name_exist(name) == 0)
     {
@@ -45,20 +30,42 @@ int try_insert_Node(int line,Type type_in,char* name){
     }
 }
 
-int try_Define(int line,char *name){
-    if(if_define(name) != 1)
+int try_insert_FuncNode(int line,Type type_in,char* name,int define){
+    if(getKind(type_in) != FUNCTION)
     {
-        Define(name);
+        printf("wrong in try_insert_FuncNode\n");
+        exit(0);
+    }
+    Type t = search_function(name);
+    if(t == NULL)
+    {
+        insert_Node(type_in,name);
+        if(define == 1)
+            Define(name);
         return 1;
     }
-    else
-    {
+    else if(if_define(name) == 1 && define == 1){
         char *s1 = "Redefined function \"";
         char *s2 = "\"";
         char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2));
         char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
         insert_Error("4",line,inf);
         return 0;
+    }
+    else if(same(t,type_in) == 0)
+    {
+        char *s1 = "Inconsistent declaration of function \"";
+        char *s2 = "\"";
+        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2));
+        char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
+        insert_Error("19",line,inf);
+        return 0;
+    }
+    else
+    {
+        if(define == 1)
+            Define(name);
+        return 1;
     }
 }
 

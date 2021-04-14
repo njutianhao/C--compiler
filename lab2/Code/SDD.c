@@ -49,13 +49,17 @@ void handle_ExtDef(struct GrammarTree *node){
     tmp2->inh = tmp1->syn;
     switch(tmp2->type){
         case FunDec:
-            tmp2->inh = tmp1->syn;
             if(handle_FunDec(tmp2) == 0)
                 return ; 
-            if(tmp3->type == CompSt)
+            if(tmp3->type != CompSt)
             {
-                if(try_Define(tmp2->line,tmp2->syn.str) == 0)
-                    return ;
+                if(try_insert_FuncNode(tmp2->line,tmp2->syn.func.t,tmp2->syn.func.name,0) == 0)
+                    return 0;
+            }
+            else
+            {
+                if(try_insert_FuncNode(tmp2->line,tmp2->syn.func.t,tmp2->syn.func.name,1) == 0)
+                    return 0;
                 tmp3->inh = tmp2->syn;
                 handle_CompSt(tmp3);
             }
@@ -219,8 +223,9 @@ int handle_FunDec(struct GrammarTree *node){
             return 0;
         f = tmp2->syn.f;
     }
-    node->syn = tmp->syn;
-    return try_insert_Node(tmp->line,create_Function_Type(node->inh.t,f,tmp->line),tmp->syn.str);
+    node->syn.func.name = tmp->syn.str;
+    node->syn.func.t = create_Function_Type(node->inh.t,f,tmp->line);
+    return 1;
 }
 
 void handle_CompSt(struct GrammarTree *node){
