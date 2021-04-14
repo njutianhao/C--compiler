@@ -74,6 +74,7 @@ void insert_Node(Type type_in,char* name)
             temp->next=FunctionTable[hashnum];
             FunctionTable[hashnum]=temp;
         }
+        return;
     }
     if(SymbolTable[hashnum]==NULL) SymbolTable[hashnum]=temp;
     else
