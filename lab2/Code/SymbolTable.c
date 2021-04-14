@@ -697,3 +697,12 @@ FieldList getNextFieldList(FieldList f){
         return NULL;
     return f->next;
 }
+
+void displayFieldList(FieldList f){
+    while(f != NULL)
+    {
+        printf("%s ",f->name);
+        f = f->next;
+    }
+    printf("\n");
+}

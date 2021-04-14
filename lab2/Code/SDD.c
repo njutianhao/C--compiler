@@ -151,6 +151,7 @@ int handle_StructSpecifier(struct GrammarTree *node){
             return res;
         case Tag:
             handle_ID(tmp);
+            printf("%s\n",tmp->val.str);
             t = search_struct(tmp->syn.str);
             if(check_undefined_struct(tmp->line,t,tmp->syn.str) == 0)
                 return 0;
