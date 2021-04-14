@@ -9,6 +9,7 @@ void initTable()
         FunctionTable[i]=NULL;
     }
     headptr=NULL;
+    namelessStructNumber=0;
 }
 
 //hash函数
@@ -38,6 +39,27 @@ void insert_Node(Type type_in,char* name)
         if(name!=NULL && strcmp(type_in->u.structure.structName,name)==0)
         {
             if(StructTable[hashnum]==NULL) StructTable[hashnum]=temp;
+            else
+            {
+                temp->next=StructTable[hashnum];
+                SymbolTable[hashnum]=temp;
+            }
+        }
+        else if(name==NULL)
+        {
+            temp->name=malloc(sizeof(char)*15);
+            int i=0;
+            int num=namelessStructNumber;
+            do
+            {
+                temp->name[i]=num%10+'0';
+                i++;
+                num=num/10;
+            } while (num!=0 && i<14);
+            temp->name[i]='\0';
+            namelessStructNumber++;
+            hashnum=hash_pjw(temp->name);
+            if(StructTable[hashnum]==NULL ) StructTable[hashnum]=temp;
             else
             {
                 temp->next=StructTable[hashnum];
@@ -495,9 +517,12 @@ char* generateStr(FieldList p)
                         char* tmp=malloc(sizeof(str)+sizeof("struct "));
                         tmp=strcat(str,"struct ");
                         str=tmp;
-                        tmp=malloc(sizeof(str)+strlen(temp->u.structure.structName));
-                        tmp=strcat(str,temp->u.structure.structName);
-                        str=tmp;
+                        if(temp->u.structure.structName!=NULL && '0'<=temp->u.structure.structName[0] && temp->u.structure.structName[0]<='9')
+                        {
+                            tmp=malloc(sizeof(str)+strlen(temp->u.structure.structName));
+                            tmp=strcat(str,temp->u.structure.structName);
+                            str=tmp;
+                        }
                         for(int i=0;i<num;i++)
                         {
                             tmp=malloc(sizeof(str)+sizeof("[]"));
@@ -519,9 +544,12 @@ char* generateStr(FieldList p)
                 char* tmp=malloc(sizeof(str)+sizeof("struct "));
                 tmp=strcat(str,"struct ");
                 str=tmp;
-                tmp=malloc(sizeof(str)+strlen(p->type->u.structure.structName));
-                tmp=strcat(str,p->type->u.structure.structName);
-                str=tmp;
+                if(p->type->u.structure.structName!=NULL && '0'<=p->type->u.structure.structName[0] && p->type->u.structure.structName[0]<='9')
+                {
+                    tmp=malloc(sizeof(str)+strlen(p->type->u.structure.structName));
+                    tmp=strcat(str,p->type->u.structure.structName);
+                    str=tmp;
+                }
                 break;
             }
             case FUNCTION:

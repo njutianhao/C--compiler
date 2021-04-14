@@ -16,12 +16,14 @@ int is_leftval(struct GrammarTree *node){
 
 struct GrammarTree *get_child(struct GrammarTree *node,int index){
     struct ListNode *head = node->head;
+    printf("%d\n",(int)node);
     for(int i = 1;i < index;i++)
     {
         if(head == NULL)
             return NULL;
         head = head->next;
     }
+
     return head->val;
 }
 
@@ -322,8 +324,13 @@ void handle_ExtDecList(struct GrammarTree *node){
 
 int handle_Exp(struct GrammarTree *node){
     struct GrammarTree *tmp = get_child(node,1);
+    printf("1.\n");
     struct GrammarTree *tmp2 = get_child(node,2);
+        printf("2.\n");
+
     struct GrammarTree *tmp3 = get_child(node,3);
+        printf("3.\n");
+
     FieldList f = NULL;
     Type t;
     switch(tmp->type){

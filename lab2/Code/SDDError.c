@@ -46,7 +46,7 @@ int try_insert_Node(int line,Type type_in,char* name){
 }
 
 int try_Define(int line,char *name){
-    if(if_define(name) == -1)
+    if(if_define(name) != 1)
     {
         Define(name);
         return 1;

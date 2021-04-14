@@ -58,6 +58,7 @@ struct TableNode* SymbolTable[TABLE_SIZE];//符号表
 struct TableNode* StructTable[TABLE_SIZE];//结构体表
 struct TableNode* FunctionTable[TABLE_SIZE];//函数表
 struct UndefinedFunction* headptr;
+int namelessStructNumber;
 
 void initTable();//初始化
 unsigned int hash_pjw(char* name);//hash函数
