@@ -69,10 +69,9 @@ int try_insert_FuncNode(int line,Type type_in,char* name,int define){
     }
 }
 
-int try_insert_FieldList(int line,FieldList p1,FieldList p2,int instruct){
+int check_FieldList(int line,FieldList p1,FieldList p2,int instruct){
     FieldList f = FieldList_repeat(p1,p2);
     if(f == NULL){
-        insert_FieldList(p1,p2);
         return 1;
     }
     else if(instruct == 1){

@@ -143,7 +143,9 @@ void handle_DefList(struct GrammarTree *node){
     struct GrammarTree *tmp2 = get_child(node,2);
     handle_Def(tmp);  
     handle_DefList(tmp2);
-    node->syn.f = try_insert_FieldList(tmp->line,tmp->syn.f,tmp2->syn.f,instruct);
+    if(check_FieldList(tmp->line,tmp->syn.f,tmp2->syn.f,instruct) == 0)
+        return;
+    node->syn.f = insert_FieldList(tmp->syn.f,tmp2->syn.f);
 }
 
 void handle_Def(struct GrammarTree *node){
@@ -170,7 +172,9 @@ void handle_DecList(struct GrammarTree *node){
     { 
         tmp2->inh = node->inh;
         handle_DecList(tmp2);
-        node->syn.f = try_insert_FieldList(tmp->line,tmp->syn.f,tmp2->syn.f,instruct);
+        if(check_FieldList(tmp->line,tmp->syn.f,tmp2->syn.f,instruct) == 0)
+            return;
+        node->syn.f = insert_FieldList(tmp->syn.f,tmp2->syn.f);
     }
 }
 
@@ -253,7 +257,9 @@ int handle_VarList(struct GrammarTree *node){
         handle_VarList(tmp2);
         f = tmp2->syn.f;
     }
-    node->syn.f = try_insert_FieldList(tmp->line,tmp->syn.f,f,0);
+    if(check_FieldList(tmp->line,tmp->syn.f,f,0) == 0)
+        return 0;
+    node->syn.f = insert_FieldList(tmp->syn.f,f);
 }
 
 int handle_ParamDec(struct GrammarTree *node){
