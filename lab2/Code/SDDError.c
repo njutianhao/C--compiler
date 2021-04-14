@@ -1,4 +1,15 @@
 #include "SDDError.h"
+
+int try_insert_all_FieldList(FieldList f){
+    int res = 1;
+    while(f != NULL){
+        if(try_insert_Node(getFieldListLine(f),getFieldListType(f),getFieldListName(f)) == 0)
+            res = 0;
+        f = getNextFieldList(f);
+    }
+    return res;
+}
+
 int try_insert_Node(int line,Type type_in,char* name){
     if(getKind(type_in) == FUNCTION)
     {

@@ -141,6 +141,8 @@ int handle_StructSpecifier(struct GrammarTree *node){
             old_instruct = instruct;
             instruct = 1;
             handle_DefList(tmp2);
+            if(try_insert_all_FieldList(tmp2->syn.f) == 0)
+                return 0;
             t = create_Structure_Type(tmp2->syn.f,tmp->syn.str);
             res = try_insert_Node(tmp->line,t,tmp->syn.str);
             instruct = old_instruct;
@@ -151,7 +153,6 @@ int handle_StructSpecifier(struct GrammarTree *node){
             return res;
         case Tag:
             handle_ID(tmp);
-            printf("%s\n",tmp->val.str);
             t = search_struct(tmp->syn.str);
             if(check_undefined_struct(tmp->line,t,tmp->syn.str) == 0)
                 return 0;
@@ -247,8 +248,6 @@ int handle_VarDec(struct GrammarTree *node){
     struct GrammarTree *tmp2 = get_child(node,3);
     if(tmp2 == NULL){
         handle_ID(tmp);
-        if(try_insert_Node(node->line,node->inh.t,tmp->syn.str) == 0)
-            return 0;
         node->syn.f = new_FieldList(tmp->syn.str,node->inh.t);
         return 1;
     }
@@ -281,6 +280,7 @@ void handle_CompSt(struct GrammarTree *node){
     struct GrammarTree *tmp = get_child(node,2);
     struct GrammarTree *tmp2 = get_child(node,3);
     handle_DefList(tmp);
+    try_insert_all_FieldList(tmp->syn.f);
     free_FieldList(tmp->syn.f);
     tmp2->inh = node->inh;
     handle_StmtList(tmp2);
@@ -294,14 +294,14 @@ int handle_VarList(struct GrammarTree *node){
     struct GrammarTree *tmp = get_child(node,1);
     struct GrammarTree *tmp2 = get_child(node,3);
     handle_ParamDec(tmp);
+    if(try_insert_all_FieldList(tmp->syn.f) == 0)
+        return 0;
     FieldList f = NULL;
     if(tmp2 != NULL)
     {
         handle_VarList(tmp2);
         f = tmp2->syn.f;
     }
-    if(check_FieldList(tmp->line,tmp->syn.f,f,0) == 0)
-        return 0;
     node->syn.f = insert_FieldList(tmp->syn.f,f);
 }
 
@@ -373,6 +373,7 @@ void handle_ExtDecList(struct GrammarTree *node){
     struct GrammarTree *tmp = get_child(node,1);
     struct GrammarTree *tmp2 = get_child(node,3);
     handle_VarDec(tmp);
+    try_insert_all_FieldList(tmp->syn.f);
     free_FieldList(tmp->syn.f);
     if(tmp2 != NULL)
         handle_ExtDecList(tmp2);

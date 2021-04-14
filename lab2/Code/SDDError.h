@@ -4,6 +4,8 @@
 #include"Error.h"
 #include"syntax.tab.h"
 
+int try_insert_all_FieldList(FieldList f);
+
 int try_insert_Node(int line,Type type_in,char* name);
 
 int try_insert_FuncNode(int line,Type type_in,char* name,int define);
