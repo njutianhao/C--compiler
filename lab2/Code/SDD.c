@@ -10,6 +10,48 @@ char *get_VarDec_name(struct GrammarTree *node){
     return node->val.str;
 }
 
+char *prepare_exp_name(struct GrammarTree *node){
+    if(node->head == NULL)
+    {
+        char *res;
+        switch(node->type){
+            case ID:
+                res = (char *)malloc(strlen(node->val.str));
+                return strcpy(res,node->val.str);
+            case INT:
+                res = (char *)malloc(11);
+                sprintf(res,"%d",node->val.i);
+                return res;
+            case FLOAT:
+                res = (char *)malloc(40);
+                sprintf(res,"%f",node->val.f);
+                return res;
+            default:
+                res = (char *)malloc(strlen(token2_symbol_map[node->type - BASE_NUM]));
+                return strcpy(res,token2_symbol_map[node->type - BASE_NUM]);
+            }
+    }
+    struct ListNode *l = node->head;
+    char *res = NULL;
+    while(l != NULL){
+        char *tmp = prepare_exp_name(l->val);
+        if(res == NULL)
+        {
+            res = tmp;
+        }
+        else
+        {
+            char *str = malloc(strlen(res) + strlen(tmp));
+            strcat(strcpy(str,res),tmp);
+            free(res);
+            free(tmp);
+            res = str;
+        }
+        l = l->next;
+    }
+    return res;
+}
+
 int is_leftval(struct GrammarTree *node){
     if(node == NULL)
         return 0;
@@ -341,6 +383,7 @@ int handle_Exp(struct GrammarTree *node){
     struct GrammarTree *tmp3 = get_child(node,3);
     FieldList f = NULL;
     Type t;
+    char *name;
     switch(tmp->type){
         case INT:node->syn.t = create_Basic_Type("int");return 1;
         case FLOAT:node->syn.t = create_Basic_Type("float");return 1;
@@ -420,9 +463,11 @@ int handle_Exp(struct GrammarTree *node){
                 case LB:
                     if(handle_Exp(tmp) == 0 || handle_Exp(tmp3) == 0)
                         return 0;
-                    if(check_array_type(tmp->line,tmp->syn.t) == 0)
+                    name = prepare_exp_name(tmp);
+                    if(check_array_type(tmp->line,tmp->syn.t,name) == 0)
                         return 0;
-                    if(check_int_in_array(tmp3->line,tmp3->syn.t) == 0)
+                    name = prepare_exp_name(tmp3);
+                    if(check_int_in_array(tmp3->line,tmp3->syn.t,name) == 0)
                         return 0;
                     node->syn.t = getLowerArray(tmp->syn.t);
                     return 1;

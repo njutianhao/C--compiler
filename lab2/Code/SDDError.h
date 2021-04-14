@@ -32,11 +32,11 @@ int check_paras(int line,FieldList f,char *name);
 
 int check_leftval(int line,int isleftval);
 
-int check_array_type(int line,Type t);
+int check_array_type(int line,Type t,char *name);
 
 int check_struct_type(int line,Type t);
 
-int check_int_in_array(int line,Type t);
+int check_int_in_array(int line,Type t,char *name);
 
 int check_field_in_struct(int line,Type t,char *name);
 //never defined func

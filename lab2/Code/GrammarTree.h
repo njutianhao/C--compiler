@@ -48,6 +48,7 @@ struct GrammarTree{
 struct GrammarTree *root;
 extern char *token_map[];
 extern char *token2_map[];
+extern char *token2_symbol_map[];
 
 void insert(struct GrammarTree *t1,struct GrammarTree *t2);
 struct GrammarTree *createnode(int type,int line,void *value);
@@ -56,6 +57,7 @@ void __DFS(struct GrammarTree *n,int depth);
 void print_tree();
 int check_error();
 int instruct;
+char *prepare_exp_name(struct GrammarTree *node);
 int is_leftval(struct GrammarTree *node);
 char *get_VarDec_name(struct GrammarTree *node);
 struct GrammarTree *get_child(struct GrammarTree *node,int index);
