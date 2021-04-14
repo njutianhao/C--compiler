@@ -25,7 +25,7 @@ int try_insert_Node(int line,Type type_in,char* name){
     {
         char *s1 = "Redefined variable \"";
         char *s2 = "\"";
-        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2));
+        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2) + 1);
         char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
         insert_Error("3",line,inf);
         return 0;
@@ -34,7 +34,7 @@ int try_insert_Node(int line,Type type_in,char* name){
     {
         char *s1 = "Duplicated name \"";
         char *s2 = "\"";
-        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2));
+        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2) + 1);
         char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
         insert_Error("16",line,inf);
         return 0;
@@ -58,7 +58,7 @@ int try_insert_FuncNode(int line,Type type_in,char* name,int define){
     else if(if_define(name) == 1 && define == 1){
         char *s1 = "Redefined function \"";
         char *s2 = "\"";
-        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2));
+        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2) + 1);
         char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
         insert_Error("4",line,inf);
         return 0;
@@ -67,7 +67,7 @@ int try_insert_FuncNode(int line,Type type_in,char* name,int define){
     {
         char *s1 = "Inconsistent declaration of function \"";
         char *s2 = "\"";
-        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2));
+        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2) + 1);
         char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
         insert_Error("19",line,inf);
         return 0;
@@ -91,7 +91,7 @@ int check_FieldList(int line,FieldList p1,FieldList p2,int instruct){
         while(f != NULL)
         {
             char *name = getFieldListName(p1);
-            char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2));
+            char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2) + 1);
             char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
             insert_Error("15",line,inf);
             f = getNextFieldList(f);
@@ -105,7 +105,7 @@ int check_FieldList(int line,FieldList p1,FieldList p2,int instruct){
         while(f != NULL)
         {
             char *name = getFieldListName(p1);
-            char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2));
+            char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2) + 1);
             char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
             insert_Error("3",line,inf);
             f = getNextFieldList(f);
@@ -141,7 +141,7 @@ int check_undefined_struct(int line,Type t,char *name){
     {
         char *s1 = "Undefined structure \"";
         char *s2 = "\"";
-        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2));
+        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2) + 1);
         char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
         insert_Error("17",line,inf);
         return 0;
@@ -155,7 +155,7 @@ int check_undefined_var(int line,Type t,char *name){
     {
         char *s1 = "Undefined variable \"";
         char *s2 = "\"";
-        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2));
+        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2) + 1);
         char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
         insert_Error("1",line,inf);
         return 0;
@@ -193,7 +193,7 @@ int check_instruct(int line,char *name){
     if(instruct == 1){
         char *s1 = "initilize feild \"";
         char *s2 = "\" when defining its struct";
-        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2));
+        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2) + 1);
         char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
         insert_Error("15",line,inf);
         return 0;
@@ -209,7 +209,7 @@ int check_paras(int line,FieldList f,char *name){
         char *s3 = "\" is not applicable for arguments \"";
         char *s4 = generateStr(f);
         char *s5 = "\"";
-        char *tmp = (char *)malloc(strlen(s1) + strlen(s2) + strlen(s3) + strlen(s4) + strlen(s5));
+        char *tmp = (char *)malloc(strlen(s1) + strlen(s2) + strlen(s3) + strlen(s4) + strlen(s5) + 1);
         char *inf = strcat(strcat(strcat(strcat(strcpy(tmp,s1),s2),s3),s4),s5);
         insert_Error("9",line,inf);
         return 0;
@@ -247,7 +247,7 @@ int check_use_var_as_func(int line,Type t,char *name){
     {
         char *s1 = "\"";
         char *s2 = "\" is not a function";
-        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2));
+        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2) + 1);
         char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
         insert_Error("11",line,inf);
         return 0;
@@ -259,7 +259,7 @@ int check_array_type(int line,Type t,char *name){
     {
         char *s1 = "\"";
         char *s2 = "\" is not an array";
-        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2));
+        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2) + 1);
         char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
         free(name);
         insert_Error("10",line,inf);
@@ -288,7 +288,7 @@ int check_int_in_array(int line,Type t,char *name){
     {
         char *s1 = "\"";
         char *s2 = "\" is not an integer";
-        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2));
+        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2) + 1);
         char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
         free(name);
         insert_Error("12",line,inf);
@@ -307,7 +307,7 @@ int check_field_in_struct(int line,Type t,char *name){
     {
         char *s1 = "Non-existent field \"";
         char *s2 = "\"";
-        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2));
+        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2) + 1);
         char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
         insert_Error("14",line,inf);
         return 0;
@@ -326,7 +326,7 @@ int check_func_not_defined(){
         int line = p->line;
         char *s1 = "Undefined function \"";
         char *s2 = "\"";
-        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2));
+        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2) + 1);
         char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
         insert_Error("18",line,inf);
         p = p->next;
