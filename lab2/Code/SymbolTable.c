@@ -146,7 +146,7 @@ void free_FieldList(FieldList head)
     }
 }
 
-//FieldList是否有重复变量
+//FieldList是否有重名变量
 FieldList FieldList_repeat(FieldList head,FieldList ptr)
 {
     FieldList tempHead=head;
@@ -154,12 +154,11 @@ FieldList FieldList_repeat(FieldList head,FieldList ptr)
     FieldList repeatHead=NULL;
     for(;tempHead!=NULL;tempHead=tempHead->next)
     {
-        
         for(;tempPtr!=NULL;tempPtr=tempPtr->next)
         {
             if(strcmp(tempHead->name,tempPtr->name)==0)
             {
-                FieldList p=malloc(sizeof(struct FieldList_));
+                FieldList p=(FieldList)malloc(sizeof(struct FieldList_));
                 p->type=tempHead->type;
                 p->next=NULL;
                 if(tempHead->name!=NULL)
