@@ -66,6 +66,7 @@ void handle_ExtDefList(struct GrammarTree *node);
 void handle_ExtDef(struct GrammarTree *node);
 int handle_Specifier(struct GrammarTree *node);
 int handle_StructSpecifier(struct GrammarTree *node);
+void handle_Tag(struct GrammarTree *node);
 void handle_OptTag(struct GrammarTree *node);
 int handle_VarList(struct GrammarTree *node);
 void handle_DefList(struct GrammarTree *node);

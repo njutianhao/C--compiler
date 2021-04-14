@@ -34,7 +34,8 @@ struct Type_
 
 struct FieldList_
 {
-    char* name; // 域的名字 
+    char* name; // 域的名字
+    int lineno;// 行号
     Type type; // 域的类型
     FieldList next; // 下一个域
 };
@@ -42,7 +43,7 @@ struct FieldList_
 struct TableNode
 {
     char* name;//变量或函数名
-    Type type;
+    Type type;//行号
     int ifdef;//是否经过定义或初始化，未定义或未初始化则置0
     struct TableNode* next;//hash表下一个元素指针
 };
@@ -79,12 +80,14 @@ int check_paralist(char* funcName,FieldList head);//检查函数实参和形参�
 int check_return(char* funcName,Type returntype);//返回值类型匹配
 Type getReturnType(char* funcName);//获取返回值类型
 Type getListHeadType(FieldList head);
-FieldList new_FieldList(char* name_in,Type type_in);//创建一个FieldList节点
+FieldList new_FieldList(char* name_in,Type type_in,int line_no);//创建一个FieldList节点
 FieldList insert_FieldList(FieldList head,FieldList ptr);//向FieldList链表内插入节点
 FieldList getNextFieldList(FieldList f);
 void free_FieldList(FieldList head);
 FieldList FieldList_repeat(FieldList head,FieldList ptr);//FieldList是否有该名称的变量,1表示存在,0不存
 char* getFieldListName(FieldList list);
+Type getFieldListType(FieldList list);
+int getFieldListline(FieldList list);
 int same(Type A,Type B);//检查是否为同一类型，是则返回1,不是则返回0,异常则返回-1
 //int strict_array_same(Type A,Type B);//检查数组严格相等,返回值同same()
 enum KIND getKind(Type type);//type转KIND

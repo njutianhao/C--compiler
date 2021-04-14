@@ -46,7 +46,7 @@ void insert_Node(Type type_in,char* name)
             else
             {
                 temp->next=StructTable[hashnum];
-                SymbolTable[hashnum]=temp;
+                StructTable[hashnum]=temp;
             }
         }
         else if(name==NULL)
@@ -62,12 +62,15 @@ void insert_Node(Type type_in,char* name)
             } while (num!=0 && i<14);
             temp->name[i]='\0';
             namelessStructNumber++;
+            temp->type->u.structure.structName=malloc(strlen(temp->name));
+            strcpy(temp->type->u.structure.structName,temp->name);
+            printf("%s\n",temp->name);
             hashnum=hash_pjw(temp->name);
             if(StructTable[hashnum]==NULL ) StructTable[hashnum]=temp;
             else
             {
                 temp->next=StructTable[hashnum];
-                SymbolTable[hashnum]=temp;
+                StructTable[hashnum]=temp;
             }
         }
     }
@@ -110,7 +113,7 @@ Type create_Array_Type(Type paratype,int size_in)
     return temp;
 }
 //创建structure type类型,同时完成FieldList_的接口
-FieldList new_FieldList(char* name_in,Type type_in)
+FieldList new_FieldList(char* name_in,Type type_in,int line_no)
 {
     FieldList temp=(FieldList)malloc(sizeof(struct FieldList_));
     temp->next=NULL;
@@ -121,6 +124,7 @@ FieldList new_FieldList(char* name_in,Type type_in)
         strcpy(temp->name,name_in);
      }
     temp->type=type_in;
+    temp->lineno=line_no;
     return temp;
 }
 
@@ -146,7 +150,7 @@ void free_FieldList(FieldList head)
     }
 }
 
-//FieldList是否有重复变量
+//FieldList是否有重名变量
 FieldList FieldList_repeat(FieldList head,FieldList ptr)
 {
     FieldList tempHead=head;
@@ -154,12 +158,11 @@ FieldList FieldList_repeat(FieldList head,FieldList ptr)
     FieldList repeatHead=NULL;
     for(;tempHead!=NULL;tempHead=tempHead->next)
     {
-        
         for(;tempPtr!=NULL;tempPtr=tempPtr->next)
         {
             if(strcmp(tempHead->name,tempPtr->name)==0)
             {
-                FieldList p=malloc(sizeof(struct FieldList_));
+                FieldList p=(FieldList)malloc(sizeof(struct FieldList_));
                 p->type=tempHead->type;
                 p->next=NULL;
                 if(tempHead->name!=NULL)
@@ -305,7 +308,14 @@ char* getFieldListName(FieldList list)
 {
     return list->name;
 }
-
+Type getFieldListType(FieldList list)
+{
+    return list->type;
+}
+int getFieldListline(FieldList list)
+{
+    return list->lineno;
+}
 //根据名字查询节点
 Type search_with_name(char* Name)
 {
@@ -323,6 +333,8 @@ Type search_with_name(char* Name)
 //根据名字查询该名称结构体
 Type search_struct(char* Name)
 {
+    if(Name==NULL) return NULL;
+    //printf("%s\n",Name);
     unsigned int number=hash_pjw(Name);
     struct TableNode* p=StructTable[number];
     for(;p!=NULL;p=p->next)
