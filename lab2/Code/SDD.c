@@ -16,18 +16,18 @@ char *prepare_exp_name(struct GrammarTree *node){
         char *res;
         switch(node->type){
             case ID:
-                res = (char *)malloc(strlen(node->val.str));
+                res = (char *)malloc(strlen(node->val.str) + 1);
                 return strcpy(res,node->val.str);
             case INT:
                 res = (char *)malloc(11);
                 sprintf(res,"%d",node->val.i);
                 return res;
             case FLOAT:
-                res = (char *)malloc(40);
-                sprintf(res,"%f",node->val.f);
+                res = (char *)malloc(50);
+                sprintf(res,"%.6f",node->val.f);
                 return res;
             default:
-                res = (char *)malloc(strlen(token2_symbol_map[node->type - BASE_NUM]));
+                res = (char *)malloc(strlen(token2_symbol_map[node->type - BASE_NUM]) + 1);
                 return strcpy(res,token2_symbol_map[node->type - BASE_NUM]);
             }
     }
@@ -41,7 +41,7 @@ char *prepare_exp_name(struct GrammarTree *node){
         }
         else
         {
-            char *str = malloc(strlen(res) + strlen(tmp));
+            char *str = malloc(strlen(res) + strlen(tmp) + 1);
             strcat(strcpy(str,res),tmp);
             free(res);
             free(tmp);
