@@ -6,7 +6,7 @@
 
 int try_insert_Node(int line,Type type_in,char* name);
 
-int try_Define(int line,char *name);
+int try_insert_FuncNode(int line,Type type_in,char* name,int define);
 
 int check_return_type(int line,char *funcname,Type t);
 

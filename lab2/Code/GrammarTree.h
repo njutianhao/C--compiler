@@ -24,6 +24,10 @@ union TreeVal{
     char *str;
 };
 union SDDVal{
+    struct{
+        char *name;
+        Type t;
+    } func;
     Type t;
     char *str;
     FieldList f;
