@@ -98,4 +98,5 @@ int isStruct(Type type);
 int isInStruct(Type t,char *name);
 Type getLowerArray(Type t);
 Type getFieldType(Type t,char *name);
+void displayFieldList(FieldList f);
 #endif
