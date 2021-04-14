@@ -226,7 +226,7 @@ int check_leftval(int line,int isleftval){
         return 0;
     }
     else
-        return 0;
+        return 1;
 }
 
 int check_oprands_type(int line,Type t1,Type t2){

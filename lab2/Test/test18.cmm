@@ -1,5 +1,5 @@
 int func(int a);
-int func(int a) 
+int func(int b) 
 {
     return 1;
 }
