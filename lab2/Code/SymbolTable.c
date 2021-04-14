@@ -620,3 +620,9 @@ Type getFieldType(Type t,char *name){
     }
     return NULL;
 }
+
+FieldList getNextFieldList(FieldList f){
+    if(f == NULL)
+        return NULL;
+    return f->next;
+}

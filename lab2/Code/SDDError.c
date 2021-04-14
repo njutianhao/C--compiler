@@ -69,6 +69,41 @@ int try_insert_FuncNode(int line,Type type_in,char* name,int define){
     }
 }
 
+int try_insert_FieldList(int line,FieldList p1,FieldList p2,int instruct){
+    FieldList f = FieldList_repeat(p1,p2);
+    if(f == NULL){
+        insert_FieldList(p1,p2);
+        return 1;
+    }
+    else if(instruct == 1){
+        char *s1 = "Redefined field \"";
+        char *s2 = "\"";
+        while(f != NULL)
+        {
+            char *name = getFieldListName(p1);
+            char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2));
+            char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
+            insert_Error("15",line,inf);
+            f = getNextFieldList(f);
+        }
+        return 0;
+    }
+    else
+    {
+        char *s1 = "Redefined variable \"";
+        char *s2 = "\"";
+        while(f != NULL)
+        {
+            char *name = getFieldListName(p1);
+            char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2));
+            char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
+            insert_Error("3",line,inf);
+            f = getNextFieldList(f);
+        }
+        return 0;
+    }
+}
+
 int check_return_type(int line,char *funcname,Type t){
     Type t1 = getReturnType(funcname);
     if(same(t1,t) == 0)
