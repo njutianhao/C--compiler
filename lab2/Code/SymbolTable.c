@@ -113,7 +113,7 @@ Type create_Array_Type(Type paratype,int size_in)
     return temp;
 }
 //创建structure type类型,同时完成FieldList_的接口
-FieldList new_FieldList(char* name_in,Type type_in)
+FieldList new_FieldList(char* name_in,Type type_in,int line_no)
 {
     FieldList temp=(FieldList)malloc(sizeof(struct FieldList_));
     temp->next=NULL;
@@ -124,6 +124,7 @@ FieldList new_FieldList(char* name_in,Type type_in)
         strcpy(temp->name,name_in);
      }
     temp->type=type_in;
+    temp->lineno=line_no;
     return temp;
 }
 
@@ -307,7 +308,14 @@ char* getFieldListName(FieldList list)
 {
     return list->name;
 }
-
+Type getFieldListType(FieldList list)
+{
+    return list->type;
+}
+int getFieldListline(FieldList list)
+{
+    return list->lineno;
+}
 //根据名字查询节点
 Type search_with_name(char* Name)
 {

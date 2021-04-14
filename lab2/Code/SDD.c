@@ -150,14 +150,19 @@ int handle_StructSpecifier(struct GrammarTree *node){
             }
             return res;
         case Tag:
-            handle_ID(tmp);
-            printf("%s\n",tmp->val.str);
+            handle_Tag(tmp);
             t = search_struct(tmp->syn.str);
             if(check_undefined_struct(tmp->line,t,tmp->syn.str) == 0)
                 return 0;
             node->syn.t = t;
             return 1;
     }
+}
+
+void handle_Tag(struct GrammarTree *node){
+    struct GrammarTree *tmp = get_child(node,1);
+    handle_ID(tmp);
+    node-> syn = tmp->syn;
 }
 
 void handle_OptTag(struct GrammarTree *node){
