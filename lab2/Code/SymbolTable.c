@@ -312,7 +312,7 @@ Type getFieldListType(FieldList list)
 {
     return list->type;
 }
-int getFieldListline(FieldList list)
+int getFieldListLine(FieldList list)
 {
     return list->lineno;
 }

@@ -87,7 +87,7 @@ void free_FieldList(FieldList head);
 FieldList FieldList_repeat(FieldList head,FieldList ptr);//FieldList是否有该名称的变量,1表示存在,0不存
 char* getFieldListName(FieldList list);
 Type getFieldListType(FieldList list);
-int getFieldListline(FieldList list);
+int getFieldListLine(FieldList list);
 int same(Type A,Type B);//检查是否为同一类型，是则返回1,不是则返回0,异常则返回-1
 //int strict_array_same(Type A,Type B);//检查数组严格相等,返回值同same()
 enum KIND getKind(Type type);//type转KIND

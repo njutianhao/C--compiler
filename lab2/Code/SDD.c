@@ -254,7 +254,7 @@ int handle_VarDec(struct GrammarTree *node){
     struct GrammarTree *tmp2 = get_child(node,3);
     if(tmp2 == NULL){
         handle_ID(tmp);
-        node->syn.f = new_FieldList(tmp->syn.str,node->inh.t);
+        node->syn.f = new_FieldList(tmp->syn.str,node->inh.t,tmp->line);
         return 1;
     }
     else{
@@ -498,7 +498,7 @@ int handle_Args(struct GrammarTree *node){
     struct GrammarTree *tmp2 = get_child(node,3);
     if(handle_Exp(tmp) == 0)
         return 0;
-    FieldList f = new_FieldList(NULL,tmp->syn.t);
+    FieldList f = new_FieldList(NULL,tmp->syn.t,tmp->line);
     node->syn.f = f;
     if(tmp2 != NULL){
         if(handle_Args(tmp2) == 0)
