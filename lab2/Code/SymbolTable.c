@@ -30,8 +30,12 @@ void insert_Node(Type type_in,char* name)
     unsigned int hashnum=hash_pjw(name);
     temp->next=NULL;
     temp->type=type_in;
-    temp->name=malloc(strlen(name));
-    strcpy(temp->name,name);
+    if(name!=NULL)
+    {
+        temp->name=malloc(strlen(name));
+        strcpy(temp->name,name);
+    }
+    else temp->name=NULL;
     temp->next=NULL;
     temp->ifdef=0;
     if(type_in->kind==STRUCTURE)
@@ -110,8 +114,12 @@ FieldList new_FieldList(char* name_in,Type type_in)
 {
     FieldList temp=(FieldList)malloc(sizeof(struct FieldList_));
     temp->next=NULL;
-    temp->name=malloc(strlen(name_in));
-    strcpy(temp->name,name_in);
+    if(name_in==NULL) temp->name=NULL;
+    else 
+    {
+        temp->name=malloc(strlen(name_in));
+        strcpy(temp->name,name_in);
+     }
     temp->type=type_in;
     return temp;
 }
@@ -158,8 +166,12 @@ Type create_Structure_Type(FieldList head,char* struct_Name)
     Type temp=(Type)malloc(sizeof(struct Type_));
     temp->kind=STRUCTURE;
     temp->u.structure.structmember=head;
-    temp->u.structure.structName=malloc(strlen(struct_Name));
-    strcpy(temp->u.structure.structName,struct_Name);
+    if(struct_Name!=NULL)
+    {
+        temp->u.structure.structName=malloc(strlen(struct_Name));
+        strcpy(temp->u.structure.structName,struct_Name);
+    }
+    else temp->u.structure.structName=NULL;
     return temp;
 }
 //创建function type类型
@@ -443,8 +455,12 @@ struct UndefinedFunction* get_undefined_function()
                 if(p->ifdef==0)
                 {
                     struct UndefinedFunction* node=(struct UndefinedFunction*)malloc(sizeof(struct UndefinedFunction));
-                    node->func_name=malloc(strlen(p->name));
-                    strcpy(node->func_name,p->name);
+                    if(p->name!=NULL)
+                    {
+                        node->func_name=malloc(strlen(p->name));
+                        strcpy(node->func_name,p->name);
+                    }
+                    else node->func_name=NULL;
                     node->line=p->type->u.function.declare_line;
                     node->next=headptr;
                     headptr=node;                    
@@ -520,9 +536,16 @@ char* generateStr(FieldList p)
                         str=tmp;
                         if(temp->u.structure.structName!=NULL && '0'<=temp->u.structure.structName[0] && temp->u.structure.structName[0]<='9')
                         {
+                            //do nothing
+                        }
+                        else if(temp->u.structure.structName!=NULL)
+                        {
                             tmp=malloc(sizeof(str)+strlen(temp->u.structure.structName));
                             tmp=strcat(str,temp->u.structure.structName);
                             str=tmp;
+                        }
+                        else {
+                            //do nothing
                         }
                         for(int i=0;i<num;i++)
                         {
@@ -547,9 +570,17 @@ char* generateStr(FieldList p)
                 str=tmp;
                 if(p->type->u.structure.structName!=NULL && '0'<=p->type->u.structure.structName[0] && p->type->u.structure.structName[0]<='9')
                 {
+                    //do nothing
+                }
+                else if(p->type->u.structure.structName!=NULL)
+                {
                     tmp=malloc(sizeof(str)+strlen(p->type->u.structure.structName));
                     tmp=strcat(str,p->type->u.structure.structName);
                     str=tmp;
+                }
+                else
+                {
+                    //do nothing
                 }
                 break;
             }
