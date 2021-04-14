@@ -30,8 +30,12 @@ void insert_Node(Type type_in,char* name)
     unsigned int hashnum=hash_pjw(name);
     temp->next=NULL;
     temp->type=type_in;
-    temp->name=malloc(strlen(name));
-    strcpy(temp->name,name);
+    if(name!=NULL)
+    {
+        temp->name=malloc(strlen(name));
+        strcpy(temp->name,name);
+    }
+    else temp->name=NULL;
     temp->next=NULL;
     temp->ifdef=0;
     if(type_in->kind==STRUCTURE)
@@ -110,8 +114,12 @@ FieldList new_FieldList(char* name_in,Type type_in)
 {
     FieldList temp=(FieldList)malloc(sizeof(struct FieldList_));
     temp->next=NULL;
-    temp->name=malloc(strlen(name_in));
-    strcpy(temp->name,name_in);
+    if(name_in==NULL) temp->name=NULL;
+    else 
+    {
+        temp->name=malloc(strlen(name_in));
+        strcpy(temp->name,name_in);
+     }
     temp->type=type_in;
     return temp;
 }
@@ -138,28 +146,53 @@ void free_FieldList(FieldList head)
     }
 }
 
-//FieldList是否有该名称的变量
-int FieldList_repeat(FieldList head,FieldList ptr)
+//FieldList是否有重复变量
+FieldList FieldList_repeat(FieldList head,FieldList ptr)
 {
     FieldList tempHead=head;
     FieldList tempPtr=ptr;
+    FieldList repeatHead=NULL;
     for(;tempHead!=NULL;tempHead=tempHead->next)
     {
+        
         for(;tempPtr!=NULL;tempPtr=tempPtr->next)
         {
-            if(strcmp(tempHead->name,tempPtr->name)==0) return 1;
+            if(strcmp(tempHead->name,tempPtr->name)==0)
+            {
+                FieldList p=malloc(sizeof(struct FieldList_));
+                p->type=tempHead->type;
+                p->next=NULL;
+                if(tempHead->name!=NULL)
+                {
+                    p->name=malloc(strlen(tempHead->name));
+                    strcpy(p->name,tempHead->name);
+                }
+                else p->name=NULL;
+                if(repeatHead==NULL) repeatHead=p;
+                else
+                {
+                    FieldList tmp=repeatHead;
+                    while (tmp->next!=NULL) tmp=tmp->next;
+                    tmp->next=p;
+                }
+            } 
         }
     }
-    return 0;
+    return repeatHead;
 }
+
 
 Type create_Structure_Type(FieldList head,char* struct_Name)
 {
     Type temp=(Type)malloc(sizeof(struct Type_));
     temp->kind=STRUCTURE;
     temp->u.structure.structmember=head;
-    temp->u.structure.structName=malloc(strlen(struct_Name));
-    strcpy(temp->u.structure.structName,struct_Name);
+    if(struct_Name!=NULL)
+    {
+        temp->u.structure.structName=malloc(strlen(struct_Name));
+        strcpy(temp->u.structure.structName,struct_Name);
+    }
+    else temp->u.structure.structName=NULL;
     return temp;
 }
 //创建function type类型
@@ -267,6 +300,10 @@ Type getListHeadType(FieldList head)
 {
     if(head!=NULL) return head->type;
     return NULL;
+}
+char* getFieldListName(FieldList list)
+{
+    return list->name;
 }
 
 //根据名字查询节点
@@ -443,8 +480,12 @@ struct UndefinedFunction* get_undefined_function()
                 if(p->ifdef==0)
                 {
                     struct UndefinedFunction* node=(struct UndefinedFunction*)malloc(sizeof(struct UndefinedFunction));
-                    node->func_name=malloc(strlen(p->name));
-                    strcpy(node->func_name,p->name);
+                    if(p->name!=NULL)
+                    {
+                        node->func_name=malloc(strlen(p->name));
+                        strcpy(node->func_name,p->name);
+                    }
+                    else node->func_name=NULL;
                     node->line=p->type->u.function.declare_line;
                     node->next=headptr;
                     headptr=node;                    
@@ -466,14 +507,16 @@ char* generateStr(FieldList p)
             {
                 char*temp=malloc(sizeof(str)+sizeof("int"));
                 temp=strcat(str,"int");
-                str=temp;
+                str=malloc(strlen(temp));
+                strcpy(str,temp);
                 break;
             }
             case BASIC_FLOAT:
             {
                 char*temp=malloc(sizeof(str)+sizeof("float"));
                 str=strcat(str,"float");
-                str=temp;
+                str=malloc(strlen(temp));
+                strcpy(str,temp);
                 break;
             }
             case ARRAY:
@@ -491,12 +534,14 @@ char* generateStr(FieldList p)
                     {
                         char* tmp=malloc(sizeof(str)+sizeof("int"));
                         tmp=strcat(str,"int");
-                        str=tmp;                        
+                        str=malloc(strlen(tmp));
+                        strcpy(str,tmp);
                         for(int i=0;i<num;i++)
                         {
                             tmp=malloc(sizeof(str)+sizeof("[]"));
                             tmp=strcat(str,"[]");
-                            str=tmp;
+                            str=malloc(strlen(tmp));
+                            strcpy(str,tmp);
                         }
                         break;
                     }
@@ -509,7 +554,8 @@ char* generateStr(FieldList p)
                         {
                             tmp=malloc(sizeof(str)+sizeof("[]"));
                             tmp=strcat(str,"[]");
-                            str=tmp;
+                            str=malloc(strlen(tmp));
+                            strcpy(str,tmp);
                         }
                         break;
                     }
@@ -517,18 +563,28 @@ char* generateStr(FieldList p)
                     {
                         char* tmp=malloc(sizeof(str)+sizeof("struct "));
                         tmp=strcat(str,"struct ");
-                        str=tmp;
+                        str=malloc(strlen(tmp));
+                        strcpy(str,tmp);
                         if(temp->u.structure.structName!=NULL && '0'<=temp->u.structure.structName[0] && temp->u.structure.structName[0]<='9')
+                        {
+                            //do nothing
+                        }
+                        else if(temp->u.structure.structName!=NULL)
                         {
                             tmp=malloc(sizeof(str)+strlen(temp->u.structure.structName));
                             tmp=strcat(str,temp->u.structure.structName);
-                            str=tmp;
+                            str=malloc(strlen(tmp));
+                            strcpy(str,tmp);
+                            }
+                        else {
+                            //do nothing
                         }
                         for(int i=0;i<num;i++)
                         {
                             tmp=malloc(sizeof(str)+sizeof("[]"));
                             tmp=strcat(str,"[]");
-                            str=tmp;
+                            str=malloc(strlen(tmp));
+                            strcpy(str,tmp);
                         }
                         break;
                     }
@@ -544,12 +600,22 @@ char* generateStr(FieldList p)
             {
                 char* tmp=malloc(sizeof(str)+sizeof("struct "));
                 tmp=strcat(str,"struct ");
-                str=tmp;
+                str=malloc(strlen(tmp));
+                strcpy(str,tmp);
                 if(p->type->u.structure.structName!=NULL && '0'<=p->type->u.structure.structName[0] && p->type->u.structure.structName[0]<='9')
+                {
+                    //do nothing
+                }
+                else if(p->type->u.structure.structName!=NULL)
                 {
                     tmp=malloc(sizeof(str)+strlen(p->type->u.structure.structName));
                     tmp=strcat(str,p->type->u.structure.structName);
-                    str=tmp;
+                    str=malloc(strlen(tmp));
+                    strcpy(str,tmp);
+                }
+                else
+                {
+                    //do nothing
                 }
                 break;
             }
@@ -563,13 +629,15 @@ char* generateStr(FieldList p)
         {
             char* tmp=malloc(sizeof(str)+sizeof(" , "));
             tmp=strcat(str," , ");
-            str=tmp;
+            str=malloc(strlen(tmp));
+            strcpy(str,tmp);
         }
         else 
         {
             char* tmp=malloc(sizeof(str)+sizeof(")"));
             tmp=strcat(str,")");
-            str=tmp;        
+            str=malloc(strlen(tmp));
+            strcpy(str,tmp);        
         }
         p=p->next;
     }
@@ -620,7 +688,6 @@ Type getFieldType(Type t,char *name){
     }
     return NULL;
 }
-
 FieldList getNextFieldList(FieldList f){
     if(f == NULL)
         return NULL;
