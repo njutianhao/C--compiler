@@ -243,15 +243,22 @@ int check_use_var_as_func(int line,Type t,char *name){
     }
 }
 
-int check_array_type(int line,Type t){
+int check_array_type(int line,Type t,char *name){
     if(isArray(t) == 0)
     {
-        char *inf = "use [] to not an array";
+        char *s1 = "\"";
+        char *s2 = "\" is not an array";
+        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2));
+        char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
+        free(name);
         insert_Error("10",line,inf);
         return 0;
     }
     else
+    {
+        free(name);
         return 1;
+    }
 }
 
 int check_struct_type(int line,Type t){
@@ -265,15 +272,23 @@ int check_struct_type(int line,Type t){
         return 1;
 }
 
-int check_int_in_array(int line,Type t){
+int check_int_in_array(int line,Type t,char *name){
     if(isInt(t) == 0)
     {
-        char *inf = "the Exp in [] is not an integer";
+        char *s1 = "\"";
+        char *s2 = "\" is not an integer";
+        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2));
+        char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
+        free(name);
         insert_Error("12",line,inf);
         return 0;
     }
     else
+    {
+        free(name);
         return 1;
+    }
+        
 }
 
 int check_field_in_struct(int line,Type t,char *name){
