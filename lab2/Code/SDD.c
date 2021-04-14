@@ -78,7 +78,7 @@ void SDT(){
 }
 
 void handle_ExtDefList(struct GrammarTree *node){
-    if(node->head == NULL)
+    if(node == NULL || node -> head == NULL)
         return ;
     handle_ExtDef(get_child(node,1));
     handle_ExtDefList(get_child(node,2));
@@ -357,7 +357,8 @@ int handle_Stmt(struct GrammarTree *node){
             tmp2 = get_child(node,3);
             tmp3 = get_child(node,5);
             tmp4 = get_child(node,7);
-            handle_Exp(tmp2);
+            if(handle_Exp(tmp2) == 0)
+                return 0;
             if(check_condition_type(tmp2->line,tmp2->syn.t) == 0)
                 return 0;
             tmp3->inh = node->inh;
@@ -371,7 +372,8 @@ int handle_Stmt(struct GrammarTree *node){
         case WHILE:
             tmp2 = get_child(node,3);
             tmp3 = get_child(node,5);
-            handle_Exp(tmp2);
+            if(handle_Exp(tmp2) == 0)
+                return 0;
             if(check_condition_type(tmp2->line,tmp2->syn.t) == 0)
                 return 0;
             tmp3->inh = node->inh;
