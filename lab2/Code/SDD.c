@@ -11,7 +11,9 @@ char *get_VarDec_name(struct GrammarTree *node){
 }
 
 int is_leftval(struct GrammarTree *node){
-    return node->type == ID;
+    if(node == NULL)
+        return 0;
+    return node->head != NULL && node->head->val->type == ID && node->head->next == NULL;
 }
 
 struct GrammarTree *get_child(struct GrammarTree *node,int index){
@@ -54,12 +56,12 @@ void handle_ExtDef(struct GrammarTree *node){
             if(tmp3->type != CompSt)
             {
                 if(try_insert_FuncNode(tmp2->line,tmp2->syn.func.t,tmp2->syn.func.name,0) == 0)
-                    return 0;
+                    return ;
             }
             else
             {
                 if(try_insert_FuncNode(tmp2->line,tmp2->syn.func.t,tmp2->syn.func.name,1) == 0)
-                    return 0;
+                    return ;
                 tmp3->inh = tmp2->syn;
                 handle_CompSt(tmp3);
             }
