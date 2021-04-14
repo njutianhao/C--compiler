@@ -46,7 +46,7 @@ void insert_Node(Type type_in,char* name)
             else
             {
                 temp->next=StructTable[hashnum];
-                SymbolTable[hashnum]=temp;
+                StructTable[hashnum]=temp;
             }
         }
         else if(name==NULL)
@@ -62,12 +62,15 @@ void insert_Node(Type type_in,char* name)
             } while (num!=0 && i<14);
             temp->name[i]='\0';
             namelessStructNumber++;
+            temp->type->u.structure.structName=malloc(strlen(temp->name));
+            strcpy(temp->type->u.structure.structName,temp->name);
+            printf("%s\n",temp->name);
             hashnum=hash_pjw(temp->name);
             if(StructTable[hashnum]==NULL ) StructTable[hashnum]=temp;
             else
             {
                 temp->next=StructTable[hashnum];
-                SymbolTable[hashnum]=temp;
+                StructTable[hashnum]=temp;
             }
         }
     }
@@ -322,6 +325,8 @@ Type search_with_name(char* Name)
 //根据名字查询该名称结构体
 Type search_struct(char* Name)
 {
+    if(Name==NULL) return NULL;
+    //printf("%s\n",Name);
     unsigned int number=hash_pjw(Name);
     struct TableNode* p=StructTable[number];
     for(;p!=NULL;p=p->next)
