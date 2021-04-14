@@ -32,7 +32,7 @@ void insert_Node(Type type_in,char* name)
     temp->type=type_in;
     if(name!=NULL)
     {
-        temp->name=malloc(strlen(name));
+        temp->name=malloc(strlen(name)+1);
         strcpy(temp->name,name);
     }
     else temp->name=NULL;
@@ -62,7 +62,7 @@ void insert_Node(Type type_in,char* name)
             } while (num!=0 && i<14);
             temp->name[i]='\0';
             namelessStructNumber++;
-            temp->type->u.structure.structName=malloc(strlen(temp->name));
+            temp->type->u.structure.structName=malloc(strlen(temp->name)+1);
             strcpy(temp->type->u.structure.structName,temp->name);
             printf("%s\n",temp->name);
             hashnum=hash_pjw(temp->name);
@@ -120,7 +120,7 @@ FieldList new_FieldList(char* name_in,Type type_in,int line_no)
     if(name_in==NULL) temp->name=NULL;
     else 
     {
-        temp->name=malloc(strlen(name_in));
+        temp->name=malloc(strlen(name_in)+1);
         strcpy(temp->name,name_in);
      }
     temp->type=type_in;
@@ -167,7 +167,7 @@ FieldList FieldList_repeat(FieldList head,FieldList ptr)
                 p->next=NULL;
                 if(tempHead->name!=NULL)
                 {
-                    p->name=malloc(strlen(tempHead->name));
+                    p->name=malloc(strlen(tempHead->name)+1);
                     strcpy(p->name,tempHead->name);
                 }
                 else p->name=NULL;
@@ -192,7 +192,7 @@ Type create_Structure_Type(FieldList head,char* struct_Name)
     temp->u.structure.structmember=head;
     if(struct_Name!=NULL)
     {
-        temp->u.structure.structName=malloc(strlen(struct_Name));
+        temp->u.structure.structName=malloc(strlen(struct_Name)+1);
         strcpy(temp->u.structure.structName,struct_Name);
     }
     else temp->u.structure.structName=NULL;
@@ -494,7 +494,7 @@ struct UndefinedFunction* get_undefined_function()
                     struct UndefinedFunction* node=(struct UndefinedFunction*)malloc(sizeof(struct UndefinedFunction));
                     if(p->name!=NULL)
                     {
-                        node->func_name=malloc(strlen(p->name));
+                        node->func_name=malloc(strlen(p->name)+1);
                         strcpy(node->func_name,p->name);
                     }
                     else node->func_name=NULL;
@@ -510,24 +510,25 @@ struct UndefinedFunction* get_undefined_function()
 
 char* generateStr(FieldList p)
 {
-    char* str="(";
+    char* str=malloc(strlen("(")+1);
+    strcpy(str,"(");
     while(p!=NULL)
     {
         switch(p->type->kind)
         {
             case BASIC_INT:
             {
-                char*temp=malloc(sizeof(str)+sizeof("int"));
+                char* temp=malloc(strlen(str)+strlen("int")+1);
                 temp=strcat(str,"int");
-                str=malloc(strlen(temp));
+                str=malloc(strlen(temp)+1);
                 strcpy(str,temp);
                 break;
             }
             case BASIC_FLOAT:
             {
-                char*temp=malloc(sizeof(str)+sizeof("float"));
-                str=strcat(str,"float");
-                str=malloc(strlen(temp));
+                char*temp=malloc(sizeof(str)+sizeof("float")+1);
+                temp=strcat(str,"float");
+                str=malloc(strlen(temp)+1);
                 strcpy(str,temp);
                 break;
             }
@@ -544,38 +545,38 @@ char* generateStr(FieldList p)
                 {
                     case BASIC_INT:
                     {
-                        char* tmp=malloc(sizeof(str)+sizeof("int"));
+                        char* tmp=malloc(sizeof(str)+sizeof("int")+1);
                         tmp=strcat(str,"int");
-                        str=malloc(strlen(tmp));
+                        str=malloc(strlen(tmp)+1);
                         strcpy(str,tmp);
                         for(int i=0;i<num;i++)
                         {
-                            tmp=malloc(sizeof(str)+sizeof("[]"));
+                            tmp=malloc(sizeof(str)+sizeof("[]")+1);
                             tmp=strcat(str,"[]");
-                            str=malloc(strlen(tmp));
+                            str=malloc(strlen(tmp)+1);
                             strcpy(str,tmp);
                         }
                         break;
                     }
                     case BASIC_FLOAT:
                     {
-                        char* tmp=malloc(sizeof(str)+sizeof("float"));
+                        char* tmp=malloc(sizeof(str)+sizeof("float")+1);
                         tmp=strcat(str,"float");
                         str=tmp;                        
                         for(int i=0;i<num;i++)
                         {
-                            tmp=malloc(sizeof(str)+sizeof("[]"));
+                            tmp=malloc(sizeof(str)+sizeof("[]")+1);
                             tmp=strcat(str,"[]");
-                            str=malloc(strlen(tmp));
+                            str=malloc(strlen(tmp)+1);
                             strcpy(str,tmp);
                         }
                         break;
                     }
                     case STRUCTURE:
                     {
-                        char* tmp=malloc(sizeof(str)+sizeof("struct "));
+                        char* tmp=malloc(sizeof(str)+sizeof("struct ")+1);
                         tmp=strcat(str,"struct ");
-                        str=malloc(strlen(tmp));
+                        str=malloc(strlen(tmp)+1);
                         strcpy(str,tmp);
                         if(temp->u.structure.structName!=NULL && '0'<=temp->u.structure.structName[0] && temp->u.structure.structName[0]<='9')
                         {
@@ -583,9 +584,9 @@ char* generateStr(FieldList p)
                         }
                         else if(temp->u.structure.structName!=NULL)
                         {
-                            tmp=malloc(sizeof(str)+strlen(temp->u.structure.structName));
+                            tmp=malloc(sizeof(str)+strlen(temp->u.structure.structName)+1);
                             tmp=strcat(str,temp->u.structure.structName);
-                            str=malloc(strlen(tmp));
+                            str=malloc(strlen(tmp)+1);
                             strcpy(str,tmp);
                             }
                         else {
@@ -593,9 +594,9 @@ char* generateStr(FieldList p)
                         }
                         for(int i=0;i<num;i++)
                         {
-                            tmp=malloc(sizeof(str)+sizeof("[]"));
+                            tmp=malloc(sizeof(str)+sizeof("[]")+1);
                             tmp=strcat(str,"[]");
-                            str=malloc(strlen(tmp));
+                            str=malloc(strlen(tmp)+1);
                             strcpy(str,tmp);
                         }
                         break;
@@ -610,9 +611,9 @@ char* generateStr(FieldList p)
             }
             case STRUCTURE:
             {
-                char* tmp=malloc(sizeof(str)+sizeof("struct "));
+                char* tmp=malloc(sizeof(str)+sizeof("struct ")+1);
                 tmp=strcat(str,"struct ");
-                str=malloc(strlen(tmp));
+                str=malloc(strlen(tmp)+1);
                 strcpy(str,tmp);
                 if(p->type->u.structure.structName!=NULL && '0'<=p->type->u.structure.structName[0] && p->type->u.structure.structName[0]<='9')
                 {
@@ -620,9 +621,9 @@ char* generateStr(FieldList p)
                 }
                 else if(p->type->u.structure.structName!=NULL)
                 {
-                    tmp=malloc(sizeof(str)+strlen(p->type->u.structure.structName));
+                    tmp=malloc(sizeof(str)+strlen(p->type->u.structure.structName)+1);
                     tmp=strcat(str,p->type->u.structure.structName);
-                    str=malloc(strlen(tmp));
+                    str=malloc(strlen(tmp)+1);
                     strcpy(str,tmp);
                 }
                 else
@@ -639,9 +640,9 @@ char* generateStr(FieldList p)
         }
         if(p->next!=NULL) 
         {
-            char* tmp=malloc(sizeof(str)+sizeof(" , "));
-            tmp=strcat(str," , ");
-            str=malloc(strlen(tmp));
+            char* tmp=malloc(sizeof(str)+sizeof(", ")+1);
+            tmp=strcat(str,", ");
+            str=malloc(strlen(tmp)+1);
             strcpy(str,tmp);
         }
         else 
