@@ -91,7 +91,6 @@ void handle_ExtDef(struct GrammarTree *node){
     if(handle_Specifier(tmp1) == 0)
         return ;
     tmp2->inh = tmp1->syn;
-    printf("%d",tmp2->inh.t->kind);
     switch(tmp2->type){
         case FunDec:
             if(handle_FunDec(tmp2) == 0)
@@ -263,14 +262,6 @@ int handle_VarDec(struct GrammarTree *node){
     if(tmp2 == NULL){
         handle_ID(tmp);
         node->syn.f = new_FieldList(tmp->syn.str,node->inh.t,tmp->line);
-        Type temptype=node->syn.f->type;
-        while(temptype->kind==ARRAY)
-        {
-            printf("%d\n",temptype->kind);
-            if(temptype->u.array.elem==NULL) {printf("aha\n"); break;}
-            temptype=temptype->u.array.elem;
-        }
-        printf("%d\n",temptype->kind);
         return 1;
     }
     else{
@@ -333,7 +324,6 @@ int handle_ParamDec(struct GrammarTree *node){
     if(handle_Specifier(tmp) == 0)
         return 0;
     tmp2->inh = tmp->syn;
-    printf("%d\n",tmp2->inh.t->kind);
     handle_VarDec(tmp2);
     node->syn = tmp2->syn;
     return 1;
