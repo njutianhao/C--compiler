@@ -18,6 +18,7 @@ int main(int argc,char** argv){
 		print_Errors();
 		return 0;
 	}
+	//print_tree();
 	SDT();
 	print_Errors();
 	return 0;

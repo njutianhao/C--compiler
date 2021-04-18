@@ -53,9 +53,16 @@ char *prepare_exp_name(struct GrammarTree *node){
 }
 
 int is_leftval(struct GrammarTree *node){
-    if(node == NULL)
-        return 0;
-    return node->head != NULL && node->head->val->type == ID && node->head->next == NULL;
+    struct GrammarTree *p = node;
+    while(p != NULL){
+        struct GrammarTree *tmp = get_child(p,1);
+        if(tmp == NULL)
+        {
+            return p->type == ID;
+        }
+        p = tmp;
+    }
+    return 0;
 }
 
 struct GrammarTree *get_child(struct GrammarTree *node,int index){
@@ -436,7 +443,7 @@ int handle_Exp(struct GrammarTree *node){
                 return 1;
             }
             else
-            {
+            {       
                 t = search_with_name(tmp->syn.str);
                 if(check_use_var_as_func(tmp->line,t,tmp->syn.str) == 0)
                     return 0;
@@ -474,7 +481,7 @@ int handle_Exp(struct GrammarTree *node){
                 case OR:
                 case RELOP:
                 case PLUS:
-                case MINUS:
+                case SUB:
                 case STAR:
                 case DIV:
                     if(handle_Exp(tmp) == 0 || handle_Exp(tmp3) == 0)
