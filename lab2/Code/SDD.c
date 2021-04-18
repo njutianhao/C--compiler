@@ -204,7 +204,8 @@ void handle_DefList(struct GrammarTree *node){
 void handle_Def(struct GrammarTree *node){
     struct GrammarTree *tmp = get_child(node,1);
     struct GrammarTree *tmp2 = get_child(node,2);
-    handle_Specifier(tmp);
+    if(handle_Specifier(tmp) == 0)
+        return ;
     tmp2->inh = tmp->syn;
     handle_DecList(tmp2);
     node->syn = tmp2->syn;
