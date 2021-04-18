@@ -397,13 +397,17 @@ int handle_Stmt(struct GrammarTree *node){
 void handle_ExtDecList(struct GrammarTree *node){
     struct GrammarTree *tmp = get_child(node,1);
     struct GrammarTree *tmp2 = get_child(node,3);
+    tmp->inh = node->inh;
     if(handle_VarDec(tmp) != 0)
     {
         try_insert_all_FieldList(tmp->syn.f);
         free_FieldList(tmp->syn.f);
     }
     if(tmp2 != NULL)
+    {
+        tmp2->inh = node->inh;
         handle_ExtDecList(tmp2);
+    }
 }
 
 int handle_Exp(struct GrammarTree *node){
