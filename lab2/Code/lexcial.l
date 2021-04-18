@@ -77,9 +77,10 @@ digit [0-9]
 "." { return DOT; }
 "!" { return NOT; }
 (int)|(float) { 
-	yylval.type_treenode.str=(char *)malloc(yyleng*sizeof(char)); 
+	yylval.type_treenode.str=(char *)malloc(yyleng*sizeof(char)+1); 
 	for(int i=0;i<yyleng;i++)
 		yylval.type_treenode.str[i]=yytext[i];
+	yylval.type_treenode.str[yyleng]='\0';
 	return TYPE; 
  }
 "(" { return LP; }
@@ -96,9 +97,10 @@ digit [0-9]
 ([1-9]{digit}*)|(0) { yylval.type_treenode.i=atoi(yytext); return INT; }
 ((([1-9]{digit}*)|(0))(\.)({digit}+)) { yylval.type_treenode.f=atof(yytext); return FLOAT; }
 ({letter}|(_))({letter}|{digit}|_)* {
-	yylval.type_treenode.str=(char *)malloc(yyleng*sizeof(char)); 
+	yylval.type_treenode.str=(char *)malloc(yyleng*sizeof(char)+1); 
 	for(int i=0;i<yyleng;i++)
 		yylval.type_treenode.str[i]=yytext[i];
+	yylval.type_treenode.str[yyleng]='\0';
 	return ID;
  }
 . { printf("Error type A at line %d:Mysterious characters \'%s\'.\n",yylineno,yytext);

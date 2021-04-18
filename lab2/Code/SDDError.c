@@ -181,12 +181,16 @@ int check_undefined_func(int line,Type t,char *name){
 int check_assign_type(int line,Type t1,Type t2){
     if(same(t1,t2) == 0)
     {
+        printf("get\n");
         char *inf = "Type mismatched for assignment";
         insert_Error("5",line,inf);
         return 0;
     }
-    else
-        return 1;
+    else{
+        printf("1\n");
+                return 1;
+
+    }
 }
 
 int check_instruct(int line,char *name){

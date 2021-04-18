@@ -405,7 +405,8 @@ int same(Type A,Type B)
                 Btype=Btype->u.array.elem;
                 if(Btype->kind!=ARRAY) break;
             }
-            if(DimensionA==DimensionB) return 1;
+            if(DimensionA!=DimensionB) return 0;
+            if(same(Atype,Btype)==1) return 1;
             else return 0;
             break; 
         }   
@@ -677,6 +678,7 @@ int isStruct(Type t){
 }
 
 Type getLowerArray(Type t){
+    if(t->u.array.elem==NULL) printf("12345\n"); 
     return t->u.array.elem;
 }
 
