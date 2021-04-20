@@ -146,7 +146,10 @@ int handle_StructSpecifier(struct GrammarTree *node){
             instruct = 1;
             handle_DefList(tmp2);
             if(try_insert_all_FieldList(tmp2->syn.f) == 0)
+            {
+                instruct = old_instruct;
                 return 0;
+            }
             t = create_Structure_Type(tmp2->syn.f,tmp->syn.str);
             res = try_insert_struct(tmp->line,t,tmp->syn.str);
             instruct = old_instruct;
