@@ -88,10 +88,11 @@ int try_insert_FuncNode(int line,Type type_in,char* name,int define){
     }
 }
 
-int check_FieldList(FieldList p1,FieldList p2,int instruct){
-    FieldList f = FieldList_repeat(p1,p2);
+FieldList check_FieldList(FieldList p1,FieldList p2,int instruct){
+    FieldList res = malloc(sizeof(FieldList));
+    FieldList f = FieldList_repeat(p1,p2,&res);
     if(f == NULL){
-        return 1;
+        ;
     }
     else if(instruct == 1){
         char *s1 = "Redefined field \"";
@@ -104,7 +105,6 @@ int check_FieldList(FieldList p1,FieldList p2,int instruct){
             insert_Error("15",getFieldListLine(f),inf);
             f = getNextFieldList(f);
         }
-        return 0;
     }
     else
     {
@@ -118,8 +118,9 @@ int check_FieldList(FieldList p1,FieldList p2,int instruct){
             insert_Error("3",getFieldListLine(f),inf);
             f = getNextFieldList(f);
         }
-        return 0;
     }
+    free_FieldList(f);
+    return res;
 }
 
 int check_return_type(int line,char *funcname,Type t){
