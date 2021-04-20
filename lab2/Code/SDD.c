@@ -189,7 +189,7 @@ void handle_DefList(struct GrammarTree *node){
     struct GrammarTree *tmp2 = get_child(node,2);
     handle_Def(tmp);  
     handle_DefList(tmp2);
-    if(check_FieldList(tmp->line,tmp->syn.f,tmp2->syn.f,instruct) == 0)
+    if(check_FieldList(tmp->syn.f,tmp2->syn.f,instruct) == 0)
         return;
     node->syn.f = insert_FieldList(tmp->syn.f,tmp2->syn.f);
 }
@@ -342,6 +342,7 @@ int handle_Stmt(struct GrammarTree *node){
     struct GrammarTree *tmp2;
     struct GrammarTree *tmp3;
     struct GrammarTree *tmp4;
+    int res;
     switch(tmp->type){
         case Exp: handle_Exp(tmp);break;
         case CompSt: tmp->inh = node->inh;handle_CompSt(tmp);break;
@@ -355,6 +356,7 @@ int handle_Stmt(struct GrammarTree *node){
             tmp2 = get_child(node,3);
             tmp3 = get_child(node,5);
             tmp4 = get_child(node,7);
+            res = handle_Exp(tmp2);
             tmp3->inh = node->inh;
             handle_Stmt(tmp3);
             if(tmp4 != NULL)
@@ -362,7 +364,7 @@ int handle_Stmt(struct GrammarTree *node){
                 tmp4->inh = node->inh;
                 handle_Stmt(tmp4);
             }
-            if(handle_Exp(tmp2) == 0)
+            if(res == 0)
                 return 0;
             if(check_condition_type(tmp2->line,tmp2->syn.t) == 0)
                 return 0;
@@ -370,9 +372,10 @@ int handle_Stmt(struct GrammarTree *node){
         case WHILE:
             tmp2 = get_child(node,3);
             tmp3 = get_child(node,5);
+            res = handle_Exp(tmp2);
             tmp3->inh = node->inh;
             handle_Stmt(tmp3);
-            if(handle_Exp(tmp2) == 0)
+            if(res == 0)
                 return 0;
             if(check_condition_type(tmp2->line,tmp2->syn.t) == 0)
                 return 0;
