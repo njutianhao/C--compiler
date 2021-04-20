@@ -209,7 +209,10 @@ void handle_Def(struct GrammarTree *node){
     struct GrammarTree *tmp = get_child(node,1);
     struct GrammarTree *tmp2 = get_child(node,2);
     if(handle_Specifier(tmp) == 0)
+    {
+        node->syn.f = NULL;
         return ;
+    }
     tmp2->inh = tmp->syn;
     handle_DecList(tmp2);
     node->syn = tmp2->syn;
