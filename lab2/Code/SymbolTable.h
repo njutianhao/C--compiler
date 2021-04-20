@@ -83,7 +83,7 @@ FieldList new_FieldList(char* name_in,Type type_in,int line_no);//创建一个Fi
 FieldList insert_FieldList(FieldList head,FieldList ptr);//向FieldList链表内插入节点
 FieldList getNextFieldList(FieldList f);
 void free_FieldList(FieldList head);
-FieldList FieldList_repeat(FieldList head,FieldList ptr);//FieldList是否有该名称的变量,1表示存在,0不存
+FieldList FieldList_repeat(FieldList head,FieldList ptr,FieldList* fptr);//FieldList是否有该名称的变量,1表示存在,0不存
 char* getFieldListName(FieldList list);
 Type getFieldListType(FieldList list);
 int getFieldListLine(FieldList list);

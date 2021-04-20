@@ -164,20 +164,51 @@ void free_FieldList(FieldList head)
     }
 }
 
-//FieldList是否有重名变量
-FieldList FieldList_repeat(FieldList head, FieldList ptr)
+//FieldList是否有重名变量，删除第二个fieldList中的重复域，并重新整合为一个FieldList
+FieldList FieldList_repeat(FieldList head, FieldList ptr,FieldList* fptr)
 {
     FieldList tempHead = head;
     FieldList tempPtr = ptr;
     FieldList repeatHead = NULL;
-    for (; tempHead != NULL; tempHead = tempHead->next)
+    FieldList unrepeatList=NULL;
+
+    //保留head，head和ptr内部不存在重复
+    FieldList unrepeatListCopy=unrepeatList;//尾指针
+    for(FieldList t=head;t!=NULL;t=t->next)
     {
-        for (; tempPtr != NULL; tempPtr = tempPtr->next)
+        FieldList temp = (FieldList)malloc(sizeof(struct FieldList_));
+        temp->lineno=t->lineno;
+        if(temp->name!=NULL)
+        {
+            temp->name=malloc(strlen(t->name)+1);
+            strcpy(temp->name,t->name);
+        }
+        temp->next=NULL;
+        temp->type=t->type;
+        if(unrepeatList==NULL)
+        {
+            unrepeatList=temp;
+            unrepeatListCopy=temp;
+        }
+        else
+        {
+            unrepeatListCopy->next=temp;
+            unrepeatListCopy=unrepeatListCopy->next;
+        }
+    }
+    //查重
+    for (tempPtr=ptr; tempPtr != NULL; tempPtr = tempPtr->next)
+    {
+        int flag=0;
+        for (tempHead=head; tempHead != NULL; tempHead = tempHead->next)
         {
             if (strcmp(tempHead->name, tempPtr->name) == 0)
             {
+                flag=1;
+                //重复域单独组成一个链表
                 FieldList p = (FieldList)malloc(sizeof(struct FieldList_));
                 p->type = tempPtr->type;
+                p->lineno=tempPtr->lineno;
                 p->next = NULL;
                 if (tempPtr->name != NULL)
                 {
@@ -195,9 +226,33 @@ FieldList FieldList_repeat(FieldList head, FieldList ptr)
                         tmp = tmp->next;
                     tmp->next = p;
                 }
+                break;
+            }
+        }
+        if(flag==0)
+        {
+            FieldList p = (FieldList)malloc(sizeof(struct FieldList_));
+            p->type = tempPtr->type;
+            p->lineno=tempPtr->lineno;
+            p->next = NULL;
+            if (tempPtr->name != NULL)
+            {
+                p->name = malloc(strlen(tempPtr->name) + 1);
+                strcpy(p->name, tempPtr->name);
+            }
+            if(unrepeatList==NULL)
+            {
+                unrepeatList=p;
+                unrepeatListCopy=p;
+            }
+            else
+            {
+                unrepeatListCopy->next=p;
+                unrepeatListCopy=unrepeatListCopy->next;
             }
         }
     }
+    fptr=&unrepeatList;
     return repeatHead;
 }
 
