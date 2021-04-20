@@ -177,6 +177,8 @@ void handle_Tag(struct GrammarTree *node){
 void handle_OptTag(struct GrammarTree *node){
     struct GrammarTree* tmp = get_child(node,1);
     node->syn.str = NULL;
+    if(tmp == NULL)
+        return;
     if(tmp->type == ID){
         handle_ID(tmp);
         node->syn.str = tmp->syn.str;
