@@ -89,7 +89,8 @@ int try_insert_FuncNode(int line,Type type_in,char* name,int define){
 }
 
 FieldList check_FieldList(FieldList p1,FieldList p2,int instruct){
-    FieldList f = FieldList_repeat(p1,p2);
+    FieldList res = malloc(sizeof(FieldList));
+    FieldList f = FieldList_repeat(p1,p2,&res);
     if(f == NULL){
         ;
     }
@@ -118,7 +119,8 @@ FieldList check_FieldList(FieldList p1,FieldList p2,int instruct){
             f = getNextFieldList(f);
         }
     }
-    return p1;
+    free_FieldList(f);
+    return res;
 }
 
 int check_return_type(int line,char *funcname,Type t){
