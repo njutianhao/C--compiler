@@ -176,46 +176,32 @@ void handle_Tag(struct GrammarTree *node){
 
 void handle_OptTag(struct GrammarTree *node){
     struct GrammarTree* tmp = get_child(node,1);
-    if(tmp == NULL)
-    {
-        node->syn.str = NULL;
-    }
-    else if(tmp->type == ID){
+    node->syn.str = NULL;
+    if(tmp->type == ID){
         handle_ID(tmp);
         node->syn.str = tmp->syn.str;
-    }
-    else{
-        printf("wrong in handle_OptTag\n");
-        exit(0);
     }
 }
 
 void handle_DefList(struct GrammarTree *node){
+    node->syn.f = NULL;
     if(node->head == NULL)
-    {
-        node->syn.f = NULL;
         return;
-    }
     struct GrammarTree *tmp = get_child(node,1);
     struct GrammarTree *tmp2 = get_child(node,2);
     handle_Def(tmp);  
     handle_DefList(tmp2);
     if(check_FieldList(tmp->line,tmp->syn.f,tmp2->syn.f,instruct) == 0)
-    {
-        node->syn.f = NULL;
         return;
-    }
     node->syn.f = insert_FieldList(tmp->syn.f,tmp2->syn.f);
 }
 
 void handle_Def(struct GrammarTree *node){
     struct GrammarTree *tmp = get_child(node,1);
     struct GrammarTree *tmp2 = get_child(node,2);
+    node->syn.f = NULL;
     if(handle_Specifier(tmp) == 0)
-    {
-        node->syn.f = NULL;
         return ;
-    }
     tmp2->inh = tmp->syn;
     handle_DecList(tmp2);
     node->syn = tmp2->syn;
@@ -225,20 +211,16 @@ void handle_DecList(struct GrammarTree *node){
     struct GrammarTree *tmp = get_child(node,1);
     struct GrammarTree *tmp2 = get_child(node,3);
     tmp->inh = node->inh;
+    node->syn.f = NULL;
     int res = handle_Dec(tmp);
     if(res == 1)
-    {
         node->syn = tmp->syn;
-    }
-    else
-        node->syn.f = NULL;
     if(tmp2 != NULL)
     { 
         tmp2->inh = node->inh;
         handle_DecList(tmp2);
         if(check_FieldList(tmp->line,tmp->syn.f,tmp2->syn.f,instruct) == 0)
         {
-            node->syn.f = NULL;
             return;
         }
         node->syn.f = insert_FieldList(tmp->syn.f,tmp2->syn.f);
@@ -249,6 +231,7 @@ int handle_Dec(struct GrammarTree *node){
     struct GrammarTree *tmp = get_child(node,1);
     struct GrammarTree *tmp2 = get_child(node,3);
     tmp->inh = node->inh;
+    node->syn.f = NULL;
     if(tmp2 == NULL){
         if(handle_VarDec(tmp) == 0)
             return 0;
@@ -269,6 +252,7 @@ int handle_Dec(struct GrammarTree *node){
 int handle_VarDec(struct GrammarTree *node){
     struct GrammarTree *tmp = get_child(node,1);
     struct GrammarTree *tmp2 = get_child(node,3);
+    node->syn.f = NULL;
     if(tmp2 == NULL){
         handle_ID(tmp);
         node->syn.f = new_FieldList(tmp->syn.str,node->inh.t,tmp->line);
@@ -317,20 +301,25 @@ int handle_VarList(struct GrammarTree *node){
     struct GrammarTree *tmp = get_child(node,1);
     struct GrammarTree *tmp2 = get_child(node,3);
     handle_ParamDec(tmp);
-    if(try_insert_all_FieldList(tmp->syn.f) == 0)
-        return 0;
-    FieldList f = NULL;
+    node->syn.f = NULL;
     if(tmp2 != NULL)
     {
         handle_VarList(tmp2);
-        f = tmp2->syn.f;
+        node->syn = tmp2->syn;
     }
-    node->syn.f = insert_FieldList(tmp->syn.f,f);
+    if(try_insert_all_FieldList(tmp->syn.f) == 0)
+        return 0;
+    if(tmp2 != NULL)
+        node->syn.f = insert_FieldList(tmp->syn.f,tmp2->syn.f);
+    else
+        node->syn = tmp->syn;
+    return 1;
 }
 
 int handle_ParamDec(struct GrammarTree *node){
     struct GrammarTree *tmp = get_child(node,1);
     struct GrammarTree *tmp2 = get_child(node,2);
+    node->syn.f = NULL;
     if(handle_Specifier(tmp) == 0)
         return 0;
     tmp2->inh = tmp->syn;
