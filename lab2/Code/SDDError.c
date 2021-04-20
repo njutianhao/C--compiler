@@ -10,6 +10,23 @@ int try_insert_all_FieldList(FieldList f){
     return res;
 }
 
+int try_insert_struct(int line,Type type_in,char *name){
+    if(name_exist(name) == 0)
+    {
+        insert_Node(type_in,name);  
+        return 1;
+    }
+    else
+    {
+        char *s1 = "Duplicated name \"";
+        char *s2 = "\"";
+        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2) + 1);
+        char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
+        insert_Error("16",line,inf);
+        return 0;
+    }
+}
+
 int try_insert_Node(int line,Type type_in,char* name){
     if(getKind(type_in) == FUNCTION)
     {
@@ -20,15 +37,6 @@ int try_insert_Node(int line,Type type_in,char* name){
     {
         insert_Node(type_in,name);  
         return 1;
-    }
-    else if(search_with_name(name) != NULL && isStruct(type_in))
-    {
-        char *s1 = "Duplicated name \"";
-        char *s2 = "\"";
-        char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2) + 1);
-        char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
-        insert_Error("16",line,inf);
-        return 0;
     }
     else
     {

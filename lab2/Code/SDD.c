@@ -53,16 +53,13 @@ char *prepare_exp_name(struct GrammarTree *node){
 }
 
 int is_leftval(struct GrammarTree *node){
-    struct GrammarTree *p = node;
-    while(p != NULL){
-        struct GrammarTree *tmp = get_child(p,1);
-        if(tmp == NULL)
-        {
-            return p->type == ID;
-        }
-        p = tmp;
+    struct GrammarTree *p = get_child(node,1);
+    struct GrammarTree *n = get_child(node,2);
+    while(p->head != NULL){
+        n = get_child(p,2);
+        p = get_child(p,1);
     }
-    return 0;
+    return p->type == ID && n == NULL;
 }
 
 struct GrammarTree *get_child(struct GrammarTree *node,int index){
@@ -151,7 +148,7 @@ int handle_StructSpecifier(struct GrammarTree *node){
             if(try_insert_all_FieldList(tmp2->syn.f) == 0)
                 return 0;
             t = create_Structure_Type(tmp2->syn.f,tmp->syn.str);
-            res = try_insert_Node(tmp->line,t,tmp->syn.str);
+            res = try_insert_struct(tmp->line,t,tmp->syn.str);
             instruct = old_instruct;
             if(res == 1)
             {

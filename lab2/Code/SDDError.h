@@ -10,6 +10,8 @@ int try_insert_Node(int line,Type type_in,char* name);
 
 int try_insert_FuncNode(int line,Type type_in,char* name,int define);
 
+int try_insert_struct(int line,Type type_in,char *name);
+
 int check_FieldList(int line,FieldList p1,FieldList p2,int instruct);
 
 int check_return_type(int line,char *funcname,Type t);
