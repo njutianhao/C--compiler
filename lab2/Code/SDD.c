@@ -145,11 +145,7 @@ int handle_StructSpecifier(struct GrammarTree *node){
             old_instruct = instruct;
             instruct = 1;
             handle_DefList(tmp2);
-            if(try_insert_all_FieldList(tmp2->syn.f) == 0)
-            {
-                instruct = old_instruct;
-                return 0;
-            }
+            try_insert_all_FieldList(tmp2->syn.f);
             t = create_Structure_Type(tmp2->syn.f,tmp->syn.str);
             res = try_insert_struct(tmp->line,t,tmp->syn.str);
             instruct = old_instruct;
@@ -359,10 +355,6 @@ int handle_Stmt(struct GrammarTree *node){
             tmp2 = get_child(node,3);
             tmp3 = get_child(node,5);
             tmp4 = get_child(node,7);
-            if(handle_Exp(tmp2) == 0)
-                return 0;
-            if(check_condition_type(tmp2->line,tmp2->syn.t) == 0)
-                return 0;
             tmp3->inh = node->inh;
             handle_Stmt(tmp3);
             if(tmp4 != NULL)
@@ -370,16 +362,20 @@ int handle_Stmt(struct GrammarTree *node){
                 tmp4->inh = node->inh;
                 handle_Stmt(tmp4);
             }
-            break;
-        case WHILE:
-            tmp2 = get_child(node,3);
-            tmp3 = get_child(node,5);
             if(handle_Exp(tmp2) == 0)
                 return 0;
             if(check_condition_type(tmp2->line,tmp2->syn.t) == 0)
                 return 0;
+            break;
+        case WHILE:
+            tmp2 = get_child(node,3);
+            tmp3 = get_child(node,5);
             tmp3->inh = node->inh;
             handle_Stmt(tmp3);
+            if(handle_Exp(tmp2) == 0)
+                return 0;
+            if(check_condition_type(tmp2->line,tmp2->syn.t) == 0)
+                return 0;
             break;
     }
     return 1;
