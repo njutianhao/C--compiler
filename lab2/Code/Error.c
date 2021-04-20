@@ -3,7 +3,7 @@
 struct ErrorNode *ErrorHead = NULL;
 int HaveErrors=0;
 void print_Node(struct ErrorNode* node){
-    printf("Error Type %s at line %d:%s.\n",node->ErrorType,node->Linenumber,node->Information);
+    printf("Error type %s at Line %d: %s.\n",node->ErrorType,node->Linenumber,node->Information);
 }
 void print_Errors(){
     if(HaveErrors==0) return;
@@ -17,9 +17,9 @@ void insert_Error(char* errorType,int linenumber,char* information){
     HaveErrors++;
     struct ErrorNode* q=(struct ErrorNode*)malloc(sizeof(struct ErrorNode));
     q->Linenumber=linenumber;
-    q->ErrorType=malloc(strlen(errorType));
+    q->ErrorType=malloc(strlen(errorType)+1);
     strcpy(q->ErrorType,errorType);
-    q->Information=malloc(strlen(information));
+    q->Information=malloc(strlen(information)+1);
     strcpy(q->Information,information);
     q->next=NULL;
     struct ErrorNode* p=ErrorHead;

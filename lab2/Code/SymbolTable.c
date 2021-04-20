@@ -52,6 +52,7 @@ void insert_Node(Type type_in, char *name)
                 temp->next = StructTable[hashnum];
                 StructTable[hashnum] = temp;
             }
+            return;
         }
         else if (name == NULL)
         {
@@ -76,6 +77,7 @@ void insert_Node(Type type_in, char *name)
                 temp->next = StructTable[hashnum];
                 StructTable[hashnum] = temp;
             }
+            return;
         }
     }
     else if (type_in->kind == FUNCTION)
@@ -175,12 +177,12 @@ FieldList FieldList_repeat(FieldList head, FieldList ptr)
             if (strcmp(tempHead->name, tempPtr->name) == 0)
             {
                 FieldList p = (FieldList)malloc(sizeof(struct FieldList_));
-                p->type = tempHead->type;
+                p->type = tempPtr->type;
                 p->next = NULL;
-                if (tempHead->name != NULL)
+                if (tempPtr->name != NULL)
                 {
-                    p->name = malloc(strlen(tempHead->name) + 1);
-                    strcpy(p->name, tempHead->name);
+                    p->name = malloc(strlen(tempPtr->name) + 1);
+                    strcpy(p->name, tempPtr->name);
                 }
                 else
                     p->name = NULL;
@@ -340,7 +342,7 @@ int getFieldListLine(FieldList list)
 {
     return list->lineno;
 }
-//根据名字查询节点
+//根据名字查询symboltable
 Type search_with_name(char *Name)
 {
     unsigned int number = hash_pjw(Name);
@@ -386,7 +388,7 @@ Type search_function(char *Name)
     return NULL;
 }
 
-//某一变量、形参或者成员名是否已存在,是则返回1,不是则返回0
+//某一变量、形参、结构体名或成员名是否已存在,是则返回1,不是则返回0
 int name_exist(char *name)
 {
     if (name == NULL)
@@ -395,6 +397,12 @@ int name_exist(char *name)
     }
     unsigned int hashnum = hash_pjw(name);
     struct TableNode *p = SymbolTable[hashnum];
+    for (; p != NULL; p = p->next)
+    {
+        if (strcmp(p->name, name) == 0)
+            return 1;
+    }
+    p=StructTable[hashnum];
     for (; p != NULL; p = p->next)
     {
         if (strcmp(p->name, name) == 0)
@@ -561,17 +569,10 @@ struct UndefinedFunction *get_undefined_function()
 
 char *generateStr(FieldList p)
 {
-    //printf("in there\n");
     char *str = malloc(strlen("(") + 1);
     strcpy(str, "(");
     while (p != NULL)
     {
-        //printf("got here\n");
-        //if (p->type == NULL)
-        //{
-          //  printf("gotcha\n");
-        //}
-        //printf("%d\n",p->type->kind);
         switch (p->type->kind)
         {
         case BASIC_INT:
@@ -586,7 +587,7 @@ char *generateStr(FieldList p)
         }
         case BASIC_FLOAT:
         {
-            char *temp = malloc(sizeof(str) + sizeof("float") + 1);
+            char *temp = malloc(strlen(str) + strlen("float") + 1);
             temp = strcat(strcpy(temp, str), "float");
             free(str);
             str = malloc(strlen(temp) + 1);
@@ -607,7 +608,7 @@ char *generateStr(FieldList p)
             {
             case BASIC_INT:
             {
-                char *tmp = malloc(sizeof(str) + sizeof("int") + 1);
+                char *tmp = malloc(strlen(str) + strlen("int") + 1);
                 tmp = strcat(strcpy(tmp, str), "int");
                 free(str);
                 str = malloc(strlen(tmp) + 1);
@@ -615,7 +616,7 @@ char *generateStr(FieldList p)
                 free(tmp);
                 for (int i = 0; i < num; i++)
                 {
-                    tmp = malloc(sizeof(str) + sizeof("[]") + 1);
+                    tmp = malloc(strlen(str) + strlen("[]") + 1);
                     tmp = strcat(strcpy(tmp, str), "[]");
                     free(str);
                     str = malloc(strlen(tmp) + 1);
@@ -626,7 +627,7 @@ char *generateStr(FieldList p)
             }
             case BASIC_FLOAT:
             {
-                char *tmp = malloc(sizeof(str) + sizeof("float") + 1);
+                char *tmp = malloc(strlen(str) + strlen("float") + 1);
                 tmp = strcat(strcpy(tmp, str), "float");
                 free(str);
                 str = malloc(strlen(tmp) + 1);
@@ -634,7 +635,7 @@ char *generateStr(FieldList p)
                 free(tmp);
                 for (int i = 0; i < num; i++)
                 {
-                    tmp = malloc(sizeof(str) + sizeof("[]") + 1);
+                    tmp = malloc(strlen(str) + strlen("[]") + 1);
                     tmp = strcat(strcpy(tmp, str), "[]");
                     free(str);
                     str = malloc(strlen(tmp) + 1);
@@ -645,7 +646,7 @@ char *generateStr(FieldList p)
             }
             case STRUCTURE:
             {
-                char *tmp = malloc(sizeof(str) + sizeof("struct ") + 1);
+                char *tmp = malloc(strlen(str) + strlen("struct ") + 1);
                 tmp = strcat(strcpy(tmp, str), "struct ");
                 free(str);
                 str = malloc(strlen(tmp) + 1);
@@ -657,7 +658,7 @@ char *generateStr(FieldList p)
                 }
                 else if (temp->u.structure.structName != NULL)
                 {
-                    tmp = malloc(sizeof(str) + strlen(temp->u.structure.structName) + 1);
+                    tmp = malloc(strlen(str) + strlen(temp->u.structure.structName) + 1);
                     tmp = strcat(strcpy(tmp, str), temp->u.structure.structName);
                     free(str);
                     str = malloc(strlen(tmp) + 1);
@@ -670,7 +671,7 @@ char *generateStr(FieldList p)
                 }
                 for (int i = 0; i < num; i++)
                 {
-                    tmp = malloc(sizeof(str) + sizeof("[]") + 1);
+                    tmp = malloc(strlen(str) + strlen("[]") + 1);
                     tmp = strcat(strcpy(tmp, str), "[]");
                     free(str);
                     str = malloc(strlen(tmp) + 1);
@@ -689,19 +690,19 @@ char *generateStr(FieldList p)
         }
         case STRUCTURE:
         {
-            char *tmp = malloc(sizeof(str) + sizeof("struct ") + 1);
+            char *tmp = malloc(strlen(str) + strlen("struct ") + 1);
             tmp = strcat(strcpy(tmp, str), "struct ");
             free(str);
             str = malloc(strlen(tmp) + 1);
             strcpy(str, tmp);
-            free(tmp);
+            free(tmp);            
             if (p->type->u.structure.structName != NULL && '0' <= p->type->u.structure.structName[0] && p->type->u.structure.structName[0] <= '9')
             {
                 //do nothing
             }
             else if (p->type->u.structure.structName != NULL)
             {
-                tmp = malloc(sizeof(str) + strlen(p->type->u.structure.structName) + 1);
+                tmp = malloc(strlen(str) + strlen(p->type->u.structure.structName) + 1);
                 tmp = strcat(strcpy(tmp, str), p->type->u.structure.structName);
                 free(str);
                 str = malloc(strlen(tmp) + 1);
@@ -722,7 +723,7 @@ char *generateStr(FieldList p)
         }
         if (p->next != NULL)
         {
-            char *tmp = malloc(sizeof(str) + sizeof(", ") + 1);
+            char *tmp = malloc(strlen(str) + strlen(", ") + 1);
             tmp = strcat(strcpy(tmp, str), ", ");
             free(str);
             str = malloc(strlen(tmp) + 1);
@@ -731,14 +732,13 @@ char *generateStr(FieldList p)
         }
         else
         {
-            char *tmp = malloc(sizeof(str) + sizeof(")") + 1);
+            char *tmp = malloc(strlen(str) + strlen(")") + 1);
             tmp = strcat(strcpy(tmp, str), ")");
             free(str);
             str = malloc(strlen(tmp) + 1);
             strcpy(str, tmp);
             free(tmp);
         }
-        //printf("loop\n");
         p = p->next;
     }
     return str;

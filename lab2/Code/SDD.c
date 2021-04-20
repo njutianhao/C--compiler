@@ -6,7 +6,7 @@ int instruct = 0;
 
 char *get_VarDec_name(struct GrammarTree *node){
     if(node->type != ID)
-        get_VarDec_name(get_child(node,1));
+        return get_VarDec_name(get_child(node,1));
     return node->val.str;
 }
 
@@ -217,7 +217,7 @@ void handle_DecList(struct GrammarTree *node){
     { 
         tmp2->inh = node->inh;
         handle_DecList(tmp2);
-        if(check_FieldList(tmp->line,tmp->syn.f,tmp2->syn.f,instruct) == 0)
+        if(check_FieldList(tmp->syn.f,tmp2->syn.f,instruct) == 0)
         {
             return;
         }
