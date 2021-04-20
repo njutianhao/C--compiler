@@ -217,7 +217,7 @@ void handle_DecList(struct GrammarTree *node){
     { 
         tmp2->inh = node->inh;
         handle_DecList(tmp2);
-        if(check_FieldList(tmp->line,tmp->syn.f,tmp2->syn.f,instruct) == 0)
+        if(check_FieldList(tmp->syn.f,tmp2->syn.f,instruct) == 0)
         {
             return;
         }
