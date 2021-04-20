@@ -254,6 +254,7 @@ int handle_VarDec(struct GrammarTree *node){
     if(tmp2 == NULL){
         handle_ID(tmp);
         node->syn.f = new_FieldList(tmp->syn.str,node->inh.t,tmp->line);
+        printf("%s:%d",tmp->syn.str,tmp->line);
         return 1;
     }
     else{
