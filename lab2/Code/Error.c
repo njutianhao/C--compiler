@@ -3,7 +3,7 @@
 struct ErrorNode *ErrorHead = NULL;
 int HaveErrors=0;
 void print_Node(struct ErrorNode* node){
-    printf("Error Type %s at line %d:%s.\n",node->ErrorType,node->Linenumber,node->Information);
+    printf("Error type %s at Line %d: %s.\n",node->ErrorType,node->Linenumber,node->Information);
 }
 void print_Errors(){
     if(HaveErrors==0) return;

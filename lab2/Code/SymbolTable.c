@@ -52,6 +52,7 @@ void insert_Node(Type type_in, char *name)
                 temp->next = StructTable[hashnum];
                 StructTable[hashnum] = temp;
             }
+            return;
         }
         else if (name == NULL)
         {
@@ -76,6 +77,7 @@ void insert_Node(Type type_in, char *name)
                 temp->next = StructTable[hashnum];
                 StructTable[hashnum] = temp;
             }
+            return;
         }
     }
     else if (type_in->kind == FUNCTION)
@@ -175,12 +177,12 @@ FieldList FieldList_repeat(FieldList head, FieldList ptr)
             if (strcmp(tempHead->name, tempPtr->name) == 0)
             {
                 FieldList p = (FieldList)malloc(sizeof(struct FieldList_));
-                p->type = tempHead->type;
+                p->type = tempPtr->type;
                 p->next = NULL;
-                if (tempHead->name != NULL)
+                if (tempPtr->name != NULL)
                 {
-                    p->name = malloc(strlen(tempHead->name) + 1);
-                    strcpy(p->name, tempHead->name);
+                    p->name = malloc(strlen(tempPtr->name) + 1);
+                    strcpy(p->name, tempPtr->name);
                 }
                 else
                     p->name = NULL;
@@ -340,7 +342,7 @@ int getFieldListLine(FieldList list)
 {
     return list->lineno;
 }
-//根据名字查询节点
+//根据名字查询symboltable
 Type search_with_name(char *Name)
 {
     unsigned int number = hash_pjw(Name);
@@ -386,7 +388,7 @@ Type search_function(char *Name)
     return NULL;
 }
 
-//某一变量、形参或者成员名是否已存在,是则返回1,不是则返回0
+//某一变量、形参、结构体名或成员名是否已存在,是则返回1,不是则返回0
 int name_exist(char *name)
 {
     if (name == NULL)
@@ -395,6 +397,12 @@ int name_exist(char *name)
     }
     unsigned int hashnum = hash_pjw(name);
     struct TableNode *p = SymbolTable[hashnum];
+    for (; p != NULL; p = p->next)
+    {
+        if (strcmp(p->name, name) == 0)
+            return 1;
+    }
+    p=StructTable[hashnum];
     for (; p != NULL; p = p->next)
     {
         if (strcmp(p->name, name) == 0)
