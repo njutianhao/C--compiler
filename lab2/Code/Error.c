@@ -17,9 +17,9 @@ void insert_Error(char* errorType,int linenumber,char* information){
     HaveErrors++;
     struct ErrorNode* q=(struct ErrorNode*)malloc(sizeof(struct ErrorNode));
     q->Linenumber=linenumber;
-    q->ErrorType=malloc(strlen(errorType));
+    q->ErrorType=malloc(strlen(errorType)+1);
     strcpy(q->ErrorType,errorType);
-    q->Information=malloc(strlen(information));
+    q->Information=malloc(strlen(information)+1);
     strcpy(q->Information,information);
     q->next=NULL;
     struct ErrorNode* p=ErrorHead;

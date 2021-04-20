@@ -6,7 +6,7 @@ int instruct = 0;
 
 char *get_VarDec_name(struct GrammarTree *node){
     if(node->type != ID)
-        get_VarDec_name(get_child(node,1));
+        return get_VarDec_name(get_child(node,1));
     return node->val.str;
 }
 
