@@ -4,6 +4,6 @@ int b(int y){
   a(y-1);
 }
 
-int a(int c){
+int a(int x){
   b(x-2);
 }

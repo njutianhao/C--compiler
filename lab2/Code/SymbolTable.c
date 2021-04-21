@@ -171,18 +171,18 @@ FieldList FieldList_repeat(FieldList head, FieldList ptr,FieldList* fptr)
     FieldList tempPtr = ptr;
     FieldList repeatHead = NULL;
     FieldList unrepeatList=NULL;
-
     //保留head，head和ptr内部不存在重复
     FieldList unrepeatListCopy=unrepeatList;//尾指针
     for(FieldList t=head;t!=NULL;t=t->next)
     {
         FieldList temp = (FieldList)malloc(sizeof(struct FieldList_));
         temp->lineno=t->lineno;
-        if(temp->name!=NULL)
+        if(t->name!=NULL)
         {
             temp->name=malloc(strlen(t->name)+1);
             strcpy(temp->name,t->name);
         }
+        else temp->name=NULL;
         temp->next=NULL;
         temp->type=t->type;
         if(unrepeatList==NULL)
@@ -202,7 +202,7 @@ FieldList FieldList_repeat(FieldList head, FieldList ptr,FieldList* fptr)
         int flag=0;
         for (tempHead=head; tempHead != NULL; tempHead = tempHead->next)
         {
-            if (strcmp(tempHead->name, tempPtr->name) == 0)
+            if (strcmp(tempPtr->name, tempHead->name) == 0)
             {
                 flag=1;
                 //重复域单独组成一个链表
@@ -252,7 +252,7 @@ FieldList FieldList_repeat(FieldList head, FieldList ptr,FieldList* fptr)
             }
         }
     }
-    fptr=&unrepeatList;
+    *fptr=unrepeatList;
     return repeatHead;
 }
 
@@ -904,6 +904,34 @@ void printTable()
             p = p->next;
         }
     }
+    printf("\nStructTable:\n");
+    for (int i = 0; i < TABLE_SIZE; i++)
+    {
+        struct TableNode* p=StructTable[i];
+        while(p!=NULL)
+        {
+            printf("hashnum:%d  ",i);
+            if(p->name!=NULL&& '0'<=p->name[0]&& p->name[0]<='9') 
+            {
+                printf("structname:NULL   ");
+                printf("structno:%s\n",p->name);
+            }
+            else if(p->name!=NULL)
+            {
+                printf("structname:%s\n",p->name);
+            }
+            else 
+            {
+                printf("unknown format\n");
+                exit(0);
+            }
+            printf("FieldList:\n");
+            printFieldList(p->type->u.structure.structmember);
+            printf("\n");
+            p=p->next;
+        }
+    }
+    
     printf("FunctionTable:\n");
     for (int i = 0; i < TABLE_SIZE; i++)
     {
@@ -942,6 +970,7 @@ void printTable()
                     printf("type:function\n");
                     printf("FieldList:\n");
                     printFieldList(p->type->u.function.paramlist);
+                    printf("\n");
                     break;
                 }
                 default:
