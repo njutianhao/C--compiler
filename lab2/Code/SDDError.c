@@ -88,13 +88,13 @@ int try_insert_FuncNode(int line,Type type_in,char* name,int define){
     }
 }
 
-FieldList check_FieldList(FieldList p1,FieldList p2,int instruct){
+FieldList check_FieldList(FieldList p1,FieldList p2){
     FieldList res = malloc(sizeof(FieldList));
     FieldList f = FieldList_repeat(p1,p2,&res);
     if(f == NULL){
         ;
     }
-    else if(instruct == 1){
+    else{
         char *s1 = "Redefined field \"";
         char *s2 = "\"";
         while(f != NULL)
@@ -103,19 +103,6 @@ FieldList check_FieldList(FieldList p1,FieldList p2,int instruct){
             char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2) + 1);
             char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
             insert_Error("15",getFieldListLine(f),inf);
-            f = getNextFieldList(f);
-        }
-    }
-    else
-    {
-        char *s1 = "Redefined variable \"";
-        char *s2 = "\"";
-        while(f != NULL)
-        {
-            char *name = getFieldListName(p1);
-            char *tmp = (char *)malloc(strlen(s1) + strlen(name) + strlen(s2) + 1);
-            char *inf = strcat(strcat(strcpy(tmp,s1),name),s2);
-            insert_Error("3",getFieldListLine(f),inf);
             f = getNextFieldList(f);
         }
     }

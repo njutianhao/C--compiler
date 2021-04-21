@@ -189,7 +189,10 @@ void handle_DefList(struct GrammarTree *node){
     struct GrammarTree *tmp2 = get_child(node,2);
     handle_Def(tmp);  
     handle_DefList(tmp2);
-    node->syn.f = check_FieldList(tmp->syn.f,tmp2->syn.f,instruct);
+    if(instruct == 0)
+        node->syn.f = insert_FieldList(tmp->syn.f,tmp2->syn.f);
+    else
+        node->syn.f = check_FieldList(tmp->syn.f,tmp2->syn.f);
 }
 
 void handle_Def(struct GrammarTree *node){
@@ -215,7 +218,10 @@ void handle_DecList(struct GrammarTree *node){
     { 
         tmp2->inh = node->inh;
         handle_DecList(tmp2);
-        node->syn.f = check_FieldList(tmp->syn.f,tmp2->syn.f,instruct);
+        if(instruct == 0)
+            node->syn.f = insert_FieldList(tmp->syn.f,tmp2->syn.f);
+        else
+            node->syn.f = check_FieldList(tmp->syn.f,tmp2->syn.f);
     }
 }
 
@@ -228,6 +234,8 @@ int handle_Dec(struct GrammarTree *node){
         if(handle_VarDec(tmp) == 0)
             return 0;
         node->syn = tmp->syn;
+        if(instruct == 0)
+            try_insert_all_FieldList(tmp->syn.f);
         return 1;
     }
     else
@@ -237,6 +245,7 @@ int handle_Dec(struct GrammarTree *node){
         if(check_assign_type(tmp->line,getListHeadType(tmp->syn.f),tmp2->syn.t) == 0)
             return 0;
         node->syn = tmp->syn;
+        try_insert_all_FieldList(tmp->syn.f);
         return 1;
     } 
 }
@@ -279,7 +288,6 @@ void handle_CompSt(struct GrammarTree *node){
     struct GrammarTree *tmp = get_child(node,2);
     struct GrammarTree *tmp2 = get_child(node,3);
     handle_DefList(tmp);
-    try_insert_all_FieldList(tmp->syn.f);
     free_FieldList(tmp->syn.f);
     tmp2->inh = node->inh;
     handle_StmtList(tmp2);

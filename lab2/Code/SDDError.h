@@ -12,7 +12,7 @@ int try_insert_FuncNode(int line,Type type_in,char* name,int define);
 
 int try_insert_struct(int line,Type type_in,char *name);
 
-FieldList check_FieldList(FieldList p1,FieldList p2,int instruct);
+FieldList check_FieldList(FieldList p1,FieldList p2);
 
 int check_return_type(int line,char *funcname,Type t);
 
