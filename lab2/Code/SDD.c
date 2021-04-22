@@ -107,7 +107,7 @@ void handle_ExtDef(struct GrammarTree *node){
             else
             {
                 try_insert_all_FieldList(tmp2->syn.func.f);
-                if(try_insert_FuncNode(tmp2->line,create_Function_Type(tmp1->syn.t,tmp2->syn.func.f,tmp2->line),tmp2->syn.func.name,0) == 0)
+                if(try_insert_FuncNode(tmp2->line,create_Function_Type(tmp1->syn.t,tmp2->syn.func.f,tmp2->line),tmp2->syn.func.name,1) == 0)
                     return ;
                 tmp3->inh = tmp2->syn;
                 handle_CompSt(tmp3);
