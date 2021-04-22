@@ -101,12 +101,13 @@ void handle_ExtDef(struct GrammarTree *node){
                 return ; 
             if(tmp3->type != CompSt)
             {
-                if(try_insert_FuncNode(tmp2->line,tmp2->syn.func.t,tmp2->syn.func.name,0) == 0)
+                if(try_insert_FuncNode(tmp2->line,create_Function_Type(tmp1->syn.t,tmp2->syn.func.f,tmp2->line),tmp2->syn.func.name,0) == 0)
                     return ;
             }
             else
             {
-                if(try_insert_FuncNode(tmp2->line,tmp2->syn.func.t,tmp2->syn.func.name,1) == 0)
+                try_insert_all_FieldList(tmp2->syn.func.f);
+                if(try_insert_FuncNode(tmp2->line,create_Function_Type(tmp1->syn.t,tmp2->syn.func.f,tmp2->line),tmp2->syn.func.name,0) == 0)
                     return ;
                 tmp3->inh = tmp2->syn;
                 handle_CompSt(tmp3);
@@ -280,7 +281,7 @@ int handle_FunDec(struct GrammarTree *node){
         f = tmp2->syn.f;
     }
     node->syn.func.name = tmp->syn.str;
-    node->syn.func.t = create_Function_Type(node->inh.t,f,tmp->line);
+    node->syn.func.f = f;
     return 1;
 }
 
@@ -307,8 +308,6 @@ int handle_VarList(struct GrammarTree *node){
         handle_VarList(tmp2);
         node->syn = tmp2->syn;
     }
-    if(try_insert_all_FieldList(tmp->syn.f) == 0)
-        return 0;
     if(tmp2 != NULL)
         node->syn.f = insert_FieldList(tmp->syn.f,tmp2->syn.f);
     else
