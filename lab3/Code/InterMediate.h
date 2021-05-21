@@ -1,8 +1,11 @@
 #ifndef INTERMEDIATE_H
 #define INTERMEDIATE_H
 #include <stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include<assert.h>
 //TO DO
-typedef struct Operand_ *Operand;
+typedef struct Operand_ * Operand;
 struct Operand_
 {
     enum
@@ -20,6 +23,7 @@ struct Operand_
         int order;//v,t的序号
         int value;
         char *name;//保存函数&变量名
+        char *vname;
         //TO ADD
     } u;
 };
@@ -43,11 +47,15 @@ struct InterCode
         IR_WRITE,
         IR_ARG,
         IR_RETURN,
-        IR_DEC
+        IR_DEC,
+        IR_ASSIGNADDR,
+        IR_ASSIGNMEM,
+        IR_MEMASSIGN
         //TO ADD
     } kind;
     union
     {
+        Operand single;
         struct
         {
             Operand right, left;
@@ -59,11 +67,18 @@ struct InterCode
         struct 
         {
             Operand op1,relop,op2,label;
-        };
+        } control;
         
         //TO ADD
     } u;
 };
+
+struct InterCodes {
+    struct InterCode code;
+    struct InterCodes *prev, *next; 
+};
+
+struct InterCodes head;
 
 //TO DO 存储结构
 struct OperandList
@@ -72,7 +87,9 @@ struct OperandList
     struct OperandList* next;
 };
 //TO COMPLETE 函数接口
-void add_operand(Operand operand,struct OperandList* head);
+
+void init();
+void add_operand(Operand operand,struct OperandList ** head);
 Operand new_temp();//对于保存同一int型常量的t，可以不再重复产生
 Operand new_label();
 Operand new_variable();
@@ -85,7 +102,9 @@ void create_InterCode_twoOp(Operand op1,Operand op2,int CodeKind);
 void create_InterCode_threeOp(Operand op1,Operand op2,Operand op3,int CodeKind);
 void create_InterCode_fourOp(Operand op1,Operand relop,Operand op2,Operand label,int CodeKind);
 
-void renew_int(Operand op,int value,int OpKind);
-void renew_char(Operand op,char* name,int OpKind);
+void renew_int(Operand *op,int value,int OpKind);
+void renew_char(Operand *op,char* name,int OpKind);
+
+void generateCode(char *fileName);
 
 #endif

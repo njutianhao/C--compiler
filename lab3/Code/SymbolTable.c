@@ -1,4 +1,5 @@
 #include "SymbolTable.h"
+#include <assert.h>
 //初始化
 void initTable()
 {
@@ -10,6 +11,11 @@ void initTable()
     }
     headptr = NULL;
     namelessStructNumber = 0;
+
+    Type t = create_Function_Type(create_Basic_Type("int"),NULL,-1);
+    insert_Node(t,"read");
+    t = create_Function_Type(create_Basic_Type("int"),new_FieldList(NULL,create_Basic_Type("int"),-1),-1);
+    insert_Node(t,"write");
 }
 
 //hash函数
@@ -1023,4 +1029,48 @@ void printFieldList(FieldList f)
         }
         f = f->next;
     }
+}
+
+FieldList getFieldListhead(Type type){
+    assert(type->kind == FUNCTION);
+    return type->u.function.paramlist;
+}
+
+int getDimension(Type t){
+    assert(t->kind == ARRAY);
+    int res = 0;
+    while(t->kind == ARRAY)
+    {
+        t = t->u.array.elem;
+        res++;
+    }
+    return res;
+}
+int getSize(Type t){
+    if(t->kind == ARRAY){
+        int res = 1;
+        while(t->kind == ARRAY)
+        {
+            res *= t->u.array.size;
+            t = t->u.array.elem;
+        }
+        return res * getSize(t);
+    }
+    else if(t->kind == BASIC_INT || t->kind == BASIC_FLOAT)
+    {
+        return 1;
+    }
+    else if(t->kind == STRUCTURE)
+    {
+        FieldList f = t->u.structure.structmember;
+        int res = 0;
+        while(f != NULL)
+        {
+            res += getSize(f->type);
+            f = f->next;
+        }
+        return res;
+    }
+    assert(0);
+    return -1;
 }
