@@ -482,7 +482,7 @@ void translate_Cond(struct GrammarTree *node, Operand label_true, Operand label_
         Operand op2 = new_temp();
         translate_Exp(first, op1);
         translate_Exp(third, op2);
-        Operand relop = new_char_Operand(get_relop(second), OP_VARIABLE);
+        Operand relop = new_char_Operand(get_relop(second), OP_RELOP);
         create_InterCode_fourOp(op1, relop, op2, label_true, IR_IFGOTO);
         create_InterCode_oneOp(label_false, IR_GOTO);
     }
@@ -507,7 +507,7 @@ void translate_Cond(struct GrammarTree *node, Operand label_true, Operand label_
         Operand label1 = new_label();
         translate_Exp(node, label1);
         Operand op2 = new_int_Operand(0, OP_CONSTANT);
-        Operand relop = new_char_Operand("!=", OP_VARIABLE);
+        Operand relop = new_char_Operand("!=", OP_RELOP);
         create_InterCode_fourOp(label1, relop, op2, label_true, IR_IFGOTO);
         create_InterCode_oneOp(label_false, IR_GOTO);
     }
