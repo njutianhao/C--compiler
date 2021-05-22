@@ -216,7 +216,9 @@ void create_InterCode_fourOp(Operand op1, Operand relop, Operand op2, Operand la
 void renew_int(Operand op, int value, int OpKind)
 {
     assert(op != NULL);
-    op->u.value = value;
+    char *num = itoa(value);
+    op->u.name = generateString("#",num);
+    free(num);
 }
 
 void renew_char(Operand op, char *name, int OpKind)
