@@ -308,7 +308,7 @@ void translate_Exp(struct GrammarTree *node, Operand place)
                         Operand op = new_char_Operand(arg->operand->u.name, OP_ADDRESS);
                         create_InterCode_oneOp(op, IR_ARG);
                     }
-                    //TO be improve: distinguish array
+                    // maybe improve: distinguish array
                     else
                     {
                         create_InterCode_oneOp(arg_list->operand, IR_ARG);
@@ -324,7 +324,9 @@ void translate_Exp(struct GrammarTree *node, Operand place)
     {
         Operand op1 = new_temp();
         translate_Exp(get_child(node, 1), op1);
-        int offset = get_offset(get_child(node, 3)->val.str);
+        assert(op1->u.name!=NULL);
+        Type type=getBasicType(search_with_name(op1->u.name));
+        int offset = get_offset(type,get_child(node, 3)->val.str);
         if (offset == 0)
         {
             if (op1->kind == OP_ADDRESS)
