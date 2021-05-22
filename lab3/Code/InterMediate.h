@@ -16,7 +16,6 @@ struct Operand_
         OP_FUNCTION,
         OP_LABEL,
         OP_RELOP
-        //TO ADD
     } kind;
     struct
     {
@@ -24,7 +23,6 @@ struct Operand_
         int value;
         char *name;//保存函数&变量名
         char *vname;
-        //TO ADD
     } u;
 };
 
@@ -49,10 +47,7 @@ struct InterCode
         IR_RETURN,
         IR_DEC,
         IR_ASSIGNADDR,
-        IR_ASSIGNMEM,
-        IR_MEMASSIGN,
         IR_ADD_ADDR
-        //TO ADD
     } kind;
     union
     {
@@ -69,8 +64,6 @@ struct InterCode
         {
             Operand op1,relop,op2,label;
         } control;
-        
-        //TO ADD
     } u;
 };
 
@@ -108,7 +101,6 @@ void renew_char(Operand op,char* name,int OpKind);
 
 void generateCode(char *fileName);
 
-//TO DO
 void set_Op_address(Operand op);
 void set_Op_name(Operand op,char* name);
 #endif

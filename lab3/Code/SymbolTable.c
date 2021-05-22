@@ -1074,3 +1074,28 @@ int getSize(Type t){
     assert(0);
     return -1;
 }
+
+
+Type getBasicType(Type t){
+    assert(t->kind == ARRAY);
+    while(t->kind==ARRAY){
+        t = t->u.array.elem;
+    }
+    return t;
+}
+int get_offset(Type t,char* name){
+    assert(t->kind == STRUCTURE);
+    FieldList f = t->u.structure.structmember;
+    int res = 0;
+    while(f!=NULL){
+        if(strcmp(f->name,name) == 0)
+            return res;
+        else 
+        {
+            res+=getSize(f->type);
+        }
+        f = f->next;
+    }
+    assert(0);
+    return -1;
+}
