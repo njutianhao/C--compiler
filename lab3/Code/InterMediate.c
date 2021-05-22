@@ -104,6 +104,7 @@ void add_operand(Operand operand, struct OperandList **head)
 
 char *getOperandName(Operand o)
 {
+    assert(o!=NULL);
     if (o->u.vname == NULL)
     {
         if (o->kind == OP_ADDRESS)
@@ -145,7 +146,7 @@ Operand new_char_Operand(char *name, int OpKind)
     Operand res = (Operand)malloc(sizeof(struct Operand_));
     res->kind = OpKind;
     res->u.name = name;
-    if(Opkind != OP_RELOP)
+    if(OpKind != OP_RELOP && OpKind != OP_FUNCTION)
     {
         res->u.vname = getVName();
         table[top++] = res;
@@ -220,6 +221,7 @@ void renew_int(Operand op, int value, int OpKind)
 {
     assert(op != NULL);
     op->u.value = value;
+    op->kind=OpKind;
 }
 
 void renew_char(Operand op, char *name, int OpKind)
@@ -470,9 +472,9 @@ void generateCode(char *fileName)
             o4 = p->code.u.control.label;
             assert(o3->kind == OP_RELOP && o4->kind == OP_LABEL);
             s1 = generateString("IF ", getOperandName(o1));
-            s2 = generateString(s2, " [");
+            s2 = generateString(s2, " ");
             s3 = generateString(s2, getOperandName(o3));
-            s4 = generateString(s3, "] ");
+            s4 = generateString(s3, " ");
             s5 = generateString(s4, getOperandName(o2));
             s6 = generateString(s5, " GOTO ");
             s7 = generateString(s6, getOperandName(o4));
@@ -520,7 +522,7 @@ void generateCode(char *fileName)
             break;
         case IR_WRITE:
             o1 = p->code.u.single;
-            assert(o1->kind==OP_VARIABLE);
+            assert(o1->kind==OP_VARIABLE || o1->kind == OP_CONSTANT);
             s1 = generateString("WRITE ", getOperandName(o1));
             s2 = generateString(s1, "\n");
             fputs(s2, f);

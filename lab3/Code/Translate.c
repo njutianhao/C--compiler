@@ -198,7 +198,7 @@ void translate_Exp(struct GrammarTree *node, Operand place)
     //Exp -> INT
     else if (first->type == INT)
     {
-        renew_int(place, first->val.i, OP_CONSTANT);
+        renew_int(place,first->val.i,OP_CONSTANT);
     }
     //Exp -> ID
     else if (first->type == ID && get_child(node, 2) == NULL)
@@ -216,7 +216,7 @@ void translate_Exp(struct GrammarTree *node, Operand place)
         Operand op2 = new_temp();
         translate_Exp(first, op1);
         translate_Exp(third, op2);
-        create_InterCode_threeOp(place, op1, op2, IR_ASSIGN);
+        create_InterCode_twoOp(op1, op2, IR_ASSIGN);
     }
     //Exp -> Exp PLUS Exp
     else if (first->type == Exp && get_child(node, 2)->type == PLUS)
@@ -333,9 +333,9 @@ void translate_Exp(struct GrammarTree *node, Operand place)
     {
         Operand op1 = new_temp();
         translate_Exp(get_child(node, 1), op1);
-        assert(op1->u.name!=NULL);
-        Type type=getBasicType(search_with_name(op1->u.name));
-        int offset = get_offset(type,get_child(node, 3)->val.str);
+        assert(op1->u.name != NULL);
+        Type type = getBasicType(search_with_name(op1->u.name));
+        int offset = get_offset(type, get_child(node, 3)->val.str);
         if (offset == 0)
         {
             if (op1->kind == OP_ADDRESS)
@@ -414,8 +414,13 @@ void translate_Stmt(struct GrammarTree *node)
     if (translate_success == 0)
         return;
     struct GrammarTree *first = get_child(node, 1);
+    //Stmt -> Exp SEMI
+    if (first->type == Exp)
+    {
+        translate_Exp(first, NULL);
+    }
     //Stmt -> CompSt
-    if (first->type == CompSt)
+    else if (first->type == CompSt)
     {
         translate_CompSt(first);
     }
@@ -516,17 +521,20 @@ void translate_Args(struct GrammarTree *node, struct OperandList **arg_list)
 {
     Operand op = new_temp();
     struct GrammarTree *first = get_child(node, 1);
-    if (first->type == Exp && get_child(node,2)==NULL)
+    if (first->type == Exp && get_child(node, 2) == NULL)
     {
         translate_Exp(first, op);
         if (op->kind == OP_VARIABLE)
         {
             Type arg_type = search_with_name(op->u.name);
-            if (arg_type->kind==ARRAY)
+            if (arg_type != NULL)
             {
-                translate_success=0;
-                printf("Cannot translate: Code contains parameters of array type.\n");
-                return;
+                if (arg_type->kind == ARRAY)
+                {
+                    translate_success = 0;
+                    printf("Cannot translate: Code contains parameters of array type.\n");
+                    return;
+                }
             }
         }
         add_operand(op, arg_list);
@@ -538,9 +546,9 @@ void translate_Args(struct GrammarTree *node, struct OperandList **arg_list)
         if (op->kind == OP_VARIABLE)
         {
             Type arg_type = search_with_name(op->u.name);
-            if (arg_type->kind==ARRAY)
+            if (arg_type->kind == ARRAY)
             {
-                translate_success=0;
+                translate_success = 0;
                 printf("Cannot translate: Code contains parameters of array type.\n");
                 return;
             }
