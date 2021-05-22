@@ -116,7 +116,7 @@ void translate_ExtDefList(struct GrammarTree *node);
 void translate_ExtDef(struct GrammarTree *node);
 void translate_FunDec(struct GrammarTree *node);
 void translate_Cond(struct GrammarTree *node, Operand label_true, Operand label_false);
-void translate_Args(struct GrammarTree *node, struct OperandList *arg_list);
+void translate_Args(struct GrammarTree *node, struct OperandList **arg_list);
 void translate_Stmt(struct GrammarTree *node);
 void translate_CompSt(struct GrammarTree *node);
 void translate_DefList(struct GrammarTree *node);

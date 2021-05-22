@@ -91,7 +91,7 @@ void translate_StmtList(struct GrammarTree *node)
     translate_StmtList(get_child(node, 2));
 }
 
-void tranlate_Def(struct GrammarTree* node)
+void translate_Def(struct GrammarTree* node)
 {
     if(translate_success==0) return;
     translate_DecList(get_child(node,2));
@@ -399,7 +399,7 @@ void translate_Cond(struct GrammarTree *node, Operand label_true, Operand label_
         create_InterCode_oneOp(label_false, IR_GOTO);
     }
 }
-void translate_Args(struct GrammarTree *node, struct OperandList *arg_list)
+void translate_Args(struct GrammarTree *node, struct OperandList **arg_list)
 {
     Operand op = new_temp();
     struct GrammarTree *first = get_child(node, 1);
