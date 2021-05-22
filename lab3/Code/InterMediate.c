@@ -114,6 +114,7 @@ Operand new_temp()
 {
     Operand res = (Operand)malloc(sizeof(struct Operand_));
     res->u.name = getTName();
+    res->kind = OP_VARIABLE;
     res->u.vname = NULL;
     return res;
 }
@@ -162,11 +163,13 @@ Operand new_int_Operand(int val, int OpKind)
 
 void create_InterCode_oneOp(Operand op, int CodeKind)
 {
+    //printf("here\n");
     struct InterCodes *tmp = (struct InterCodes *)malloc(sizeof(struct InterCodes));
     tmp->prev = head.prev;
     tmp->next = &head;
     head.prev->next = tmp;
     head.prev = tmp;
+    //printf("1\n");
     tmp->code.kind = CodeKind;
     tmp->code.u.single = op;
 }

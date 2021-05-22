@@ -2,6 +2,15 @@
 #include "syntax.tab.h"
 int translate_success = 1;
 
+int Success()
+{
+    return translate_success;
+}
+void translate()
+{
+    init();
+    translate_Program(root);
+}
 void translate_Program(struct GrammarTree *root)
 {
     if (translate_success == 0)
@@ -57,7 +66,7 @@ void translate_FunDec(struct GrammarTree *node)
         FieldList head = getFieldListhead(type);
         while (head != NULL)
         {
-            if (head->type == ARRAY)
+            if (head->type->kind == ARRAY)
             {
                 translate_success = 0;
                 printf("Cannot translate: Code contains parameters of array type.\n");
@@ -331,7 +340,7 @@ void translate_Exp(struct GrammarTree *node, Operand place)
         {
             if (op1->kind == OP_ADDRESS)
             {
-                copy_op(place, op1);
+                create_InterCode_threeOp(place, op1, new_int_Operand(0, OP_CONSTANT), IR_ADD_ADDR);
             }
             else
             {
@@ -367,7 +376,7 @@ void translate_Exp(struct GrammarTree *node, Operand place)
         if (offset->kind == OP_ADDRESS)
         {
             Operand t1 = new_temp();
-            create_InterCode_twoOp(t1, offset, IR_ASSIGNMEM);
+            create_InterCode_twoOp(t1, offset, IR_ASSIGN);
             Operand t2 = new_temp();
             create_InterCode_threeOp(t2, t1, new_int_Operand(size * 4, OP_CONSTANT), IR_MUL);
             if (id->kind == OP_ADDRESS)
@@ -396,7 +405,7 @@ void translate_Exp(struct GrammarTree *node, Operand place)
                 create_InterCode_threeOp(place, t2, t1, IR_ADD_ADDR);
             }
         }
-        set_Op_Address(place);
+        set_Op_address(place);
         set_Op_name(place, id->u.name);
     }
 }
@@ -473,7 +482,7 @@ void translate_Cond(struct GrammarTree *node, Operand label_true, Operand label_
         Operand op2 = new_temp();
         translate_Exp(first, op1);
         translate_Exp(third, op2);
-        Operand relop = new_char_Operand(get_relop(second), OP_RELOP);
+        Operand relop = new_char_Operand(get_relop(second), OP_VARIABLE);
         create_InterCode_fourOp(op1, relop, op2, label_true, IR_IFGOTO);
         create_InterCode_oneOp(label_false, IR_GOTO);
     }
@@ -498,7 +507,7 @@ void translate_Cond(struct GrammarTree *node, Operand label_true, Operand label_
         Operand label1 = new_label();
         translate_Exp(node, label1);
         Operand op2 = new_int_Operand(0, OP_CONSTANT);
-        Operand relop = new_char_Operand("!=", OP_RELOP);
+        Operand relop = new_char_Operand("!=", OP_VARIABLE);
         create_InterCode_fourOp(label1, relop, op2, label_true, IR_IFGOTO);
         create_InterCode_oneOp(label_false, IR_GOTO);
     }

@@ -14,8 +14,10 @@ void initTable()
 
     Type t = create_Function_Type(create_Basic_Type("int"),NULL,-1);
     insert_Node(t,"read");
+    Define("read");
     t = create_Function_Type(create_Basic_Type("int"),new_FieldList(NULL,create_Basic_Type("int"),-1),-1);
     insert_Node(t,"write");
+    Define("write");
 }
 
 //hash函数

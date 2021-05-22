@@ -1,6 +1,8 @@
 #include<stdio.h>
 #include"GrammarTree.h"
 #include"Error.h"
+extern void translate();
+extern int Success();
 extern int yyrestart(FILE *);
 extern int yyparse();
 int main(int argc,char** argv){
@@ -21,5 +23,12 @@ int main(int argc,char** argv){
 	//print_tree();
 	SDT();
 	print_Errors();
+	if(HaveErrors==0)
+	{
+		translate();
+		if(Success()){
+			generateCode("out.ir");
+		}
+	}
 	return 0;
 }
