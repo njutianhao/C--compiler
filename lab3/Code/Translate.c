@@ -320,7 +320,7 @@ void translate_Stmt(struct GrammarTree *node)
         struct GrammarTree *stmt1 = get_child(node, 5);
         Operand label1 = new_label();
         Operand label2 = new_label();
-        translate_Cond(Exp, label1, label2);
+        translate_Cond(exp, label1, label2);
         create_InterCode_oneOp(label1, IR_LABEL);
         translate_Stmt(stmt1);
         if (get_child(node, 6) == NULL)
