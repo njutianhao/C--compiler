@@ -140,9 +140,9 @@ void translate_VarDec(struct GrammarTree* node,Operand place)
                 return;
             }
             else{
-                Operand op1=new_char_Operand(first->val.str,OP_VARIABLE);
+                renew_char(place,first->val.str,OP_VARIABLE);
                 Operand op2=new_int_Operand(getSize(varType)*4,OP_CONSTANT);
-                create_InterCode_twoOp(op1,op2,IR_DEC);
+                create_InterCode_twoOp(place,op2,IR_DEC);
             }
         }
         else if(varType->kind==STRUCTURE)
@@ -294,7 +294,27 @@ void translate_Exp(struct GrammarTree *node, Operand place)
             }
         }
     }
-    //TO DO
+    //Exp -> Exp DOT ID
+    else if(get_child(node,2)->type==DOT)
+    {
+        Operand op1=new_temp();
+        Operand t;
+        translate_Exp(get_child(node,1),op1);
+        if(op1->kind==OP_ADDRESS){
+            t=new_temp();
+            create_InterCode_twoOp(t,op1,IR_ASSIGNADDR);
+        }
+
+    }
+    //Exp -> Exp1 LB Exp2 RB
+    else if(get_child(node,2)->type==LB)
+    {
+        Operand offset=new_temp();
+        Operand id=new_temp();
+        translate_Exp(get_child(node,3),offset);
+        translate_Exp(get_child(node,1),id);
+        search_with_name(id->u.name);
+    }
 }
 void translate_Stmt(struct GrammarTree *node)
 {
