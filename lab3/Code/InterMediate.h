@@ -50,7 +50,8 @@ struct InterCode
         IR_DEC,
         IR_ASSIGNADDR,
         IR_ASSIGNMEM,
-        IR_MEMASSIGN
+        IR_MEMASSIGN,
+        IR_ADD_ADDR
         //TO ADD
     } kind;
     union
@@ -107,4 +108,7 @@ void renew_char(Operand op,char* name,int OpKind);
 
 void generateCode(char *fileName);
 
+//TO DO
+void set_Op_address(Operand op);
+void set_Op_name(Operand op,char* name);
 #endif

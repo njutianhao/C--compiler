@@ -106,5 +106,5 @@ void printFieldList(FieldList f);
 FieldList getFieldListhead(Type type);//获取参数列表表头
 int getDimension(Type t);
 int getSize(Type t);
-
+Type getBasicType(Type t);
 #endif
