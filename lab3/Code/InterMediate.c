@@ -145,8 +145,11 @@ Operand new_char_Operand(char *name, int OpKind)
     Operand res = (Operand)malloc(sizeof(struct Operand_));
     res->kind = OpKind;
     res->u.name = name;
-    res->u.vname = getVName();
-    table[top++] = res;
+    if(Opkind != OP_RELOP)
+    {
+        res->u.vname = getVName();
+        table[top++] = res;
+    }
     return res;
 }
 
