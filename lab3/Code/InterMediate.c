@@ -57,6 +57,7 @@ char *getVName()
     char *newNameNum = itoa(vNum + 1);
     char *newName = generateString("v", newNameNum);
     free(newNameNum);
+    vNum++;
     return newName;
 }
 
@@ -65,6 +66,7 @@ char *getTName()
     char *newNameNum = itoa(tNum + 1);
     char *newName = generateString("t", newNameNum);
     free(newNameNum);
+    tNum++;
     return newName;
 }
 
@@ -73,6 +75,7 @@ char *getLName()
     char *newNameNum = itoa(lNum + 1);
     char *newName = generateString("l", newNameNum);
     free(newNameNum);
+    lNum++;
     return newName;
 }
 
