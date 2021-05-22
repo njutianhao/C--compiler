@@ -102,8 +102,8 @@ void create_InterCode_twoOp(Operand op1,Operand op2,int CodeKind);
 void create_InterCode_threeOp(Operand op1,Operand op2,Operand op3,int CodeKind);
 void create_InterCode_fourOp(Operand op1,Operand relop,Operand op2,Operand label,int CodeKind);
 
-void renew_int(Operand *op,int value,int OpKind);
-void renew_char(Operand *op,char* name,int OpKind);
+void renew_int(Operand op,int value,int OpKind);
+void renew_char(Operand op,char* name,int OpKind);
 
 void generateCode(char *fileName);
 
