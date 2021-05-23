@@ -1,0 +1,5 @@
+FUNCTION  :
+t3 := v2 * v1
+t2 := t3 - #4
+v3 := t2
+RETURN #0

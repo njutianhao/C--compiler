@@ -1,6 +1,6 @@
 int main()
 {
 	int a,b,c;
-	c=b/a-4;
+	c=b*a-4;
 	return 0;
 }

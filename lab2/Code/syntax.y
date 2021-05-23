@@ -31,7 +31,7 @@
 %token <type_treenode> FLOAT 
 %token <type_treenode> ID
 %token <type_treenode> RELOP 
-%token <type_treenode> SUB LOWER_THAN_ELSE
+%token <type_treenode> SUB UMINUS LOWER_THAN_ELSE
 
 %type <type_treenode> Program ExtDecList ExtDef Specifier FunDec CompSt VarDec ExtDefList
 %type <type_treenode> StructSpecifier OptTag DefList Tag
@@ -40,14 +40,13 @@
 %type <type_treenode> Def DecList Dec
 %type <type_treenode> Args
 
-
 %right ASSIGNOP
 %left AND OR 
 %left RELOP
-%left PLUS SUB
+%left PLUS MINUS
 %left STAR DIV
 %right NOT
-%left MINUS
+%left UMINUS
 %left LP RP LB RB DOT
 
 %nonassoc LOWER_THAN_ELSE
@@ -264,7 +263,7 @@ Exp : Exp ASSIGNOP Exp {$$.t = createnode(Exp,@$.first_line,NULL);
     | Exp PLUS Exp {$$.t = createnode(Exp,@$.first_line,NULL);
         $2.t = createnode(PLUS,@2.first_line,NULL);
         insertall($$.t,3,$1.t,$2.t,$3.t);}
-    | Exp MINUS Exp %prec SUB{$$.t = createnode(Exp,@$.first_line,NULL);
+    | Exp MINUS Exp{$$.t = createnode(Exp,@$.first_line,NULL);
         $2.t = createnode(SUB,@2.first_line,NULL);
         insertall($$.t,3,$1.t,$2.t,$3.t);}
     | Exp STAR Exp {$$.t = createnode(Exp,@$.first_line,NULL);
@@ -277,7 +276,7 @@ Exp : Exp ASSIGNOP Exp {$$.t = createnode(Exp,@$.first_line,NULL);
         $1.t = createnode(LP,@1.first_line,NULL);
         $3.t = createnode(RP,@3.first_line,NULL);
         insertall($$.t,3,$1.t,$2.t,$3.t);}
-    | MINUS Exp{$$.t = createnode(Exp,@$.first_line,NULL);
+    | MINUS Exp %prec UMINUS{$$.t = createnode(Exp,@$.first_line,NULL);
         $1.t = createnode(MINUS,@1.first_line,NULL);
         insertall($$.t,2,$1.t,$2.t);}
     | NOT Exp {$$.t = createnode(Exp,@$.first_line,NULL);
