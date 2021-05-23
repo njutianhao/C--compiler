@@ -5,6 +5,30 @@ int vNum = 0;
 int tNum = 0;
 int lNum = 0;
 
+void print_vtable()
+{
+    for (int i = 0; i < top; i++)
+    {
+        printf("name:%s vname:%s opkind:%d\n", table[i]->u.name, table[i]->u.vname, table[i]->kind);
+    }
+}
+int  get(Operand op,char *name)
+{
+    assert(op != NULL);
+    for (int i = 0; i < top; i++)
+    {
+        //if (table[i]->kind == OpKind && strcmp(table[i]->u.name, name) == 0)
+
+        if (strcmp(table[i]->u.name, name) == 0)
+        {
+            op->u.name = table[i]->u.name;
+            op->u.vname = table[i]->u.vname;
+            op->kind = table[i]->kind;
+            return 1;
+        }
+    }
+    return 0;
+}
 char *generateString(char *a, char *b)
 {
     int aL = strlen(a);
@@ -104,22 +128,26 @@ void add_operand(Operand operand, struct OperandList **head)
 
 char *getOperandName(Operand o)
 {
-    assert(o!=NULL);
+    assert(o != NULL);
+    if (o->kind == OP_CONSTANT)
+        return o->u.name;
     if (o->u.vname == NULL)
     {
         if (o->kind == OP_ADDRESS)
             return generateString("*", o->u.name);
         return o->u.name;
     }
+    else if (o->u.vname[0] == 't' && o->kind == OP_ADDRESS)
+        return generateString("*", o->u.vname);
     return o->u.vname;
 }
 
 Operand new_temp()
 {
     Operand res = (Operand)malloc(sizeof(struct Operand_));
-    res->u.name = getTName();
+    res->u.vname = getTName();
     res->kind = OP_VARIABLE;
-    res->u.vname = NULL;
+    res->u.name = NULL;
     return res;
 }
 
@@ -127,8 +155,8 @@ Operand new_label()
 {
     Operand res = (Operand)malloc(sizeof(struct Operand_));
     res->kind = OP_LABEL;
-    res->u.vname = NULL;
-    res->u.name = getLName();
+    res->u.name = NULL;
+    res->u.vname = getLName();
     return res;
 }
 
@@ -146,7 +174,7 @@ Operand new_char_Operand(char *name, int OpKind)
     Operand res = (Operand)malloc(sizeof(struct Operand_));
     res->kind = OpKind;
     res->u.name = name;
-    if(OpKind != OP_RELOP && OpKind != OP_FUNCTION)
+    if (OpKind != OP_RELOP && OpKind != OP_FUNCTION)
     {
         res->u.vname = getVName();
         table[top++] = res;
@@ -220,8 +248,10 @@ void create_InterCode_fourOp(Operand op1, Operand relop, Operand op2, Operand la
 void renew_int(Operand op, int value, int OpKind)
 {
     assert(op != NULL);
-    op->u.value = value;
-    op->kind=OpKind;
+    char *num = itoa(value);
+    op->u.name = generateString("#", num);
+    op->kind = OpKind;
+    free(num);
 }
 
 void renew_char(Operand op, char *name, int OpKind)
@@ -229,10 +259,14 @@ void renew_char(Operand op, char *name, int OpKind)
     assert(op != NULL);
     for (int i = 0; i < top; i++)
     {
-        if (table[i]->kind == OpKind && strcmp(table[i]->u.name, name) == 0)
+        //if (table[i]->kind == OpKind && strcmp(table[i]->u.name, name) == 0)
+
+        if (strcmp(table[i]->u.name, name) == 0)
         {
             op->u.name = table[i]->u.name;
             op->u.vname = table[i]->u.vname;
+            op->kind = OpKind;
+
             return;
         }
     }
@@ -266,7 +300,7 @@ void generateCode(char *fileName)
             o1 = p->code.u.assign.left;
             o2 = p->code.u.assign.right;
             assert(o2->kind != OP_ADDRESS);
-            s1 = generateString(getOperandName(o1), " := &");
+            s1 = generateString(o1->u.vname, " := &");
             s2 = generateString(s1, getOperandName(o2));
             s3 = generateString(s2, "\n");
             fputs(s3, f);
@@ -449,8 +483,8 @@ void generateCode(char *fileName)
             break;
         case IR_PARAM:
             o1 = p->code.u.single;
-            assert(o1->kind ==OP_VARIABLE);
-            s1 = generateString("PARAM ", getOperandName(o1));
+            //assert(o1->kind == OP_VARIABLE);
+            s1 = generateString("PARAM ", o1->u.vname);
             s2 = generateString(s1, "\n");
             fputs(s2, f);
             free(s1);
@@ -458,7 +492,7 @@ void generateCode(char *fileName)
             break;
         case IR_LABEL:
             o1 = p->code.u.single;
-            assert(o1->kind ==OP_LABEL);
+            assert(o1->kind == OP_LABEL);
             s1 = generateString("LABEL ", getOperandName(o1));
             s2 = generateString(s1, " :\n");
             fputs(s2, f);
@@ -472,7 +506,7 @@ void generateCode(char *fileName)
             o4 = p->code.u.control.label;
             assert(o3->kind == OP_RELOP && o4->kind == OP_LABEL);
             s1 = generateString("IF ", getOperandName(o1));
-            s2 = generateString(s2, " ");
+            s2 = generateString(s1, " ");
             s3 = generateString(s2, getOperandName(o3));
             s4 = generateString(s3, " ");
             s5 = generateString(s4, getOperandName(o2));
@@ -513,7 +547,7 @@ void generateCode(char *fileName)
             break;
         case IR_READ:
             o1 = p->code.u.single;
-            assert(o1->kind==OP_VARIABLE);
+            assert(o1->kind == OP_VARIABLE);
             s1 = generateString("READ ", getOperandName(o1));
             s2 = generateString(s1, "\n");
             fputs(s2, f);
@@ -522,7 +556,7 @@ void generateCode(char *fileName)
             break;
         case IR_WRITE:
             o1 = p->code.u.single;
-            assert(o1->kind==OP_VARIABLE || o1->kind == OP_CONSTANT);
+            assert(o1->kind == OP_VARIABLE || o1->kind == OP_CONSTANT);
             s1 = generateString("WRITE ", getOperandName(o1));
             s2 = generateString(s1, "\n");
             fputs(s2, f);
@@ -531,7 +565,16 @@ void generateCode(char *fileName)
             break;
         case IR_ARG:
             o1 = p->code.u.single;
-            s1 = generateString("ARG ", getOperandName(o1));
+            if (o1->kind == OP_ADDRESS && o1->u.vname != NULL && o1->u.vname[0] == 'v')
+            {
+                s1 = generateString("ARG &", getOperandName(o1));
+            }
+            else if (o1->kind == OP_ADDRESS && o1->u.vname != NULL && o1->u.vname[0] == 't')
+            {
+                s1 = generateString("ARG *", getOperandName(o1));
+            }
+            else
+                s1 = generateString("ARG ", getOperandName(o1));
             s2 = generateString(s1, "\n");
             fputs(s2, f);
             free(s1);
@@ -550,12 +593,12 @@ void generateCode(char *fileName)
             o2 = p->code.u.assign.right;
             assert(o2->kind == OP_CONSTANT && o1->kind == OP_VARIABLE);
             s1 = generateString("DEC ", getOperandName(o1));
-            s2 = generateString(s1, " [");
+            s2 = generateString(s1, " ");
             free(s1);
             s1 = itoa(o2->u.value);
             s3 = generateString(s2, s1);
-            s4 = generateString(s3, "]\n");
-            fputs(s3, f);
+            s4 = generateString(s3, "\n");
+            fputs(s4, f);
             free(s1);
             free(s2);
             free(s3);
@@ -565,11 +608,10 @@ void generateCode(char *fileName)
             o1 = p->code.u.binop.op1;
             o2 = p->code.u.binop.op2;
             o3 = p->code.u.binop.result;
-            assert(o1->kind == OP_ADDRESS && o3->kind == OP_ADDRESS);
-            s1 = generateString(o3->u.name, " := ");
-            s2 = generateString(s1, o1->u.name);
+            s1 = generateString(o3->u.vname, " := ");
+            s2 = generateString(s1, o1->u.vname);
             s3 = generateString(s2, " + ");
-            s4 = generateString(s3, o2->u.name);
+            s4 = generateString(s3, getOperandName(o2));
             s5 = generateString(s4, "\n");
             fputs(s5, f);
             free(s1);

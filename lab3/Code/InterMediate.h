@@ -19,7 +19,7 @@ struct Operand_
     } kind;
     struct
     {
-        int order;//v,t的序号
+        //int order;//v,t的序号
         int value;
         char *name;//保存函数&变量名
         char *vname;
@@ -103,4 +103,5 @@ void generateCode(char *fileName);
 
 void set_Op_address(Operand op);
 void set_Op_name(Operand op,char* name);
+int  get(Operand op,char* name);
 #endif

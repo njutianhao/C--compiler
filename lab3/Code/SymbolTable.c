@@ -1079,7 +1079,8 @@ int getSize(Type t){
 
 
 Type getBasicType(Type t){
-    assert(t->kind == ARRAY);
+    assert(t!=NULL);
+    if(t->kind!=ARRAY) return t;
     while(t->kind==ARRAY){
         t = t->u.array.elem;
     }

@@ -40,7 +40,6 @@
 %type <type_treenode> Def DecList Dec
 %type <type_treenode> Args
 
-
 %right ASSIGNOP
 %left AND OR 
 %left RELOP

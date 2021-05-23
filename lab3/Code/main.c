@@ -3,6 +3,7 @@
 #include"Error.h"
 extern void translate();
 extern int Success();
+extern void print_vtable();
 extern int yyrestart(FILE *);
 extern int yyparse();
 int main(int argc,char** argv){
@@ -20,7 +21,7 @@ int main(int argc,char** argv){
 		print_Errors();
 		return 0;
 	}
-	//print_tree();
+	print_tree();
 	SDT();
 	print_Errors();
 	if(HaveErrors==0)
@@ -28,6 +29,7 @@ int main(int argc,char** argv){
 		translate();
 		if(Success()){
 			generateCode("out.ir");
+			//print_vtable();
 		}
 	}
 	return 0;
