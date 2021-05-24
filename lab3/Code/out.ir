@@ -1,5 +1,81 @@
-FUNCTION  :
-t3 := v2 * v1
-t2 := t3 - #4
-v3 := t2
+FUNCTION calculate_avg :
+PARAM v1
+v2 := #0
+v3 := #0
+LABEL l1 :
+IF v3 < #10 GOTO l2
+GOTO l3
+LABEL l2 :
+t11 := v1 + #4
+t13 := v3 * #12
+t9 := t11 + t13
+t8 := t9 + #4
+t6 := v2 + *t8
+v2 := t6
+t15 := v3 + #1
+v3 := t15
+GOTO l1
+LABEL l3 :
+t18 := v1 + #124
+t19 := v2 / #10
+*t18 := t19
+t23 := v1 + #124
+RETURN *t23
+FUNCTION main :
+DEC v4 640
+v5 := #0
+v7 := #0
+LABEL l4 :
+IF v5 < #5 GOTO l5
+GOTO l6
+LABEL l5 :
+v6 := #0
+t36 := v5 * #128
+t37 := &v4
+t33 := t37 + t36
+t31 := t33 + #0
+*t31 := v5
+LABEL l7 :
+IF v6 < #10 GOTO l8
+GOTO l9
+LABEL l8 :
+t48 := v5 * #128
+t49 := &v4
+t45 := t49 + t48
+t44 := t45 + #4
+t50 := v6 * #12
+t42 := t44 + t50
+t40 := t42 + #4
+t54 := v5 * #100
+t51 := #3000 + t54
+t52 := v6 * #150
+t41 := t51 + t52
+*t40 := t41
+t60 := v6 + #1
+v6 := t60
+GOTO l7
+LABEL l9 :
+t68 := v5 * #128
+t69 := &v4
+t65 := t69 + t68
+t63 := t65 + #124
+t73 := v5 * #128
+t74 := &v4
+t70 := t74 + t73
+ARG t70
+t64 := CALL calculate_avg
+*t63 := t64
+t82 := v5 * #128
+t83 := &v4
+t79 := t83 + t82
+t78 := t79 + #124
+t76 := v7 + *t78
+v7 := t76
+t85 := v5 + #1
+v5 := t85
+GOTO l4
+LABEL l6 :
+t89 := v7 / #5
+v7 := t89
+WRITE v7
 RETURN #0

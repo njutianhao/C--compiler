@@ -12,7 +12,7 @@ void print_vtable()
         printf("name:%s vname:%s opkind:%d\n", table[i]->u.name, table[i]->u.vname, table[i]->kind);
     }
 }
-int  get(Operand op,char *name)
+int get(Operand op, char *name)
 {
     assert(op != NULL);
     for (int i = 0; i < top; i++)
@@ -536,7 +536,7 @@ void generateCode(char *fileName)
             o1 = p->code.u.assign.left;
             o2 = p->code.u.assign.right;
             assert(o2->kind == OP_FUNCTION);
-            assert(o1->kind == OP_VARIABLE);
+            //assert(o1->kind == OP_VARIABLE);
             s1 = generateString(getOperandName(o1), " := CALL ");
             s2 = generateString(s1, getOperandName(o2));
             s3 = generateString(s2, "\n");
@@ -556,7 +556,7 @@ void generateCode(char *fileName)
             break;
         case IR_WRITE:
             o1 = p->code.u.single;
-            assert(o1->kind == OP_VARIABLE || o1->kind == OP_CONSTANT);
+            //assert(o1->kind == OP_VARIABLE || o1->kind == OP_CONSTANT);
             s1 = generateString("WRITE ", getOperandName(o1));
             s2 = generateString(s1, "\n");
             fputs(s2, f);
@@ -571,7 +571,7 @@ void generateCode(char *fileName)
             }
             else if (o1->kind == OP_ADDRESS && o1->u.vname != NULL && o1->u.vname[0] == 't')
             {
-                s1 = generateString("ARG *", getOperandName(o1));
+                s1 = generateString("ARG *", o1->u.vname);
             }
             else
                 s1 = generateString("ARG ", getOperandName(o1));
@@ -633,6 +633,10 @@ void generateCode(char *fileName)
 void set_Op_address(Operand op)
 {
     op->kind = OP_ADDRESS;
+}
+void set_Op_variable(Operand op)
+{
+    op->kind = OP_VARIABLE;
 }
 void set_Op_name(Operand op, char *name)
 {

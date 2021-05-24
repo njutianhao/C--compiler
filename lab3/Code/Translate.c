@@ -135,8 +135,9 @@ void translate_Dec(struct GrammarTree *node)
 {
     if (translate_success == 0)
         return;
-    translate_VarDec(get_child(node, 1), NULL);
-    if (get_child(node, 2) != NULL)
+    if (get_child(node, 2) == NULL)
+        translate_VarDec(get_child(node, 1), NULL);
+    else
     {
         Operand op1 = new_variable();
         Operand op2 = new_temp();
@@ -158,7 +159,9 @@ void translate_VarDec(struct GrammarTree *node, Operand place)
             if (place == NULL)
                 new_char_Operand(first->val.str, OP_VARIABLE);
             else
+            {
                 renew_char(place, first->val.str, OP_VARIABLE);
+            }
         }
         else if (varType->kind == ARRAY)
         {
@@ -213,12 +216,15 @@ void translate_Exp(struct GrammarTree *node, Operand place)
     {
         if (getKindwithName(first->val.str) == STRUCTURE)
         {
-                Operand tmp=place;
-                int flag=get(place, first->val.str);
-                assert(flag==1);
+            Operand tmp = place;
+            int flag = get(place, first->val.str);
+            assert(flag == 1);
         }
         else
+        {
+            assert(place != NULL);
             renew_char(place, first->val.str, OP_VARIABLE);
+        }
     }
     //Exp -> Exp ASSIGNOP Exp
     else if (first->type == Exp && get_child(node, 2)->type == ASSIGNOP)
@@ -309,8 +315,10 @@ void translate_Exp(struct GrammarTree *node, Operand place)
         {
             if (strcmp(first->val.str, "read") == 0)
                 create_InterCode_oneOp(place, IR_READ);
-            else
+            else if (place != NULL)
                 create_InterCode_twoOp(place, op, IR_CALL);
+            else
+                create_InterCode_twoOp(new_temp(), op, IR_CALL);
         }
         else
         {
@@ -323,21 +331,38 @@ void translate_Exp(struct GrammarTree *node, Operand place)
                 struct OperandList *arg = arg_list;
                 while (arg != NULL)
                 {
-                    Type t = search_with_name(arg->operand->u.name);
-                    if (t != NULL && t->kind == STRUCTURE)
+                    if (arg->operand->u.name != NULL)
                     {
-                        Operand op = new_variable();
-                        renew_char(op, arg->operand->u.name, OP_ADDRESS);
-                        create_InterCode_oneOp(op, IR_ARG);
+                        Type t = getBasicType(search_with_name(arg->operand->u.name));
+                        if (t != NULL && t->kind == STRUCTURE)
+                        {
+                            if (arg->operand->kind == OP_ADDRESS)
+                            {
+                                set_Op_variable(arg->operand);
+                                create_InterCode_oneOp(arg->operand, IR_ARG);
+                            }
+                            else
+                            {
+                                Operand op = new_variable();
+                                renew_char(op, arg->operand->u.name, OP_ADDRESS);
+                                create_InterCode_oneOp(op, IR_ARG);
+                            }
+                        }
+                        // maybe improve: distinguish array
+                        else
+                        {
+                            create_InterCode_oneOp(arg->operand, IR_ARG);
+                        }
                     }
-                    // maybe improve: distinguish array
                     else
-                    {
-                        create_InterCode_oneOp(arg_list->operand, IR_ARG);
-                    }
+                        create_InterCode_oneOp(arg->operand, IR_ARG);
+
                     arg = arg->next;
                 }
-                create_InterCode_twoOp(place, op, IR_CALL);
+                if (place != NULL)
+                    create_InterCode_twoOp(place, op, IR_CALL);
+                else
+                    create_InterCode_twoOp(new_temp(), op, IR_CALL);
             }
         }
     }
@@ -474,7 +499,7 @@ void translate_Stmt(struct GrammarTree *node)
         Operand label2 = new_label();
         Operand label3 = new_label();
         struct GrammarTree *exp = get_child(node, 3);
-        struct GrammarTree *stmt1 = get_child(node, 3);
+        struct GrammarTree *stmt1 = get_child(node, 5);
         create_InterCode_oneOp(label1, IR_LABEL);
         translate_Cond(exp, label2, label3);
         create_InterCode_oneOp(label2, IR_LABEL);
@@ -536,7 +561,7 @@ void translate_Args(struct GrammarTree *node, struct OperandList **arg_list)
     if (first->type == Exp && get_child(node, 2) == NULL)
     {
         translate_Exp(first, op);
-        if (op->kind == OP_VARIABLE)
+        if (op->kind == OP_VARIABLE && op->u.name != NULL)
         {
             Type arg_type = search_with_name(op->u.name);
             if (arg_type != NULL)
@@ -555,7 +580,7 @@ void translate_Args(struct GrammarTree *node, struct OperandList **arg_list)
     {
         struct GrammarTree *third = get_child(node, 3);
         translate_Exp(first, op);
-        if (op->kind == OP_VARIABLE)
+        if (op->kind == OP_VARIABLE && op->u.name != NULL)
         {
             Type arg_type = search_with_name(op->u.name);
             if (arg_type->kind == ARRAY)
