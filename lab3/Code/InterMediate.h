@@ -4,7 +4,7 @@
 #include<string.h>
 #include<stdlib.h>
 #include<assert.h>
-//TO DO
+
 typedef struct Operand_ * Operand;
 struct Operand_
 {
@@ -19,7 +19,6 @@ struct Operand_
     } kind;
     struct
     {
-        //int order;//v,t的序号
         int value;
         char *name;//保存函数&变量名
         char *vname;
@@ -74,13 +73,11 @@ struct InterCodes {
 
 struct InterCodes head;
 
-//TO DO 存储结构
 struct OperandList
 {
     Operand operand;
     struct OperandList* next;
 };
-//TO COMPLETE 函数接口
 
 void init();
 void add_operand(Operand operand,struct OperandList ** head);
