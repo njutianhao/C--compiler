@@ -102,7 +102,7 @@ Type getFieldType(Type t,char *name);
 void printTable();
 void printFieldList(FieldList f);
 
-//TO DO in lab3
+
 FieldList getFieldListhead(Type type);//获取参数列表表头
 int getDimension(Type t);
 int getSize(Type t);
