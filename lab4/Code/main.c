@@ -1,9 +1,9 @@
 #include<stdio.h>
 #include"GrammarTree.h"
+#include"MachineCode.h"
 #include"Error.h"
 extern void translate();
 extern int Success();
-extern void print_vtable();
 extern int yyrestart(FILE *);
 extern int yyparse();
 int main(int argc,char** argv){
@@ -12,6 +12,12 @@ int main(int argc,char** argv){
 	if(!f)
 	{
 		perror(argv[1]);
+		return 1;
+	}
+	FILE* fp=fopen(argv[2],"wt+");
+	if(!fp)
+	{
+		perror(argv[2]);
 		return 1;
 	}
 	yyrestart(f);
@@ -28,8 +34,7 @@ int main(int argc,char** argv){
 	{
 		translate();
 		if(Success()){
-			generateCode(argv[2]);
-			//print_vtable();
+			generate_machine_code(fp);
 		}
 	}
 	return 0;
