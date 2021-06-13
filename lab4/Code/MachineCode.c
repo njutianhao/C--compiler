@@ -439,7 +439,7 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
             }
             else
             {
-                //在非main函数中调用时需要额外保存返回地址
+                //在非main函数中调用时需要额外保存$a0
                 fprintf(fp, "  addi $sp, $sp, -8\n");
                 fprintf(fp, "  sw $a0, 0($sp)\n");
                 fprintf(fp, "  sw $ra, 4($sp)\n");
