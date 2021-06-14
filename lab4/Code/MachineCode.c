@@ -749,3 +749,10 @@ void load_regs(FILE *fp, int *a)
     }
     free(a);
 }
+
+void push_arg(FILE *fp,Operand op){
+    int i = get_unused_reg(fp);
+    int off = get_stack_offset(op);
+    fprintf(fp,"  lw %s, %d($fp)\n",Regs[i].name,off);
+    push(fp,i);
+}
