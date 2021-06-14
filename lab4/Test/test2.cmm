@@ -1,17 +1,18 @@
-int fact(int n) 
+int fact(int n, int t) 
 {
     if (n == 1)
         return n;
     else
-        return (n * fact(n - 1)); 
+        return (n * fact(n - 1,t)); 
 }
 int main()
 {
     int m, result;
     int a[2];
+    int b=1;
     m = read();
     if (m > 1)
-        result = fact(m);
+        result = fact(m,b);
     else
     result = 1;
     write(result);

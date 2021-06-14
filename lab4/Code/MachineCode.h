@@ -23,7 +23,6 @@ struct FunctionRecord //函数活动记录
 {
     int size;//活动记录的大小
     struct StackNode *fp; //当前记录的栈底
-    struct FunctionRecord *next;
 };
 
 
@@ -39,9 +38,9 @@ int get_reg(FILE *fp, Operand op);
 int load_imm(FILE *fp, Operand op);    //装载一个立即数，返回该值所在寄存器编号
 
 //有关主要机器码生成
-int ensure_right(FILE *fp, Operand op,int dis);         //确保表达式寄存器和其内容的正确性,即确保对应寄存器中有其对应的数值，若是立即数或者地址类型则需要装载数据
-void store(FILE *fp, Operand dst, Operand val,int dis_dst,int dis_val); //将一个value装载到目的地址
-int load(FILE *fp, Operand dst, Operand src);   //从一个地址中装载数据到寄存器,返回寄存器编号
+//int ensure_right(FILE *fp, Operand op,int dis);         //确保表达式寄存器和其内容的正确性,即确保对应寄存器中有其对应的数值，若是立即数或者地址类型则需要装载数据
+//void store(FILE *fp, Operand dst, Operand val,int dis_dst,int dis_val); //将一个value装载到目的地址
+//int load(FILE *fp, Operand dst, Operand src);   //从一个地址中装载数据到寄存器,返回寄存器编号
 void translate_intercode(FILE *fp, struct InterCodes *start);
 void generate_machine_code(FILE *fp);
 
@@ -49,7 +48,7 @@ void generate_machine_code(FILE *fp);
 int get_stack_offset(Operand op);
 int save(FILE *fp,int reg_idx);
 int push(FILE *fp,int reg_idx);
-void pop();
+void pop(FILE *fp);
 int get_unused_reg(FILE *fp);
 int *save_regs(FILE *fp);
 void load_regs(FILE *fp,int *a);
