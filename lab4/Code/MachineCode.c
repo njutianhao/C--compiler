@@ -896,3 +896,12 @@ int stack_malloc(Operand op,int size){
     p->op = op;
     return p->offset;
 }
+
+int add_stacknode(Operand op,int offset){
+    struct StackNode *p = malloc(sizeof(struct StackNode));
+    p->next = Records.fp;
+    p->offset = offset;
+    p->op = op;
+    Records.fp = p;
+    return offset;
+}
