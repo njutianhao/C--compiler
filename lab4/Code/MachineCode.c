@@ -595,6 +595,7 @@ void push(FILE *fp,int reg_idx){
         if(p->op == Regs[reg_idx].content)
         {
             fprintf(fp,"  sw %s, %d($fp)\n",Regs[reg_idx].name,p->offset);
+            Regs[reg_idx].is_free = 1;
             return ;
         }
         prev = p;
@@ -615,6 +616,7 @@ void push(FILE *fp,int reg_idx){
     p->next = NULL;
     p->op = Regs[reg_idx].content;
     fprintf(fp,"  sw %s, %d($fp)\n",Regs[reg_idx].name,p->offset);
+    Regs[reg_idx].is_free = 1;
 }
 
 int get_unused_reg(FILE *fp){
@@ -667,7 +669,16 @@ int get_reg(FILE *fp, Operand op,int distance){
     for(int i = 8;i < 26;i++)
     {
         if(Regs[i].is_free == 1)
+        {
+            Regs[i].is_free = 0;
+            Regs[i].distance = distance;
+            Regs[i].content = op;
             return i;
+        }
     }
-    return get_unused_reg(fp);
+    int i = get_unused_reg(fp);
+    Regs[i].is_free = 0;
+    Regs[i].distance = distance;
+    Regs[i].content = op;
+    return i;
 }
