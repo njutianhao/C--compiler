@@ -5,6 +5,8 @@ struct Register
 {
     int is_free;
     char *name;
+    Operand content;
+    int distance;
 };
 
 struct Register Regs[32]; //32个寄存器
@@ -13,26 +15,27 @@ struct StackNode //栈中某一位置存放的数据信息
 {
     int offset;     //相对栈顶/栈底的偏移量，由具体实现决定是相对于栈底还是栈顶
     Operand op;     //当前位置存储的数据
-    int reg_number; //原来所在寄存器编号，若未被分配则该域无意义(-1)
+    // int reg_number; //原来所在寄存器编号，若未被分配则该域无意义(-1)
     struct StackNode *next;
 };
 
-struct FuntionRecord //函数活动记录
+struct FunctionRecord //函数活动记录
 {
     int size;//活动记录的大小
     struct StackNode *fp; //当前记录的栈底
-    struct FuntionRecord *next;
+    struct FunctionRecord *next;
 };
 
-struct FunctionRecord* Records;//模拟栈中的过程调用序列
+
+struct FunctionRecord Records;//模拟栈中的过程调用序列
 int is_main; //表示当前所在函数是否为main函数
 
 void init_reg();
 void init_data(FILE *fp);
 void init_code(FILE *fp);
+void init_block();
 //涉及寄存器分配
-int get_reg_op(FILE *fp, Operand op);  //获得存放作为操作数的operand寄存器编号，若没有则需要分配一个寄存器,并且需要装载该operand
-int get_reg_res(FILE *fp, Operand op); //获得存放作为结果(左值)的operand的寄存器编号，若没有则需要分配一个寄存器,可能需要将原寄存器中的值保存到栈
+int get_reg(FILE *fp, Operand op,int distance); 
 int load_data(FILE *fp, Operand op);   //从给定地址型操作数中取值存放至一个寄存器中，返回该值所在寄存器编号
 int load_imm(FILE *fp, Operand op);    //装载一个立即数，返回该值所在寄存器编号
 
@@ -42,4 +45,9 @@ void store(FILE *fp, Operand dst, Operand val); //将一个value装载到目的�
 int load(FILE *fp, Operand dst, Operand src);   //从一个地址中装载数据到寄存器,返回寄存器编号
 void translate_intercode(FILE *fp, struct InterCodes *start);
 void generate_machine_code(FILE *fp);
+
+
+int get_stack_offset(Operand op);
+void push(FILE *fp,int reg_idx);
+int get_unused_reg(FILE *fp);
 #endif

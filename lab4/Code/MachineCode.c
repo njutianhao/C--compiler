@@ -1,10 +1,17 @@
 #include "MachineCode.h"
 
+struct tmp_symbol{
+    Operand op;
+    struct tmp_symbol *next;
+    int pos;
+};
+
 void init_reg()
 {
     for (int i = 0; i < 32; i++)
     {
         Regs[i].is_free = 1;
+        Regs[i].content = NULL;
     }
     Regs[0].name = "$zero";
     Regs[1].name = "$at";
@@ -73,6 +80,105 @@ void init_code(FILE *fp) //填写代码段开始部分，主要是read和write�
     fprintf(fp, "  move $v0, $0\n");
     fprintf(fp, "  jr $ra\n"); //返回地址
 }
+
+void set_distance(struct tmp_symbol *head,int pos,int *dst,Operand op){
+    struct tmp_symbol *p = head->next;
+    struct tmp_symbol *prev = head;
+    while(p != NULL)
+    {
+        if(op == p->op)
+        {
+            *dst = pos - p->pos;
+            p->pos = pos;
+            return ;
+        }
+        prev = p;
+        p = p->next;
+    }
+    prev->next = malloc(sizeof(struct tmp_symbol));
+    p = prev->next;
+    p ->next = NULL;
+    p->op = op;
+    p->pos = pos;
+    *dst = 2147483647;
+}
+
+void init_block(){
+    struct InterCodes *p = head.next;
+    struct InterCodes *tmp;
+    while(p != &head)
+    {
+        switch(p->code.kind)
+        {
+            case IR_GOTO:case IR_IFGOTO:
+            tmp = p->next;
+            p->next = malloc(sizeof(struct InterCodes));
+            p->next->next = tmp;
+            tmp->prev = p->next;
+            p->next->prev = p;
+            p->next->code.kind = SPLIT_POINT;
+            break;
+            case IR_LABEL:
+            tmp = p->prev;
+            tmp->next = malloc(sizeof(struct InterCodes));
+            tmp->next->next = p;
+            tmp->next->prev = tmp;
+            p->prev = tmp->next;
+            tmp->next->code.kind = SPLIT_POINT;
+            break;
+        }
+        p = p ->next;
+    }
+    p = head.prev;
+    struct tmp_symbol symbol_head;
+    symbol_head.next = NULL;
+    int pos = 0;
+    while(p != &head)
+    {
+        if(p->code.kind == SPLIT_POINT)
+        {
+            pos = 0;
+            struct tmp_symbol *q = symbol_head.next;
+            while(q != NULL){
+                struct tmp_symbol *tmp2 = q->next;
+                free(q);
+                q = tmp2;
+            }
+            symbol_head.next = NULL;
+            p = p->prev;
+            continue;
+        }
+        switch(p->code.opnum)
+        {
+            case 4:
+                set_distance(&symbol_head,pos,&(p->code.next_op_distance[3]),p->code.u.control.label);
+                set_distance(&symbol_head,pos,&(p->code.next_op_distance[2]),p->code.u.control.op2);
+                set_distance(&symbol_head,pos,&(p->code.next_op_distance[1]),p->code.u.control.relop);
+                set_distance(&symbol_head,pos,&(p->code.next_op_distance[0]),p->code.u.control.op1);
+                break;
+            case 3:
+                set_distance(&symbol_head,pos,&(p->code.next_op_distance[2]),p->code.u.binop.op2);
+                set_distance(&symbol_head,pos,&(p->code.next_op_distance[1]),p->code.u.binop.op1);
+                set_distance(&symbol_head,pos,&(p->code.next_op_distance[0]),p->code.u.binop.result);
+                break;
+            case 2:
+                set_distance(&symbol_head,pos,&(p->code.next_op_distance[1]),p->code.u.assign.left);
+                set_distance(&symbol_head,pos,&(p->code.next_op_distance[0]),p->code.u.assign.right);
+                break;
+            case 1:set_distance(&symbol_head,pos,&(p->code.next_op_distance[0]),p->code.u.single);break;
+            default:assert(0);
+        }
+        p = p->prev;
+        pos++;
+    }
+    struct tmp_symbol *f = symbol_head.next;
+    while(f != NULL)
+    {
+        free(f);
+        f = f->next;
+    }
+}
+
 int ensure_right(FILE *fp, Operand op)
 {
     if (op->kind == OP_ADDRESS)
@@ -84,18 +190,18 @@ int ensure_right(FILE *fp, Operand op)
         return load_imm(fp, op);
     }
     else
-        return get_reg_op(fp, op);
+        return get_reg(fp, op);
 }
 void store(FILE *fp, Operand dst, Operand val) //将一个value装载到目的地址
 {
-    int reg_dst = get_reg_op(fp, dst);
+    int reg_dst = get_reg(fp, dst);
     int reg_val = ensure_right(fp, val);
     fprintf(fp, "  sw %s, 0(%s)\n", Regs[reg_val].name, Regs[reg_dst].name);
 }
 int load(FILE *fp, Operand dst, Operand src) //从一个地址中装载数据到寄存器
 {
-    int reg_dst = get_reg_res(fp, dst);
-    int reg_src = get_reg_op(fp, src);
+    int reg_dst = get_reg(fp, dst);
+    int reg_src = get_reg(fp, src);
     fprintf(fp, "  lw %s, 0(%s)\n", Regs[reg_dst].name, Regs[reg_src].name);
     return reg_dst;
 }
@@ -125,7 +231,7 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 }
                 else
                 {
-                    int reg_res = get_reg_res(fp, res);
+                    int reg_res = get_reg(fp, res);
                     fprintf(fp, "  li %s, %d\n", Regs[reg_res].name, val);
                 }
             }
@@ -136,13 +242,13 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 if (res->kind == OP_ADDRESS)
                 {
                     Operand t = new_temp();
-                    int reg_tmp = get_reg_res(fp, t);
+                    int reg_tmp = get_reg(fp, t);
                     fprintf(fp, "  addi %s, %s, %d\n", Regs[reg_tmp].name, Regs[reg2].name, op1->u.value);
                     store(fp, res, t);
                 }
                 else
                 {
-                    reg_res = get_reg_res(fp, res);
+                    reg_res = get_reg(fp, res);
                     fprintf(fp, "  addi %s, %s, %d\n", Regs[reg_res].name, Regs[reg2].name, op1->u.value);
                 }
             }
@@ -153,13 +259,13 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 if (res->kind == OP_ADDRESS)
                 {
                     Operand t = new_temp();
-                    int reg_tmp = get_reg_res(fp, t);
+                    int reg_tmp = get_reg(fp, t);
                     fprintf(fp, "  addi %s, %s, %d\n", Regs[reg_tmp].name, Regs[reg1].name, op2->u.value);
                     store(fp, res, t);
                 }
                 else
                 {
-                    reg_res = get_reg_res(fp, res);
+                    reg_res = get_reg(fp, res);
                     fprintf(fp, "  addi %s, %s, %d\n", Regs[reg_res].name, Regs[reg1].name, op2->u.value);
                 }
             }
@@ -171,13 +277,13 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 if (res->kind == OP_ADDRESS)
                 {
                     Operand t = new_temp();
-                    int reg_tmp = get_reg_res(fp, t);
+                    int reg_tmp = get_reg(fp, t);
                     fprintf(fp, "  add %s, %s, %s\n", Regs[reg_tmp].name, Regs[reg1].name, Regs[reg2].name);
                     store(fp, res, t);
                 }
                 else
                 {
-                    reg_res = get_reg_res(fp, res);
+                    reg_res = get_reg(fp, res);
                     fprintf(fp, "  add %s, %s, %s\n", Regs[reg_res].name, Regs[reg1].name, Regs[reg2].name);
                 }
             }
@@ -197,7 +303,7 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 }
                 else
                 {
-                    int reg_res = get_reg_res(fp, res);
+                    int reg_res = get_reg(fp, res);
                     fprintf(fp, "  li %s, %d\n", Regs[reg_res].name, val);
                 }
             }
@@ -208,13 +314,13 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 if (res->kind == OP_ADDRESS)
                 {
                     Operand t = new_temp();
-                    int reg_tmp = get_reg_res(fp, t);
+                    int reg_tmp = get_reg(fp, t);
                     fprintf(fp, "  addi %s, %s, %d\n", Regs[reg_tmp].name, Regs[reg1].name, -op2->u.value);
                     store(fp, res, t);
                 }
                 else
                 {
-                    reg_res = get_reg_res(fp, res);
+                    reg_res = get_reg(fp, res);
                     fprintf(fp, "  addi %s, %s, %d\n", Regs[reg_res].name, Regs[reg1].name, -op2->u.value);
                 }
             }
@@ -226,13 +332,13 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 if (res->kind == OP_ADDRESS)
                 {
                     Operand t = new_temp();
-                    int reg_tmp = get_reg_res(fp, t);
+                    int reg_tmp = get_reg(fp, t);
                     fprintf(fp, "  sub %s, %s, %s\n", Regs[reg_tmp].name, Regs[reg1].name, Regs[reg2].name);
                     store(fp, res, t);
                 }
                 else
                 {
-                    reg_res = get_reg_res(fp, res);
+                    reg_res = get_reg(fp, res);
                     fprintf(fp, "  sub %s, %s, %s\n", Regs[reg_res].name, Regs[reg1].name, Regs[reg2].name);
                 }
             }
@@ -252,7 +358,7 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 }
                 else
                 {
-                    int reg_res = get_reg_res(fp, res);
+                    int reg_res = get_reg(fp, res);
                     fprintf(fp, "  li %s, %d\n", Regs[reg_res].name, val);
                 }
             }
@@ -264,13 +370,13 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 if (res->kind == OP_ADDRESS)
                 {
                     Operand t = new_temp();
-                    int reg_tmp = get_reg_res(fp, t);
+                    int reg_tmp = get_reg(fp, t);
                     fprintf(fp, "  mul %s, %s, %s\n", Regs[reg_tmp].name, Regs[reg1].name, Regs[reg2].name);
                     store(fp, res, t);
                 }
                 else
                 {
-                    reg_res = get_reg_res(fp, res);
+                    reg_res = get_reg(fp, res);
                     fprintf(fp, "  mul %s, %s, %s\n", Regs[reg_res].name, Regs[reg1].name, Regs[reg2].name);
                 }
             }
@@ -295,7 +401,7 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 }
                 else
                 {
-                    int reg_res = get_reg_res(fp, res);
+                    int reg_res = get_reg(fp, res);
                     fprintf(fp, "  li %s, %d\n", Regs[reg_res].name, val);
                 }
             }
@@ -307,14 +413,14 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 if (res->kind == OP_ADDRESS)
                 {
                     Operand t = new_temp();
-                    int reg_tmp = get_reg_res(fp, t);
+                    int reg_tmp = get_reg(fp, t);
                     fprintf(fp, "  div %s, %s\n", Regs[reg1].name, Regs[reg2].name);
                     fprintf(fp, "  mflo %s\n", Regs[reg_tmp].name);
                     store(fp, res, t);
                 }
                 else
                 {
-                    reg_res = get_reg_res(fp, res);
+                    reg_res = get_reg(fp, res);
                     fprintf(fp, "  div %s, %s\n", Regs[reg1].name, Regs[reg2].name);
                     fprintf(fp, "  mflo %s\n", Regs[reg_res].name);
                 }
@@ -329,12 +435,12 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
             {
                 if (right->kind == OP_CONSTANT)
                 {
-                    int reg_left = get_reg_res(fp, left);
+                    int reg_left = get_reg(fp, left);
                     fprintf(fp, "  li %s, %d", Regs[reg_left].name, right->u.value);
                 }
                 else
                 {
-                    int reg_left = get_reg_res(fp, left);
+                    int reg_left = get_reg(fp, left);
                     int reg_right = ensure_right(fp, right);
                     fprintf(fp, "  move %s, %s\n", Regs[reg_left].name, Regs[reg_right].name);
                 }
@@ -349,7 +455,7 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
         {
             Operand right = p->code.u.assign.right;
             Operand left = p->code.u.assign.left;
-            int reg_left = get_reg_res(fp, left);
+            int reg_left = get_reg(fp, left);
             int reg_right = ensure_right(fp, right);
             fprintf(fp, "  la %s, %s\n", Regs[reg_right].name, right->u.name);
             fprintf(fp, "  move %s, %s\n", Regs[reg_left].name, Regs[reg_right].name);
@@ -399,8 +505,8 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
             Operand op1 = p->code.u.binop.op1;
             Operand op2 = p->code.u.binop.op2;
             Operand res = p->code.u.binop.result;
-            int reg1 = get_reg_op(fp, op1);
-            int reg_res = get_reg_res(fp, res);
+            int reg1 = get_reg(fp, op1);
+            int reg_res = get_reg(fp, res);
             if (op2->kind == OP_CONSTANT)
             {
                 fprintf(fp, "  addi %s, %s, %d\n", Regs[reg_res].name, Regs[reg1].name, op2->u.value);
@@ -420,7 +526,7 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
             fprintf(fp, "  lw $ra, 0($sp)\n");
             fprintf(fp, "  addi $sp, $sp, 4\n");
             Operand op = p->code.u.single;
-            int reg = get_reg_res(fp, op);
+            int reg = get_reg(fp, op);
             fprintf(fp, "  move %s, $v0\n", Regs[reg].name);
             break;
         }
@@ -463,5 +569,105 @@ void generate_machine_code(FILE *fp)
     init_reg();
     init_data(fp);
     init_code(fp);
+    init_block();
     translate_intercode(fp, head.next);
+}
+
+int get_stack_offset(Operand op){
+    struct StackNode *p = Records.fp;
+    while(p!= NULL)
+    {
+        if(p->op == op)
+        {
+            return p->offset;      
+        }
+        p = p ->next;
+    }
+    return -1;
+}
+
+
+void push(FILE *fp,int reg_idx){
+    struct StackNode *p = Records.fp;
+    struct StackNode *prev = NULL;
+    while(p != NULL)
+    {
+        if(p->op == Regs[reg_idx].content)
+        {
+            fprintf(fp,"  sw %s, %d($fp)\n",Regs[reg_idx].name,p->offset);
+            return ;
+        }
+        prev = p;
+        p = p->next;
+    }
+    if(prev==NULL)
+    {
+        Records.fp = malloc(sizeof(struct StackNode));
+        p = Records.fp;
+        p->offset = -4;
+    }
+    else 
+    {
+        prev->next = malloc(sizeof(struct StackNode));
+        p = prev->next;
+        p->offset = prev->offset - 4;
+    }
+    p->next = NULL;
+    p->op = Regs[reg_idx].content;
+    fprintf(fp,"  sw %s, %d($fp)\n",Regs[reg_idx].name,p->offset);
+}
+
+int get_unused_reg(FILE *fp){
+    for(int i = 8;i < 26;i++)
+    {
+        if(Regs[i].is_free == 1)
+        {
+            return i;
+        }
+    }
+    int max = -1;
+    int maxpos = -1;
+    for(int i = 8;i < 26;i++)
+    {
+        if(Regs[i].distance > max)
+        {
+            max = Regs[i].distance;
+            maxpos = i;
+        }
+    }
+    push(fp,maxpos);
+    return maxpos;
+}
+
+int get_reg(FILE *fp, Operand op,int distance){
+    for(int i = 0;i < 32;i++)
+    {
+        if(Regs[i].is_free == 0 && Regs[i].content==op)
+        {
+            Regs[i].distance = distance;
+            return i;
+        }
+    }
+    struct StackNode *p = Records.fp;
+    struct StackNode *prev= NULL;
+    while(p != NULL)
+    {
+        if(p->op == op)
+        {
+            int i = get_unused_reg(fp);
+            Regs[i].is_free = 0;
+            Regs[i].content = op;
+            Regs[i].distance = distance;
+            fprintf(fp, "  lw %s, %d($fp)\n",Regs[i].name,p->offset);
+            return i;
+        }
+        prev = p;
+        p = p->next;
+    }
+    for(int i = 8;i < 26;i++)
+    {
+        if(Regs[i].is_free == 1)
+            return i;
+    }
+    return get_unused_reg(fp);
 }

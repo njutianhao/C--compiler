@@ -45,7 +45,8 @@ struct InterCode
         IR_RETURN,
         IR_DEC,
         IR_ASSIGNADDR,
-        IR_ADD_ADDR
+        IR_ADD_ADDR,
+        SPLIT_POINT
     } kind;
     union
     {
@@ -63,6 +64,8 @@ struct InterCode
             Operand op1, relop, op2, label;
         } control;
     } u;
+    int opnum;
+    int next_op_distance[4];
 };
 
 struct InterCodes

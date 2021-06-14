@@ -207,6 +207,7 @@ void create_InterCode_oneOp(Operand op, int CodeKind)
     //printf("1\n");
     tmp->code.kind = CodeKind;
     tmp->code.u.single = op;
+    tmp->code.opnum = 1;
 }
 void create_InterCode_twoOp(Operand op1, Operand op2, int CodeKind)
 {
@@ -218,6 +219,7 @@ void create_InterCode_twoOp(Operand op1, Operand op2, int CodeKind)
     tmp->code.kind = CodeKind;
     tmp->code.u.assign.left = op1;
     tmp->code.u.assign.right = op2;
+    tmp->code.opnum = 2;
 }
 void create_InterCode_threeOp(Operand op1, Operand op2, Operand op3, int CodeKind)
 {
@@ -230,6 +232,7 @@ void create_InterCode_threeOp(Operand op1, Operand op2, Operand op3, int CodeKin
     tmp->code.u.binop.result = op1;
     tmp->code.u.binop.op1 = op2;
     tmp->code.u.binop.op2 = op3;
+    tmp->code.opnum = 3;
 }
 void create_InterCode_fourOp(Operand op1, Operand relop, Operand op2, Operand label, int CodeKind)
 {
@@ -243,6 +246,7 @@ void create_InterCode_fourOp(Operand op1, Operand relop, Operand op2, Operand la
     tmp->code.u.control.relop = relop;
     tmp->code.u.control.op1 = op1;
     tmp->code.u.control.op2 = op2;
+    tmp->code.opnum = 4;
 }
 
 void renew_int(Operand op, int value, int OpKind)
