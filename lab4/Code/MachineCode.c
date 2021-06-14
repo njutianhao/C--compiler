@@ -710,7 +710,8 @@ int get_unused_reg(FILE *fp)
             maxpos = i;
         }
     }
-    save(fp, maxpos);
+    if(Regs[maxpos].content->kind != OP_CONSTANT)
+        save(fp,maxpos);
     return maxpos;
 }
 
@@ -766,8 +767,14 @@ int load_data(FILE *fp, int reg_idx, int distance)
     //TODO:content
     return res;
 }
-int load_imm(FILE *fp, Operand op)
-{
+
+int load_imm(FILE *fp, Operand op){
+    int i = get_unused_reg(fp);
+    Regs[i].is_free = 0;
+    Regs[i].distance = 2147483647;
+    Regs[i].content = op;
+    fprintf(fp,"  li %s, %d\n",Regs[i].name,op->u.value);
+    return i;
 }
 
 int *save_regs(FILE *fp)
