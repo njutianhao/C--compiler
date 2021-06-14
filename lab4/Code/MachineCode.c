@@ -179,6 +179,14 @@ void init_block(){
     }
 }
 
+int load_data(FILE *fp, Operand op)
+{
+    return 0;
+}   
+int load_imm(FILE *fp, Operand op)
+{
+    return 0;
+}
 int ensure_right(FILE *fp, Operand op,int dis)
 {
     if (op->kind == OP_ADDRESS)
@@ -564,7 +572,6 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
             Operand op=p->code.u.single;
             if(op->kind==OP_CONSTANT)
             {
-                load_imm();
             }
             break;
         }

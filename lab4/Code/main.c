@@ -34,7 +34,7 @@ int main(int argc,char** argv){
 	{
 		translate();
 		if(Success()){
-			generate_machine_code(fp);
+			generateCode(fp);
 		}
 	}
 	return 0;

@@ -100,7 +100,7 @@ void create_InterCode_fourOp(Operand op1, Operand relop, Operand op2, Operand la
 void renew_int(Operand op, int value, int OpKind);
 void renew_char(Operand op, char *name, int OpKind);
 
-void generateCode(char *fileName);
+void generateCode(FILE *f);
 
 void set_Op_address(Operand op);
 void set_Op_variable(Operand op);

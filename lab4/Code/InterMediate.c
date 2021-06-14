@@ -280,9 +280,9 @@ void renew_char(Operand op, char *name, int OpKind)
     op->u.vname = tmp->u.vname;
 }
 
-void generateCode(char *fileName)
+void generateCode(FILE *f)
 {
-    FILE *f = fopen(fileName, "w");
+    //FILE *f = fopen(fileName, "w");
     struct InterCodes *p = head.next;
     Operand o1, o2, o3, o4;
     char *s1, *s2, *s3, *s4, *s5, *s6, *s7, *s8, *num, *tmp;

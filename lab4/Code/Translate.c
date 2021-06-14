@@ -234,46 +234,55 @@ void translate_Exp(struct GrammarTree *node, Operand place)
         Operand op2 = new_temp();
         translate_Exp(first, op1);
         translate_Exp(third, op2);
-        if (op1->u.name != NULL && search_with_name(op1->u.name)!=NULL&&search_with_name(op1->u.name)->kind == ARRAY )
+        if (op1->u.name != NULL && search_with_name(op1->u.name) != NULL && search_with_name(op1->u.name)->kind == ARRAY)
         {
-            int size1=getSize(search_with_name(op1->u.name));
-            int size2=getSize(search_with_name(op2->u.name));
-            int i=0;
-            Operand tmp1=new_temp();
-            Operand tmp2=new_temp();
-            if(op1->kind!=OP_ADDRESS)
-                create_InterCode_twoOp(tmp1,op1,IR_ASSIGNADDR);
+            int size1 = getSize(search_with_name(op1->u.name));
+            int size2 = getSize(search_with_name(op2->u.name));
+            int i = 0;
+            Operand tmp1 = new_temp();
+            Operand tmp2 = new_temp();
+            if (op1->kind != OP_ADDRESS)
+                create_InterCode_twoOp(tmp1, op1, IR_ASSIGNADDR);
             else
             {
                 free(tmp1);
-                tmp1=op1;
+                tmp1 = op1;
             }
-            if(op2->kind!=OP_ADDRESS)
-                create_InterCode_twoOp(tmp2,op2,IR_ASSIGNADDR);
+            if (op2->kind != OP_ADDRESS)
+                create_InterCode_twoOp(tmp2, op2, IR_ASSIGNADDR);
             else
             {
                 free(tmp2);
-                tmp2=op2;
+                tmp2 = op2;
             }
-            while(i<size1 && i<size2)
+            while (i < size1 && i < size2)
             {
-                create_InterCode_threeOp(tmp1,tmp1,new_int_Operand(i,OP_CONSTANT),IR_ADD_ADDR);
-                create_InterCode_threeOp(tmp2,tmp2,new_int_Operand(i,OP_CONSTANT),IR_ADD_ADDR);
-                create_InterCode_twoOp(tmp1,tmp2,IR_ASSIGN);
-                i=i+4;
+                create_InterCode_threeOp(tmp1, tmp1, new_int_Operand(i, OP_CONSTANT), IR_ADD_ADDR);
+                create_InterCode_threeOp(tmp2, tmp2, new_int_Operand(i, OP_CONSTANT), IR_ADD_ADDR);
+                create_InterCode_twoOp(tmp1, tmp2, IR_ASSIGN);
+                i = i + 4;
             }
-            if(size1>size2)
+            if (size1 > size2)
             {
-                while(i<size1)
+                while (i < size1)
                 {
-                    create_InterCode_threeOp(tmp1,tmp1,new_int_Operand(i,OP_CONSTANT),IR_ADD_ADDR);
-                    create_InterCode_twoOp(tmp1,new_int_Operand(0,OP_CONSTANT),IR_ASSIGN);
-                    i=i+4;
+                    create_InterCode_threeOp(tmp1, tmp1, new_int_Operand(i, OP_CONSTANT), IR_ADD_ADDR);
+                    create_InterCode_twoOp(tmp1, new_int_Operand(0, OP_CONSTANT), IR_ASSIGN);
+                    i = i + 4;
                 }
             }
         }
         else
-            create_InterCode_twoOp(op1, op2, IR_ASSIGN);
+        {
+            if (op1->kind == OP_ADDRESS && op2->kind == OP_ADDRESS)
+            {
+                Operand tmp = new_temp();
+                create_InterCode_twoOp(tmp, op2, IR_ASSIGN);
+                create_InterCode_twoOp(op1, tmp, IR_ASSIGN);
+            }
+            else
+                create_InterCode_twoOp(op1, op2, IR_ASSIGN);
+        }
     }
     //Exp -> Exp PLUS Exp
     else if (first->type == Exp && get_child(node, 2)->type == PLUS)
@@ -283,7 +292,24 @@ void translate_Exp(struct GrammarTree *node, Operand place)
         Operand op2 = new_temp();
         translate_Exp(first, op1);
         translate_Exp(third, op2);
-        create_InterCode_threeOp(place, op1, op2, IR_ADD);
+        Operand t1 = new_temp();
+        Operand t2 = new_temp();
+        if (op1->kind == OP_ADDRESS)
+        {
+            create_InterCode_twoOp(t1, op1, IR_ASSIGN);
+        }
+        if (op2->kind == OP_ADDRESS)
+        {
+            create_InterCode_twoOp(t2, op2, IR_ASSIGN);
+        }
+        if (op1->kind != OP_ADDRESS && op2->kind != OP_ADDRESS)
+            create_InterCode_threeOp(place, op1, op2, IR_ADD);
+        else if (op1->kind == OP_ADDRESS && op2->kind == OP_ADDRESS)
+            create_InterCode_threeOp(place, t1, t2, IR_ADD);
+        else if (op1->kind == OP_ADDRESS)
+            create_InterCode_threeOp(place, t1, op2, IR_ADD);
+        else
+            create_InterCode_threeOp(place, op1, t2, IR_ADD);
     }
     //Exp -> Exp MINUS Exp
     else if (first->type == Exp && get_child(node, 2)->type == SUB)
@@ -293,7 +319,24 @@ void translate_Exp(struct GrammarTree *node, Operand place)
         Operand op2 = new_temp();
         translate_Exp(first, op1);
         translate_Exp(third, op2);
-        create_InterCode_threeOp(place, op1, op2, IR_SUB);
+        Operand t1 = new_temp();
+        Operand t2 = new_temp();
+        if (op1->kind == OP_ADDRESS)
+        {
+            create_InterCode_twoOp(t1, op1, IR_ASSIGN);
+        }
+        if (op2->kind == OP_ADDRESS)
+        {
+            create_InterCode_twoOp(t2, op2, IR_ASSIGN);
+        }
+        if (op1->kind != OP_ADDRESS && op2->kind != OP_ADDRESS)
+            create_InterCode_threeOp(place, op1, op2, IR_SUB);
+        else if (op1->kind == OP_ADDRESS && op2->kind == OP_ADDRESS)
+            create_InterCode_threeOp(place, t1, t2, IR_SUB);
+        else if (op1->kind == OP_ADDRESS)
+            create_InterCode_threeOp(place, t1, op2, IR_SUB);
+        else
+            create_InterCode_threeOp(place, op1, t2, IR_SUB);
     }
     //Exp -> Exp STAR Exp
     else if (first->type == Exp && get_child(node, 2)->type == STAR)
@@ -303,7 +346,24 @@ void translate_Exp(struct GrammarTree *node, Operand place)
         Operand op2 = new_temp();
         translate_Exp(first, op1);
         translate_Exp(third, op2);
-        create_InterCode_threeOp(place, op1, op2, IR_MUL);
+        Operand t1 = new_temp();
+        Operand t2 = new_temp();
+        if (op1->kind == OP_ADDRESS)
+        {
+            create_InterCode_twoOp(t1, op1, IR_ASSIGN);
+        }
+        if (op2->kind == OP_ADDRESS)
+        {
+            create_InterCode_twoOp(t2, op2, IR_ASSIGN);
+        }
+        if (op1->kind != OP_ADDRESS && op2->kind != OP_ADDRESS)
+            create_InterCode_threeOp(place, op1, op2, IR_MUL);
+        else if (op1->kind == OP_ADDRESS && op2->kind == OP_ADDRESS)
+            create_InterCode_threeOp(place, t1, t2, IR_MUL);
+        else if (op1->kind == OP_ADDRESS)
+            create_InterCode_threeOp(place, t1, op2, IR_MUL);
+        else
+            create_InterCode_threeOp(place, op1, t2, IR_MUL);
     }
     //Exp -> Exp DIV Exp
     else if (first->type == Exp && get_child(node, 2)->type == DIV)
@@ -313,7 +373,24 @@ void translate_Exp(struct GrammarTree *node, Operand place)
         Operand op2 = new_temp();
         translate_Exp(first, op1);
         translate_Exp(third, op2);
-        create_InterCode_threeOp(place, op1, op2, IR_DIV);
+        Operand t1 = new_temp();
+        Operand t2 = new_temp();
+        if (op1->kind == OP_ADDRESS)
+        {
+            create_InterCode_twoOp(t1, op1, IR_ASSIGN);
+        }
+        if (op2->kind == OP_ADDRESS)
+        {
+            create_InterCode_twoOp(t2, op2, IR_ASSIGN);
+        }
+        if (op1->kind != OP_ADDRESS && op2->kind != OP_ADDRESS)
+            create_InterCode_threeOp(place, op1, op2, IR_DIV);
+        else if (op1->kind == OP_ADDRESS && op2->kind == OP_ADDRESS)
+            create_InterCode_threeOp(place, t1, t2, IR_DIV);
+        else if (op1->kind == OP_ADDRESS)
+            create_InterCode_threeOp(place, t1, op2, IR_DIV);
+        else
+            create_InterCode_threeOp(place, op1, t2, IR_DIV);
     }
     // Exp -> MINUS Exp
     else if (first->type == MINUS)
@@ -321,8 +398,14 @@ void translate_Exp(struct GrammarTree *node, Operand place)
         struct GrammarTree *second = get_child(node, 2);
         Operand op1 = new_temp();
         translate_Exp(second, op1);
+        Operand t1 = new_temp();
+        if (op1->kind == OP_ADDRESS)
+            create_InterCode_twoOp(t1, op1, IR_ASSIGN);
         Operand op2 = new_int_Operand(0, OP_CONSTANT);
-        create_InterCode_threeOp(place, op2, op1, IR_SUB);
+        if (op1->kind != OP_ADDRESS)
+            create_InterCode_threeOp(place, op2, op1, IR_SUB);
+        else
+            create_InterCode_threeOp(place, op2, t1, IR_SUB);
     }
     /*
     Exp -> NOT Exp
@@ -373,10 +456,10 @@ void translate_Exp(struct GrammarTree *node, Operand place)
                     if (arg->operand->u.name != NULL)
                     {
                         Type t;
-                        if(search_with_name(arg->operand->u.name)!=NULL)
-                        t = getBasicType(search_with_name(arg->operand->u.name));
-                        else 
-                        t=search_struct(arg->operand->u.name);
+                        if (search_with_name(arg->operand->u.name) != NULL)
+                            t = getBasicType(search_with_name(arg->operand->u.name));
+                        else
+                            t = search_struct(arg->operand->u.name);
                         if (t != NULL && t->kind == STRUCTURE)
                         {
                             if (arg->operand->kind == OP_ADDRESS)
@@ -490,19 +573,20 @@ void translate_Exp(struct GrammarTree *node, Operand place)
             }
         }
         set_Op_address(place);
-        if(search_with_name(id->u.name)!=NULL)
+        if (search_with_name(id->u.name) != NULL)
         {
-            if(getBasicType(search_with_name(id->u.name))->kind==STRUCTURE)
+            if (getBasicType(search_with_name(id->u.name))->kind == STRUCTURE)
             {
-                set_Op_name(place,getBasicType(search_with_name(id->u.name))->u.structure.structName);
+                set_Op_name(place, getBasicType(search_with_name(id->u.name))->u.structure.structName);
             }
         }
-        else if(search_struct(id->u.name)!=NULL)
+        else if (search_struct(id->u.name) != NULL)
         {
-            set_Op_name(place,search_struct(id->u.name)->u.structure.structName);
+            set_Op_name(place, search_struct(id->u.name)->u.structure.structName);
         }
-        else{
-            set_Op_name(place,id->u.name);
+        else
+        {
+            set_Op_name(place, id->u.name);
         }
     }
 }
@@ -526,7 +610,14 @@ void translate_Stmt(struct GrammarTree *node)
     {
         Operand op = new_temp();
         translate_Exp(get_child(node, 2), op);
-        create_InterCode_oneOp(op, IR_RETURN);
+        if (op->kind == OP_ADDRESS)
+        {
+            Operand t1 = new_temp();
+            create_InterCode_twoOp(t1, op, IR_ASSIGN);
+            create_InterCode_oneOp(t1, IR_RETURN);
+        }
+        else
+            create_InterCode_oneOp(op, IR_RETURN);
     }
     // Stmt -> IF LP Exp RP Stmt1 (ELSE Stmt2)
     else if (first->type == IF)
@@ -584,8 +675,23 @@ void translate_Cond(struct GrammarTree *node, Operand label_true, Operand label_
         Operand op2 = new_temp();
         translate_Exp(first, op1);
         translate_Exp(third, op2);
+        Operand t1, t2;
+        if (op1->kind == OP_ADDRESS)
+        {
+            t1 = new_temp();
+            create_InterCode_twoOp(t1, op1, IR_ASSIGN);
+        }
+        else
+            t1 = op1;
+        if (op2->kind == OP_ADDRESS)
+        {
+            t2 = new_temp();
+            create_InterCode_twoOp(t2, op2, IR_ASSIGN);
+        }
+        else
+            t2 = op2;
         Operand relop = new_char_Operand(get_relop(second), OP_RELOP);
-        create_InterCode_fourOp(op1, relop, op2, label_true, IR_IFGOTO);
+        create_InterCode_fourOp(t1, relop, t2, label_true, IR_IFGOTO);
         create_InterCode_oneOp(label_false, IR_GOTO);
     }
     else if (second->type == AND)
@@ -606,11 +712,19 @@ void translate_Cond(struct GrammarTree *node, Operand label_true, Operand label_
     }
     else
     {
-        Operand label1 = new_label();
-        translate_Exp(node, label1);
+        Operand tmp = new_temp();
+        translate_Exp(node, tmp);
+        Operand t;
+        if (tmp->kind == OP_ADDRESS)
+        {
+            t = new_temp();
+            create_InterCode_twoOp(t, tmp, IR_ASSIGN);
+        }
+        else
+            t = tmp;
         Operand op2 = new_int_Operand(0, OP_CONSTANT);
         Operand relop = new_char_Operand("!=", OP_RELOP);
-        create_InterCode_fourOp(label1, relop, op2, label_true, IR_IFGOTO);
+        create_InterCode_fourOp(t, relop, op2, label_true, IR_IFGOTO);
         create_InterCode_oneOp(label_false, IR_GOTO);
     }
 }
@@ -634,7 +748,14 @@ void translate_Args(struct GrammarTree *node, struct OperandList **arg_list)
                 }
             }
         }
-        add_operand(op, arg_list);
+        if (op->kind == OP_ADDRESS && op->u.name == NULL)
+        {
+            Operand tmp = new_temp();
+            create_InterCode_twoOp(tmp, op, IR_ASSIGN);
+            add_operand(tmp, arg_list);
+        }
+        else
+            add_operand(op, arg_list);
     }
     else
     {
@@ -650,7 +771,14 @@ void translate_Args(struct GrammarTree *node, struct OperandList **arg_list)
                 return;
             }
         }
-        add_operand(op, arg_list);
+        if (op->kind == OP_ADDRESS && op->u.name == NULL)
+        {
+            Operand tmp = new_temp();
+            create_InterCode_twoOp(tmp, op, IR_ASSIGN);
+            add_operand(tmp, arg_list);
+        }
+        else
+            add_operand(op, arg_list);
         translate_Args(third, arg_list);
     }
 }
