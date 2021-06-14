@@ -751,6 +751,18 @@ int get_reg(FILE *fp, Operand op,int distance){
     return i;
 }
 
+int load_data(FILE *fp, int reg_idx,int distance){
+    int res = get_unused_reg(fp);
+    fprintf("  lw %s,0(%s)",Regs[res].name,Regs[reg_idx].name);
+    Regs[res].is_free = 0;
+    Regs[res].distance = distance;
+    //TODO:content
+    return res;
+}
+int load_imm(FILE *fp, Operand op){
+    
+}
+
 
 int *save_regs(FILE* fp){
     int *res = malloc(sizeof(int) * 32);
