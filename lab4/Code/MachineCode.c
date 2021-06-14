@@ -191,19 +191,19 @@ int ensure_right(FILE *fp, Operand op, int dis)
 {
     if (op->kind == OP_ADDRESS)
     {
-        int reg = get_reg(fp, op, dis);
-        return load_data(fp, reg, dis);
+        int reg = get_reg(fp, op);
+        return load_data(fp, reg);
     }
     else if (op->kind == OP_CONSTANT)
     {
         return load_imm(fp, op);
     }
     else
-        return get_reg(fp, op, dis);
+        return get_reg(fp, op);
 }
 void store(FILE *fp, Operand dst, Operand val, int dis_dst, int dis_val) //将一个value装载到目的地址
 {
-    int reg_dst = get_reg(fp, dst, dis_dst);
+    int reg_dst = get_reg(fp, dst);
     int reg_val = ensure_right(fp, val, dis_val);
     fprintf(fp, "  sw %s, 0(%s)\n", Regs[reg_val].name, Regs[reg_dst].name);
 }
@@ -241,7 +241,7 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 Regs[reg1].distance=0;
             }
             else {
-                reg1=get_reg(fp,op1,dis1);
+                reg1=get_reg(fp,op1);
                 Regs[reg1].distance=0;
             }
             if(op1->kind==OP_CONSTANT) {
@@ -264,7 +264,7 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 }
                 else
                 {
-                    int reg_res = get_reg(fp, res, p->code.next_op_distance[0]);
+                    int reg_res = get_reg(fp, res);
                     fprintf(fp, "  li %s, %d\n", Regs[reg_res].name, val);
                 }
             }
@@ -275,13 +275,13 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 if (res->kind == OP_ADDRESS)
                 {
                     Operand t = new_temp();
-                    int reg_tmp = get_reg(fp, t, 2147483647);
+                    int reg_tmp = get_reg(fp, t);
                     fprintf(fp, "  addi %s, %s, %d\n", Regs[reg_tmp].name, Regs[reg1].name, -op2->u.value);
                     store(fp, res, t, p->code.next_op_distance[0], 2147483647);
                 }
                 else
                 {
-                    reg_res = get_reg(fp, res, p->code.next_op_distance[0]);
+                    reg_res = get_reg(fp, res);
                     fprintf(fp, "  addi %s, %s, %d\n", Regs[reg_res].name, Regs[reg1].name, -op2->u.value);
                 }
             }
@@ -293,13 +293,13 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 if (res->kind == OP_ADDRESS)
                 {
                     Operand t = new_temp();
-                    int reg_tmp = get_reg(fp, t, 2147483647);
+                    int reg_tmp = get_reg(fp, t);
                     fprintf(fp, "  sub %s, %s, %s\n", Regs[reg_tmp].name, Regs[reg1].name, Regs[reg2].name);
                     store(fp, res, t, p->code.next_op_distance[0], 2147483647);
                 }
                 else
                 {
-                    reg_res = get_reg(fp, res, p->code.next_op_distance[0]);
+                    reg_res = get_reg(fp, res);
                     fprintf(fp, "  sub %s, %s, %s\n", Regs[reg_res].name, Regs[reg1].name, Regs[reg2].name);
                 }
             }
@@ -331,13 +331,13 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 if (res->kind == OP_ADDRESS)
                 {
                     Operand t = new_temp();
-                    int reg_tmp = get_reg(fp, t, 2147483647);
+                    int reg_tmp = get_reg(fp, t);
                     fprintf(fp, "  mul %s, %s, %s\n", Regs[reg_tmp].name, Regs[reg1].name, Regs[reg2].name);
                     store(fp, res, t, p->code.next_op_distance[0], 2147483647);
                 }
                 else
                 {
-                    reg_res = get_reg(fp, res, p->code.next_op_distance[0]);
+                    reg_res = get_reg(fp, res);
                     fprintf(fp, "  mul %s, %s, %s\n", Regs[reg_res].name, Regs[reg1].name, Regs[reg2].name);
                 }
             }
@@ -362,7 +362,7 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 }
                 else
                 {
-                    int reg_res = get_reg(fp, res, p->code.next_op_distance[0]);
+                    int reg_res = get_reg(fp, res);
                     fprintf(fp, "  li %s, %d\n", Regs[reg_res].name, val);
                 }
             }
@@ -374,14 +374,14 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 if (res->kind == OP_ADDRESS)
                 {
                     Operand t = new_temp();
-                    int reg_tmp = get_reg(fp, t, 2147483647);
+                    int reg_tmp = get_reg(fp, t);
                     fprintf(fp, "  div %s, %s\n", Regs[reg1].name, Regs[reg2].name);
                     fprintf(fp, "  mflo %s\n", Regs[reg_tmp].name);
                     store(fp, res, t, p->code.next_op_distance[0], 2147483647);
                 }
                 else
                 {
-                    reg_res = get_reg(fp, res, p->code.next_op_distance[0]);
+                    reg_res = get_reg(fp, res);
                     fprintf(fp, "  div %s, %s\n", Regs[reg1].name, Regs[reg2].name);
                     fprintf(fp, "  mflo %s\n", Regs[reg_res].name);
                 }
@@ -396,12 +396,12 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
             {
                 if (right->kind == OP_CONSTANT)
                 {
-                    int reg_left = get_reg(fp, left, p->code.next_op_distance[1]);
+                    int reg_left = get_reg(fp, left);
                     fprintf(fp, "  li %s, %d", Regs[reg_left].name, right->u.value);
                 }
                 else
                 {
-                    int reg_left = get_reg(fp, left, p->code.next_op_distance[1]);
+                    int reg_left = get_reg(fp, left);
                     int reg_right = ensure_right(fp, right, p->code.next_op_distance[0]);
                     fprintf(fp, "  move %s, %s\n", Regs[reg_left].name, Regs[reg_right].name);
                 }
@@ -416,7 +416,7 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
         {
             Operand right = p->code.u.assign.right;
             Operand left = p->code.u.assign.left;
-            int reg_left = get_reg(fp, left, p->code.next_op_distance[1]);
+            int reg_left = get_reg(fp, left);
             int reg_right = ensure_right(fp, right, p->code.next_op_distance[0]);
             fprintf(fp, "  la %s, %s\n", Regs[reg_right].name, right->u.name);
             fprintf(fp, "  move %s, %s\n", Regs[reg_left].name, Regs[reg_right].name);
@@ -466,8 +466,8 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
             Operand op1 = p->code.u.binop.op1;
             Operand op2 = p->code.u.binop.op2;
             Operand res = p->code.u.binop.result;
-            int reg1 = get_reg(fp, op1, p->code.next_op_distance[1]);
-            int reg_res = get_reg(fp, res, p->code.next_op_distance[0]);
+            int reg1 = get_reg(fp, op1);
+            int reg_res = get_reg(fp, res);
             if (op2->kind == OP_CONSTANT)
             {
                 fprintf(fp, "  addi %s, %s, %d\n", Regs[reg_res].name, Regs[reg1].name, op2->u.value);
@@ -487,7 +487,7 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
             fprintf(fp, "  lw $ra, 0($sp)\n");
             fprintf(fp, "  addi $sp, $sp, 4\n");
             Operand op = p->code.u.single;
-            int reg = get_reg(fp, op, p->code.next_op_distance[0]);
+            int reg = get_reg(fp, op);
             fprintf(fp, "  move %s, $v0\n", Regs[reg].name);
             break;
         }
@@ -666,13 +666,12 @@ int get_unused_reg(FILE *fp)
     return maxpos;
 }
 
-int get_reg(FILE *fp, Operand op, int distance)
+int get_reg(FILE *fp, Operand op)
 {
     for (int i = 0; i < 32; i++)
     {
         if (Regs[i].is_free == 0 && Regs[i].content == op)
         {
-            Regs[i].distance = distance;
             return i;
         }
     }
@@ -685,7 +684,6 @@ int get_reg(FILE *fp, Operand op, int distance)
             int i = get_unused_reg(fp);
             Regs[i].is_free = 0;
             Regs[i].content = op;
-            Regs[i].distance = distance;
             fprintf(fp, "  lw %s, %d($fp)\n", Regs[i].name, p->offset);
             return i;
         }
@@ -697,14 +695,12 @@ int get_reg(FILE *fp, Operand op, int distance)
         if (Regs[i].is_free == 1)
         {
             Regs[i].is_free = 0;
-            Regs[i].distance = distance;
             Regs[i].content = op;
             return i;
         }
     }
     int i = get_unused_reg(fp);
     Regs[i].is_free = 0;
-    Regs[i].distance = distance;
     Regs[i].content = op;
     return i;
 }
