@@ -587,7 +587,7 @@ int get_stack_offset(Operand op){
 }
 
 
-void push(FILE *fp,int reg_idx){
+int push(FILE *fp,int reg_idx){
     struct StackNode *p = Records.fp;
     struct StackNode *prev = NULL;
     while(p != NULL)
@@ -596,7 +596,7 @@ void push(FILE *fp,int reg_idx){
         {
             fprintf(fp,"  sw %s, %d($fp)\n",Regs[reg_idx].name,p->offset);
             Regs[reg_idx].is_free = 1;
-            return ;
+            return p->offset;
         }
         prev = p;
         p = p->next;
@@ -617,6 +617,7 @@ void push(FILE *fp,int reg_idx){
     p->op = Regs[reg_idx].content;
     fprintf(fp,"  sw %s, %d($fp)\n",Regs[reg_idx].name,p->offset);
     Regs[reg_idx].is_free = 1;
+    return p->offset;
 }
 
 int get_unused_reg(FILE *fp){
@@ -681,4 +682,29 @@ int get_reg(FILE *fp, Operand op,int distance){
     Regs[i].distance = distance;
     Regs[i].content = op;
     return i;
+}
+
+
+int *save_regs(FILE* fp){
+    int *res = malloc(sizeof(int) * 32);
+    for(int i = 0;i < 32;i++)
+    {
+        res[i] = 1;
+        if(Regs[i].is_free == 0)
+        {
+            res[i] = push(fp,i);
+        }
+    }
+    return res;
+}
+
+void load_regs(FILE *fp,int *a){
+    for(int i = 0;i < 32;i++)
+    {
+        if(a[i] != 1)
+        {
+            fprintf(fp, "  lw %s, %d($fp)\n",Regs[i].name,a[i]);
+        }
+    }
+    free(a);
 }
