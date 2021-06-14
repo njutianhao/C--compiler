@@ -590,7 +590,23 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 paranum++;
             while (p->code.kind == IR_ARG)
             {
+                push_arg(fp,p->code.u.single);
+                p=p->next;
             }
+            assert(p->code.kind==IR_CALL);//assertion
+            fprintf(fp, "  move $fp, %sp\n");
+            fprintf(fp,"  jal %s\n",p->code.u.assign.right->u.name);
+            fprintf(fp, "  move $sp, %fp\n");
+            fprintf(fp,"  addi $sp, $sp, %d\n",paranum*4);
+            fprintf(fp, "  lw $ra, 0($sp)\n");
+            fprintf(fp, "  lw $fp, 0($sp)\n");
+            fprintf(fp, "  addi $sp, $sp, 8\n");
+            load_regs(fp,a);
+            int reg=get_reg(fp,p->code.u.assign.left);
+            int dis=p->code.next_op_distance[1];
+            Regs[reg].distance=0;
+            fprintf(fp,"  move %s, $v0\n",Regs[reg].name);
+            Regs[reg].distance=dis;
             break;
         }
         case IR_CALL:
@@ -615,12 +631,12 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
         }
         case IR_DEC:
         {
-            
+            stack_malloc(p->code.u.assign.left,p->code.u.assign.right->u.value);
             break;
         }
         case IR_PARAM:
         {
-
+            
             break;
         }
         default:
