@@ -850,3 +850,33 @@ void load_regs(FILE *fp, int *a)
     }
     free(a);
 }
+
+void push_arg(FILE *fp,Operand op){
+    int i = get_unused_reg(fp);
+    int off = get_stack_offset(op);
+    fprintf(fp,"  lw %s, %d($fp)\n",Regs[i].name,off);
+    push(fp,i);
+}
+
+int stack_malloc(Operand op,int size){
+    struct StackNode *p = Records.fp;
+    if(p == NULL)
+    {
+        Records.fp = malloc(sizeof(struct StackNode));
+        p = Records.fp;
+        p->offset = -4 * size;
+    }
+    else
+    {
+        while(p->next != NULL)
+        {
+            p = p->next;
+        }
+        p->next = malloc(sizeof(struct StackNode));
+        p->next->offset = p->offset - 4 *size;
+        p = p->next;
+    }
+    p->next = NULL;
+    p->op = op;
+    return p->offset;
+}
