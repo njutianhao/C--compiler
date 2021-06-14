@@ -48,7 +48,9 @@ void generate_machine_code(FILE *fp);
 
 
 int get_stack_offset(Operand op);
+int save(FILE *fp,int reg_idx);
 int push(FILE *fp,int reg_idx);
+void pop();
 int get_unused_reg(FILE *fp);
 int *save_regs(FILE *fp);
 void load_regs(FILE *fp,int *a);
