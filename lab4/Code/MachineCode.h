@@ -36,7 +36,7 @@ void init_code(FILE *fp);
 void init_block();
 //涉及寄存器分配
 int get_reg(FILE *fp, Operand op,int distance); 
-int load_data(FILE *fp, Operand op);   //从给定地址型操作数中取值存放至一个寄存器中，返回该值所在寄存器编号
+int load_data(FILE *fp, int reg_idx,int distance);   //从给定地址型操作数中取值存放至一个寄存器中，返回该值所在寄存器编号
 int load_imm(FILE *fp, Operand op);    //装载一个立即数，返回该值所在寄存器编号
 
 //有关主要机器码生成
