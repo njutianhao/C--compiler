@@ -232,70 +232,21 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
             Operand op1 = p->code.u.binop.op1;
             Operand op2 = p->code.u.binop.op2;
             Operand res = p->code.u.binop.result;
-            if (op1->kind == OP_CONSTANT && op2->kind == OP_CONSTANT)
-            {
-                int val = op1->u.value + op2->u.value;
-                if (res->kind == OP_ADDRESS)
-                {
-                    store(fp, res, new_int_Operand(val, OP_CONSTANT), p->code.next_op_distance[0], 2147483647);
-                }
-                else
-                {
-                    int reg_res = get_reg(fp, res, p->code.next_op_distance[0]);
-                    fprintf(fp, "  li %s, %d\n", Regs[reg_res].name, val);
-                }
+            int dis_res=p->code.next_op_distance[0];
+            int dis1=p->code.next_op_distance[1];
+            int dis2=p->code.next_op_distance[2];
+            int reg_res,reg1,reg2;
+            if(op1->kind==OP_CONSTANT) {
+                reg1=load_imm(fp,op1);
+                Regs[reg1].distance=0;
             }
-            else if (op1->kind == OP_CONSTANT)
-            {
-                int reg_res, reg2;
-                reg2 = ensure_right(fp, op2, p->code.next_op_distance[2]);
-                if (res->kind == OP_ADDRESS)
-                {
-                    Operand t = new_temp();
-                    int reg_tmp = get_reg(fp, t, 2147483647);
-                    fprintf(fp, "  addi %s, %s, %d\n", Regs[reg_tmp].name, Regs[reg2].name, op1->u.value);
-                    store(fp, res, t, p->code.next_op_distance[0], 2147483647);
-                }
-                else
-                {
-                    reg_res = get_reg(fp, res, p->code.next_op_distance[0]);
-                    fprintf(fp, "  addi %s, %s, %d\n", Regs[reg_res].name, Regs[reg2].name, op1->u.value);
-                }
+            else {
+                reg1=get_reg(fp,op1,dis1);
+                Regs[reg1].distance=0;
             }
-            else if (op2->kind == OP_CONSTANT)
-            {
-                int reg_res, reg1;
-                reg1 = ensure_right(fp, op1, p->code.next_op_distance[1]);
-                if (res->kind == OP_ADDRESS)
-                {
-                    Operand t = new_temp();
-                    int reg_tmp = get_reg(fp, t, 2147483647);
-                    fprintf(fp, "  addi %s, %s, %d\n", Regs[reg_tmp].name, Regs[reg1].name, op2->u.value);
-                    store(fp, res, t, p->code.next_op_distance[0], 2147483647);
-                }
-                else
-                {
-                    reg_res = get_reg(fp, res, p->code.next_op_distance[0]);
-                    fprintf(fp, "  addi %s, %s, %d\n", Regs[reg_res].name, Regs[reg1].name, op2->u.value);
-                }
-            }
-            else
-            {
-                int reg_res, reg1, reg2;
-                reg1 = ensure_right(fp, op1, p->code.next_op_distance[1]);
-                reg2 = ensure_right(fp, op2, p->code.next_op_distance[2]);
-                if (res->kind == OP_ADDRESS)
-                {
-                    Operand t = new_temp();
-                    int reg_tmp = get_reg(fp, t, 2147483647);
-                    fprintf(fp, "  add %s, %s, %s\n", Regs[reg_tmp].name, Regs[reg1].name, Regs[reg2].name);
-                    store(fp, res, t, p->code.next_op_distance[0], 2147483647);
-                }
-                else
-                {
-                    reg_res = get_reg(fp, res, p->code.next_op_distance[0]);
-                    fprintf(fp, "  add %s, %s, %s\n", Regs[reg_res].name, Regs[reg1].name, Regs[reg2].name);
-                }
+            if(op1->kind==OP_CONSTANT) {
+                reg1=load_imm(fp,op1);
+                Regs[reg1].distance=0;
             }
             break;
         }
