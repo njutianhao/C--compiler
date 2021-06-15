@@ -54,5 +54,5 @@ int get_unused_reg(FILE *fp);
 int *save_regs(FILE *fp);
 void load_regs(FILE *fp,int *a);
 int stack_malloc(Operand op,int size);
-void add_stacknode(Operand op,int offset);
+int add_stacknode(Operand op,int offset);
 #endif

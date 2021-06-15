@@ -681,17 +681,20 @@ void translate_Cond(struct GrammarTree *node, Operand label_true, Operand label_
             t1 = new_temp();
             create_InterCode_twoOp(t1, op1, IR_ASSIGN);
         }
-        else
-            t1 = op1;
         if (op2->kind == OP_ADDRESS)
         {
             t2 = new_temp();
             create_InterCode_twoOp(t2, op2, IR_ASSIGN);
         }
-        else
-            t2 = op2;
         Operand relop = new_char_Operand(get_relop(second), OP_RELOP);
-        create_InterCode_fourOp(t1, relop, t2, label_true, IR_IFGOTO);
+        if (op1->kind != OP_ADDRESS && op2->kind != OP_ADDRESS)
+            create_InterCode_fourOp(op1, relop, op2, label_true, IR_IFGOTO);
+        else if (op1->kind == OP_ADDRESS && op2->kind == OP_ADDRESS)
+            create_InterCode_fourOp(t1, relop, t2, label_true, IR_IFGOTO);
+        else if (op1->kind == OP_ADDRESS)
+            create_InterCode_fourOp(t1, relop, op2, label_true, IR_IFGOTO);
+        else
+            create_InterCode_fourOp(op1, relop, t1, label_true, IR_IFGOTO);
         create_InterCode_oneOp(label_false, IR_GOTO);
     }
     else if (second->type == AND)
@@ -720,11 +723,13 @@ void translate_Cond(struct GrammarTree *node, Operand label_true, Operand label_
             t = new_temp();
             create_InterCode_twoOp(t, tmp, IR_ASSIGN);
         }
-        else
-            t = tmp;
         Operand op2 = new_int_Operand(0, OP_CONSTANT);
         Operand relop = new_char_Operand("!=", OP_RELOP);
-        create_InterCode_fourOp(t, relop, op2, label_true, IR_IFGOTO);
+        if (tmp->kind != OP_ADDRESS)
+            create_InterCode_fourOp(tmp, relop, op2, label_true, IR_IFGOTO);
+        else
+            create_InterCode_fourOp(t, relop, op2, label_true, IR_IFGOTO);
+
         create_InterCode_oneOp(label_false, IR_GOTO);
     }
 }
