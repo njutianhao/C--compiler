@@ -16,6 +16,7 @@ struct StackNode //栈中某一位置存放的数据信息
     int offset;     //相对栈顶/栈底的偏移量，由具体实现决定是相对于栈底还是栈顶
     Operand op;     //当前位置存储的数据
     // int reg_number; //原来所在寄存器编号，若未被分配则该域无意义(-1)
+    int distance;
     struct StackNode *next;
 };
 
