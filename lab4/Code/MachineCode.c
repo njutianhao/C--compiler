@@ -1,5 +1,5 @@
 #include "MachineCode.h"
-#define DEBUG_SIG 1
+#define DEBUG_SIG 0
 struct tmp_symbol
 {
     Operand op;
@@ -207,6 +207,7 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
             {
                 printf("IR_LABEL\n");
             }
+            save_regs(fp);
             fprintf(fp, "%s:\n", p->code.u.single->u.vname);
             break;
         }
@@ -306,6 +307,7 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
             int dis1 = p->code.next_op_distance[1];
             int dis2 = p->code.next_op_distance[2];
             int reg_res, reg1, reg2;
+
             if (op1->kind == OP_CONSTANT)
             {
                 reg1 = load_imm(fp, op1);
@@ -316,6 +318,7 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 reg1 = get_reg(fp, op1);
                 Regs[reg1].distance = 0;
             }
+
             if (op2->kind == OP_CONSTANT)
             {
                 reg2 = load_imm(fp, op2);
@@ -476,6 +479,7 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
             {
                 printf("IR_GOTO\n");
             }
+            save_regs(fp);
             fprintf(fp, "  j %s\n", getOperandName(p->code.u.single));
             break;
         }
@@ -512,6 +516,9 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 reg2 = get_reg(fp, op2);
                 Regs[reg2].distance = 0;
             }
+            Regs[reg1].distance = dis1;
+            Regs[reg2].distance = dis2;
+            save_regs(fp);
             if (strcmp(relop->u.name, "==") == 0)
             {
                 fprintf(fp, "  beq %s, %s, %s\n", Regs[reg1].name, Regs[reg2].name, label->u.vname);
@@ -569,7 +576,11 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
             int dis = p->code.next_op_distance[0];
             if (is_main)
             {
-                int reg = get_reg(fp, op);
+                int reg;
+                if (op->kind == OP_CONSTANT)
+                    reg = load_imm(fp, op);
+                else
+                    reg = get_reg(fp, op);
                 Regs[reg].distance = 0;
                 fprintf(fp, "  move $a0, %s\n", Regs[reg].name);
                 fprintf(fp, "  addi $sp, $sp, -4\n");
@@ -585,7 +596,11 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 fprintf(fp, "  addi $sp, $sp, -8\n");
                 fprintf(fp, "  sw $a0, 0($sp)\n");
                 fprintf(fp, "  sw $ra, 4($sp)\n");
-                int reg = get_reg(fp, op);
+                int reg;
+                if (op->kind == OP_CONSTANT)
+                    reg = load_imm(fp, op);
+                else
+                    reg = get_reg(fp, op);
                 Regs[reg].distance = 0;
                 fprintf(fp, "  move $a0, %s\n", Regs[reg].name);
                 fprintf(fp, "  jal write\n");
@@ -655,7 +670,6 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 printf("IR_ARG\n");
             }
             int *a = save_regs(fp);
-            fprintf(fp, "  addi $sp, $sp, -8\n");
             push(fp, 30);
             push(fp, 31);
             //fprintf(fp, "  sw $ra, 0($sp)\n");
@@ -724,6 +738,13 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 printf("IR_DEC\n");
             }
             stack_malloc(p->code.u.assign.left, p->code.u.assign.right->u.value);
+            fprintf(fp,"  addi $sp, $sp, %d\n",-p->code.u.assign.right->u.value);
+            int i=0,size=p->code.u.assign.right->u.value;
+            while(i<size)
+            {
+                fprintf(fp, "  sw $zero, %d($sp)\n",-i);
+                i=i+4;
+            }
             break;
         }
         case IR_PARAM:
@@ -773,15 +794,17 @@ int get_stack_offset(Operand op)
 
 int save(FILE *fp, int reg_idx)
 {
+    assert(Regs[reg_idx].content->kind != OP_CONSTANT);
     struct StackNode *p = Records.fp;
     struct StackNode *prev = NULL;
     while (p != NULL)
     {
-        if (p->op == Regs[reg_idx].content)
+        //if (p->op == Regs[reg_idx].content)
+        if (strcmp(p->op->u.vname, Regs[reg_idx].content->u.vname) == 0)
         {
             fprintf(fp, "  sw %s, %d($fp)\n", Regs[reg_idx].name, p->offset);
             Regs[reg_idx].is_free = 1;
-            p->distance = Regs[reg_idx].distance ;
+            p->distance = Regs[reg_idx].distance;
             return p->offset;
         }
         prev = p;
@@ -801,7 +824,7 @@ int save(FILE *fp, int reg_idx)
     }
     p->next = NULL;
     p->op = Regs[reg_idx].content;
-    p->distance = Regs[reg_idx].distance ;
+    p->distance = Regs[reg_idx].distance;
     fprintf(fp, "  sw %s, %d($fp)\n", Regs[reg_idx].name, p->offset);
     fprintf(fp, "  addi $sp, $sp, -4\n");
     Regs[reg_idx].is_free = 1;
@@ -831,7 +854,7 @@ int push(FILE *fp, int reg_idx)
     }
     p->next = NULL;
     p->op = Regs[reg_idx].content;
-    p->distance = Regs[reg_idx].distance ;
+    p->distance = Regs[reg_idx].distance;
     fprintf(fp, "  sw %s, %d($fp)\n", Regs[reg_idx].name, p->offset);
     Regs[reg_idx].is_free = 1;
     fprintf(fp, "  addi $sp, $sp, -4\n");
@@ -889,19 +912,22 @@ int get_unused_reg(FILE *fp)
 
 int get_reg(FILE *fp, Operand op)
 {
+
     for (int i = 0; i < 32; i++)
     {
-        if (Regs[i].is_free == 0 && strcmp(op->u.vname, Regs[i].content->u.vname) == 0)
+        if (Regs[i].is_free == 0 && Regs[i].content->kind != OP_CONSTANT && strcmp(op->u.vname, Regs[i].content->u.vname) == 0)
         {
             return i;
         }
     }
     struct StackNode *p = Records.fp;
+
     struct StackNode *prev = NULL;
     while (p != NULL)
     {
         if (strcmp(p->op->u.vname, op->u.vname) == 0)
         {
+
             int i = get_unused_reg(fp);
             Regs[i].is_free = 0;
             Regs[i].content = op;
@@ -928,7 +954,8 @@ int get_reg(FILE *fp, Operand op)
     return i;
 }
 
-int load_imm(FILE *fp, Operand op){
+int load_imm(FILE *fp, Operand op)
+{
     int i = get_unused_reg(fp);
     Regs[i].is_free = 0;
     Regs[i].distance = 2147483647;
@@ -943,7 +970,7 @@ int *save_regs(FILE *fp)
     for (int i = 0; i < 32; i++)
     {
         res[i] = 1;
-        if (Regs[i].is_free == 0)
+        if (Regs[i].is_free == 0 && Regs[i].content->kind!=OP_CONSTANT)
         {
             res[i] = save(fp, i);
             Regs[i].is_free = 1;
@@ -960,9 +987,9 @@ void load_regs(FILE *fp, int *a)
         {
             fprintf(fp, "  lw %s, %d($fp)\n", Regs[i].name, a[i]);
             struct StackNode *p = Records.fp;
-            while(p != NULL)
+            while (p != NULL)
             {
-                if(p->offset == a[i])
+                if (p->offset == a[i])
                 {
                     Regs[i].is_free = 0;
                     Regs[i].content = p->op;
@@ -992,7 +1019,7 @@ int stack_malloc(Operand op, int size)
     {
         Records.fp = malloc(sizeof(struct StackNode));
         p = Records.fp;
-        p->offset = -4 * size;
+        p->offset = -size;
     }
     else
     {
@@ -1001,7 +1028,7 @@ int stack_malloc(Operand op, int size)
             p = p->next;
         }
         p->next = malloc(sizeof(struct StackNode));
-        p->next->offset = p->offset - 4 * size;
+        p->next->offset = p->offset - size;
         p = p->next;
     }
     p->next = NULL;
@@ -1009,7 +1036,8 @@ int stack_malloc(Operand op, int size)
     return p->offset;
 }
 
-void add_stacknode(Operand op,int offset){
+void add_stacknode(Operand op, int offset)
+{
     struct StackNode *p = malloc(sizeof(struct StackNode));
     p->next = Records.fp;
     p->offset = offset;

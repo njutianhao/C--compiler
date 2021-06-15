@@ -30,11 +30,12 @@ int main(int argc,char** argv){
 	//print_tree();
 	SDT();
 	print_Errors();
+	FILE *fp2=fopen("../Test/out.ir","wt+");
 	if(HaveErrors==0)
 	{
 		translate();
 		if(Success()){
-			//generateCode(fp);
+			generateCode(fp2);
 			generate_machine_code(fp);
 		}
 	}
