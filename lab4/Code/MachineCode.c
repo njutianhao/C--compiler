@@ -14,6 +14,16 @@ void init_reg()
         Regs[i].is_free = 1;
         Regs[i].content = NULL;
     }
+    Regs[24].is_free = 0;
+    Regs[24].content = new_temp();
+    free(Regs[24].content->u.vname);
+    Regs[24].content->u.vname = malloc(4);
+    strcpy(Regs[24].content->u.vname,"$ra");
+    Regs[25].is_free = 0;
+    Regs[25].content = new_temp();
+    free(Regs[25].content->u.vname);
+    Regs[25].content->u.vname = malloc(4);
+    strcpy(Regs[25].content->u.vname,"$fp");
     Regs[0].name = "$zero";
     Regs[1].name = "$at";
     Regs[2].name = "$v0";
@@ -647,7 +657,7 @@ void pop()
 
 int get_unused_reg(FILE *fp)
 {
-    for (int i = 8; i < 26; i++)
+    for (int i = 8; i < 24; i++)
     {
         if (Regs[i].is_free == 1)
         {
@@ -656,7 +666,7 @@ int get_unused_reg(FILE *fp)
     }
     int max = -1;
     int maxpos = -1;
-    for (int i = 8; i < 26; i++)
+    for (int i = 8; i < 24; i++)
     {
         if (Regs[i].distance > max)
         {
@@ -694,7 +704,7 @@ int get_reg(FILE *fp, Operand op)
         prev = p;
         p = p->next;
     }
-    for (int i = 8; i < 26; i++)
+    for (int i = 8; i < 24; i++)
     {
         if (Regs[i].is_free == 1)
         {
