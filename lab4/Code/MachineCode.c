@@ -781,6 +781,7 @@ int save(FILE *fp, int reg_idx)
         {
             fprintf(fp, "  sw %s, %d($fp)\n", Regs[reg_idx].name, p->offset);
             Regs[reg_idx].is_free = 1;
+            p->distance = Regs[reg_idx].distance ;
             return p->offset;
         }
         prev = p;
@@ -800,6 +801,7 @@ int save(FILE *fp, int reg_idx)
     }
     p->next = NULL;
     p->op = Regs[reg_idx].content;
+    p->distance = Regs[reg_idx].distance ;
     fprintf(fp, "  sw %s, %d($fp)\n", Regs[reg_idx].name, p->offset);
     fprintf(fp, "  addi $sp, $sp, -4\n");
     Regs[reg_idx].is_free = 1;
@@ -829,6 +831,7 @@ int push(FILE *fp, int reg_idx)
     }
     p->next = NULL;
     p->op = Regs[reg_idx].content;
+    p->distance = Regs[reg_idx].distance ;
     fprintf(fp, "  sw %s, %d($fp)\n", Regs[reg_idx].name, p->offset);
     Regs[reg_idx].is_free = 1;
     fprintf(fp, "  addi $sp, $sp, -4\n");
@@ -902,6 +905,7 @@ int get_reg(FILE *fp, Operand op)
             int i = get_unused_reg(fp);
             Regs[i].is_free = 0;
             Regs[i].content = op;
+            Regs[i].distance = p->distance;
             fprintf(fp, "  lw %s, %d($fp)\n", Regs[i].name, p->offset);
             return i;
         }
@@ -924,18 +928,7 @@ int get_reg(FILE *fp, Operand op)
     return i;
 }
 
-int load_data(FILE *fp, int reg_idx, int distance)
-{
-    int res = get_unused_reg(fp);
-    fprintf(fp, "  lw %s,0(%s)", Regs[res].name, Regs[reg_idx].name);
-    Regs[res].is_free = 0;
-    Regs[res].distance = distance;
-    //TODO:content
-    return res;
-}
-
-int load_imm(FILE *fp, Operand op)
-{
+int load_imm(FILE *fp, Operand op){
     int i = get_unused_reg(fp);
     Regs[i].is_free = 0;
     Regs[i].distance = 2147483647;
@@ -966,6 +959,19 @@ void load_regs(FILE *fp, int *a)
         if (a[i] != 1)
         {
             fprintf(fp, "  lw %s, %d($fp)\n", Regs[i].name, a[i]);
+            struct StackNode *p = Records.fp;
+            while(p != NULL)
+            {
+                if(p->offset == a[i])
+                {
+                    Regs[i].is_free = 0;
+                    Regs[i].content = p->op;
+                    Regs[i].distance = p->distance;
+                    break;
+                }
+                p = p->next;
+            }
+            assert(p != NULL);
         }
     }
     free(a);
@@ -1003,12 +1009,10 @@ int stack_malloc(Operand op, int size)
     return p->offset;
 }
 
-int add_stacknode(Operand op, int offset)
-{
+void add_stacknode(Operand op,int offset){
     struct StackNode *p = malloc(sizeof(struct StackNode));
     p->next = Records.fp;
     p->offset = offset;
     p->op = op;
     Records.fp = p;
-    return offset;
 }
