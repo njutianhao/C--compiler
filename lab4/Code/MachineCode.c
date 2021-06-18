@@ -1,5 +1,5 @@
 #include "MachineCode.h"
-#define DEBUG_SIG 0
+#define DEBUG_SIG 1
 struct tmp_symbol
 {
     Operand op;
@@ -187,13 +187,6 @@ void init_block()
     }
 }
 
-/*int load(FILE *fp, Operand dst, Operand src) //从一个地址中装载数据到寄存器
-{
-    int reg_dst = get_reg(fp, dst);
-    int reg_src = get_reg(fp, src);
-    fprintf(fp, "  lw %s, 0(%s)\n", Regs[reg_dst].name, Regs[reg_src].name);
-    return reg_dst;
-}*/
 void translate_intercode(FILE *fp, struct InterCodes *start)
 {
     struct InterCodes *p = start;
@@ -653,11 +646,12 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 is_main = 0;
             while (Records.fp != NULL)
             {
-                struct StackNode *p = Records.fp;
+                struct StackNode *tmp = Records.fp;
                 Records.fp = Records.fp->next;
-                free(p);
+                free(tmp);
             }
-            Records.size = 0;
+            Records.size = generate_stack(fp, p);
+            fprintf(fp, "  addi $sp, $sp, %d\n", -Records.size);
             for (int i = 8; i <= 25; i++)
                 Regs[i].is_free = 1;
             //TO DO
@@ -670,11 +664,6 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 printf("IR_ARG\n");
             }
             int *a = save_regs(fp);
-            push(fp, 30);
-            push(fp, 31);
-            //fprintf(fp, "  sw $ra, 0($sp)\n");
-            //fprintf(fp, "  sw $fp, 4($sp)\n");
-            //fprintf(fp,"  move $fp, $sp");
             int paranum = 0;
             struct InterCodes *q = p;
             while (q->code.kind == IR_ARG)
@@ -682,6 +671,9 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 paranum++;
                 q = q->next;
             }
+            fprintf(fp, "  addi $sp, $sp, -8\n");
+            fprintf(fp, "  sw $fp, 4($sp)\n");
+            fprintf(fp, "  sw $ra, 0($sp)\n");
             while (p->code.kind == IR_ARG)
             {
                 push_arg(fp, p->code.u.single);
@@ -691,12 +683,10 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
             fprintf(fp, "  move $fp, $sp\n");
             fprintf(fp, "  jal %s\n", p->code.u.assign.right->u.name);
             fprintf(fp, "  move $sp, $fp\n");
-            for (int i = 0; i < paranum; i++)
-                pop(fp);
-            fprintf(fp, "  lw $ra, 0($sp)\n");
+            fprintf(fp, "  addi $sp, $sp, %d\n", paranum * 4);
             fprintf(fp, "  lw $fp, 4($sp)\n");
-            pop(fp);
-            pop(fp);
+            fprintf(fp, "  lw $ra, 0($sp)\n");
+            fprintf(fp, "  addi $sp, $sp, 8\n");
             load_regs(fp, a);
             int reg = get_reg(fp, p->code.u.assign.left);
             int dis = p->code.next_op_distance[1];
@@ -713,15 +703,15 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
             }
             int *a = save_regs(fp);
             fprintf(fp, "  addi $sp, $sp, -8\n");
-            push(fp, 30);
-            push(fp, 31);
+            fprintf(fp, "  sw $fp, 4($sp)\n");
+            fprintf(fp, "  sw $ra, 0($sp)\n");
             //fprintf(fp, "  sw $ra, 0($sp)\n");
             //fprintf(fp, "  sw $fp, 4($sp)\n");
             fprintf(fp, "  move $fp, $sp\n");
             fprintf(fp, "  jal %s\n", p->code.u.assign.right->u.name);
             fprintf(fp, "  move $sp, $fp\n");
-            fprintf(fp, "  lw $ra, 0($sp)\n");
             fprintf(fp, "  lw $fp, 4($sp)\n");
+            fprintf(fp, "  lw $ra, 0($sp)\n");
             fprintf(fp, "  addi $sp, $sp, 8\n");
             load_regs(fp, a);
             int reg = get_reg(fp, p->code.u.assign.left);
@@ -738,12 +728,12 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
                 printf("IR_DEC\n");
             }
             stack_malloc(p->code.u.assign.left, p->code.u.assign.right->u.value);
-            fprintf(fp,"  addi $sp, $sp, %d\n",-p->code.u.assign.right->u.value);
-            int i=0,size=p->code.u.assign.right->u.value;
-            while(i<size)
+            fprintf(fp, "  addi $sp, $sp, %d\n", -p->code.u.assign.right->u.value);
+            int i = 0, size = p->code.u.assign.right->u.value;
+            while (i < size)
             {
-                fprintf(fp, "  sw $zero, %d($sp)\n",-i);
-                i=i+4;
+                fprintf(fp, "  sw $zero, %d($sp)\n", -i);
+                i = i + 4;
             }
             break;
         }
@@ -753,14 +743,6 @@ void translate_intercode(FILE *fp, struct InterCodes *start)
             {
                 printf("IR_PARAM\n");
             }
-            int i = 0;
-            while (p->next->code.kind == IR_PARAM)
-            {
-                add_stacknode(p->code.u.single, i * 4);
-                i++;
-                p = p->next;
-            }
-            add_stacknode(p->code.u.single, i * 4);
             break;
         }
         default:
@@ -776,6 +758,180 @@ void generate_machine_code(FILE *fp)
     init_code(fp);
     init_block();
     translate_intercode(fp, head.next);
+}
+int generate_stack(FILE *fp, struct InterCodes *p)
+{
+    struct InterCodes *t = p->next;
+    while (t->code.kind != IR_FUNCTION && t != &head)
+    {
+        switch (t->code.kind)
+        {
+        case IR_DEC:
+        {
+            if (DEBUG_SIG)
+            {
+                printf("DEC\n");
+            }
+            int s = t->code.u.assign.right->u.value;
+            if (get_stack_offset(t->code.u.assign.left) == -1)
+            {
+                Records.size += s;
+                add_stacknode(t->code.u.assign.left, -Records.size, 0);
+            }
+            break;
+        }
+        case IR_PARAM:
+        {
+            if (DEBUG_SIG)
+            {
+                printf("PARAM\n");
+            }
+            int i = 0;
+            while (t->next->code.kind == IR_PARAM)
+            {
+                add_stacknode(t->code.u.single, i * 4, 1);
+                i += 1;
+                t = t->next;
+            }
+            add_stacknode(t->code.u.single, i * 4, 1);
+            break;
+        }
+        case IR_ADD:
+        case IR_ADD_ADDR:
+        case IR_SUB:
+        case IR_MUL:
+        case IR_DIV:
+        {
+            if (DEBUG_SIG)
+            {
+                printf("CALCULATE\n");
+            }
+            if (t->code.u.binop.op1->kind != OP_CONSTANT && get_stack_offset(t->code.u.binop.op1) == -1)
+            {
+                Records.size += 4;
+                add_stacknode(t->code.u.binop.op1, -Records.size, 0);
+            }
+            if (t->code.u.binop.op2->kind != OP_CONSTANT && get_stack_offset(t->code.u.binop.op2) == -1)
+            {
+                Records.size += 4;
+                add_stacknode(t->code.u.binop.op2, -Records.size, 0);
+            }
+            if (get_stack_offset(t->code.u.binop.result) == -1)
+            {
+                Records.size += 4;
+                add_stacknode(t->code.u.binop.result, -Records.size, 0);
+            }
+            break;
+        }
+        case IR_WRITE:
+        {
+            if (DEBUG_SIG)
+            {
+                printf("WRITE\n");
+            }
+            if (t->code.u.single->kind != OP_CONSTANT && get_stack_offset(t->code.u.single) == -1)
+            {
+                Records.size += 4;
+                add_stacknode(t->code.u.single, -Records.size, 0);
+            }
+            break;
+        }
+        case IR_READ:
+        {
+            if (DEBUG_SIG)
+            {
+                printf("READ\n");
+            }
+            if (get_stack_offset(t->code.u.single) == -1)
+            {
+                Records.size += 4;
+                add_stacknode(t->code.u.single, -Records.size, 0);
+            }
+            break;
+        }
+        case IR_ASSIGN:
+        case IR_ASSIGNADDR:
+        {
+            if (DEBUG_SIG)
+            {
+                printf("ASSIGN\n");
+            }
+            if (get_stack_offset(t->code.u.assign.left) == -1)
+            {
+                Records.size += 4;
+                add_stacknode(t->code.u.assign.left, -Records.size, 0);
+            }
+            if (t->code.u.assign.right->kind != OP_CONSTANT && get_stack_offset(t->code.u.assign.right) == -1)
+            {
+                Records.size += 4;
+                add_stacknode(t->code.u.assign.right, -Records.size, 0);
+            }
+            break;
+        }
+        case IR_CALL:
+        {
+            if (DEBUG_SIG)
+            {
+                printf("CALL\n");
+            }
+            if (get_stack_offset(t->code.u.assign.left) == -1)
+            {
+                Records.size += 4;
+                add_stacknode(t->code.u.assign.left, -Records.size, 0);
+            }
+            break;
+        }
+        case IR_ARG:
+        {
+            if (DEBUG_SIG)
+            {
+                printf("ARG\n");
+            }
+            if (get_stack_offset(t->code.u.single) == -1)
+            {
+                Records.size += 4;
+                add_stacknode(t->code.u.single, -Records.size, 0);
+            }
+            break;
+        }
+        case IR_RETURN:
+        {
+            if (DEBUG_SIG)
+            {
+                printf("RETURN\n");
+            }
+            if (t->code.u.single->kind != OP_CONSTANT && get_stack_offset(t->code.u.single) == -1)
+            {
+                Records.size += 4;
+                add_stacknode(t->code.u.single, -Records.size, 0);
+            }
+            break;
+        }
+        case IR_IFGOTO:
+        {
+            if (DEBUG_SIG)
+            {
+                printf("IFGOTO\n");
+            }
+
+            if (t->code.u.control.op1->kind != OP_CONSTANT && get_stack_offset(t->code.u.control.op1) == -1)
+            {
+                Records.size += 4;
+                add_stacknode(t->code.u.control.op1, -Records.size, 0);
+            }
+            if (t->code.u.control.op2->kind != OP_CONSTANT && get_stack_offset(t->code.u.control.op2) == -1)
+            {
+                Records.size += 4;
+                add_stacknode(t->code.u.control.op2, -Records.size, 0);
+            }
+            break;
+        }
+        default:
+            break;
+        }
+        t = t->next;
+    }
+    return Records.size;
 }
 
 int get_stack_offset(Operand op)
@@ -794,7 +950,6 @@ int get_stack_offset(Operand op)
 
 int save(FILE *fp, int reg_idx)
 {
-    assert(Regs[reg_idx].content->kind != OP_CONSTANT);
     struct StackNode *p = Records.fp;
     struct StackNode *prev = NULL;
     while (p != NULL)
@@ -804,6 +959,7 @@ int save(FILE *fp, int reg_idx)
         {
             fprintf(fp, "  sw %s, %d($fp)\n", Regs[reg_idx].name, p->offset);
             Regs[reg_idx].is_free = 1;
+            p->is_used = 1;
             p->distance = Regs[reg_idx].distance;
             return p->offset;
         }
@@ -824,6 +980,7 @@ int save(FILE *fp, int reg_idx)
     }
     p->next = NULL;
     p->op = Regs[reg_idx].content;
+    p->is_used = 1;
     p->distance = Regs[reg_idx].distance;
     fprintf(fp, "  sw %s, %d($fp)\n", Regs[reg_idx].name, p->offset);
     fprintf(fp, "  addi $sp, $sp, -4\n");
@@ -854,6 +1011,7 @@ int push(FILE *fp, int reg_idx)
     }
     p->next = NULL;
     p->op = Regs[reg_idx].content;
+    p->is_used = 1;
     p->distance = Regs[reg_idx].distance;
     fprintf(fp, "  sw %s, %d($fp)\n", Regs[reg_idx].name, p->offset);
     Regs[reg_idx].is_free = 1;
@@ -921,11 +1079,10 @@ int get_reg(FILE *fp, Operand op)
         }
     }
     struct StackNode *p = Records.fp;
-
     struct StackNode *prev = NULL;
     while (p != NULL)
     {
-        if (strcmp(p->op->u.vname, op->u.vname) == 0)
+        if (strcmp(p->op->u.vname, op->u.vname) == 0 && p->is_used == 1)
         {
 
             int i = get_unused_reg(fp);
@@ -938,7 +1095,6 @@ int get_reg(FILE *fp, Operand op)
         prev = p;
         p = p->next;
     }
-
     for (int i = 8; i < 26; i++)
     {
         if (Regs[i].is_free == 1)
@@ -970,7 +1126,7 @@ int *save_regs(FILE *fp)
     for (int i = 0; i < 32; i++)
     {
         res[i] = 1;
-        if (Regs[i].is_free == 0 && Regs[i].content->kind!=OP_CONSTANT)
+        if (Regs[i].is_free == 0 && Regs[i].content->kind != OP_CONSTANT)
         {
             res[i] = save(fp, i);
             Regs[i].is_free = 1;
@@ -1007,9 +1163,19 @@ void load_regs(FILE *fp, int *a)
 void push_arg(FILE *fp, Operand op)
 {
     int i = get_unused_reg(fp);
-    int off = get_stack_offset(op);
-    fprintf(fp, "  lw %s, %d($fp)\n", Regs[i].name, off);
-    push(fp, i);
+    if (op->kind == OP_CONSTANT)
+    {
+        fprintf(fp, "  li %s, %d\n", Regs[i].name, op->u.value);
+        fprintf(fp, "  addi $sp, $sp, -4\n");
+        fprintf(fp, "  sw %s, 0($sp)\n", Regs[i].name);
+    }
+    else
+    {
+        int off = get_stack_offset(op);
+        fprintf(fp, "  lw %s, %d($fp)\n", Regs[i].name, off);
+        fprintf(fp, "  addi $sp, $sp, -4\n");
+        fprintf(fp, "  sw %s, 0($sp)\n", Regs[i].name);
+    }
 }
 
 int stack_malloc(Operand op, int size)
@@ -1036,11 +1202,12 @@ int stack_malloc(Operand op, int size)
     return p->offset;
 }
 
-void add_stacknode(Operand op, int offset)
+void add_stacknode(Operand op, int offset, int is_used)
 {
     struct StackNode *p = malloc(sizeof(struct StackNode));
     p->next = Records.fp;
     p->offset = offset;
+    p->is_used = is_used;
     p->op = op;
     Records.fp = p;
 }

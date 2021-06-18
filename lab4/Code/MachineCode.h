@@ -15,8 +15,8 @@ struct StackNode //栈中某一位置存放的数据信息
 {
     int offset;     //相对栈顶/栈底的偏移量，由具体实现决定是相对于栈底还是栈顶
     Operand op;     //当前位置存储的数据
-    // int reg_number; //原来所在寄存器编号，若未被分配则该域无意义(-1)
     int distance;
+    int is_used;
     struct StackNode *next;
 };
 
@@ -44,7 +44,7 @@ int load_imm(FILE *fp, Operand op);    //装载一个立即数，返回该值所
 //int load(FILE *fp, Operand dst, Operand src);   //从一个地址中装载数据到寄存器,返回寄存器编号
 void translate_intercode(FILE *fp, struct InterCodes *start);
 void generate_machine_code(FILE *fp);
-
+int generate_stack(FILE* fp,struct InterCodes* p);
 
 int get_stack_offset(Operand op);
 void push_arg(FILE *fp,Operand op);
@@ -55,5 +55,5 @@ int get_unused_reg(FILE *fp);
 int *save_regs(FILE *fp);
 void load_regs(FILE *fp,int *a);
 int stack_malloc(Operand op,int size);
-void add_stacknode(Operand op,int offset);
+void add_stacknode(Operand op,int offset,int is_used);
 #endif

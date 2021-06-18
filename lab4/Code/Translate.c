@@ -694,7 +694,7 @@ void translate_Cond(struct GrammarTree *node, Operand label_true, Operand label_
         else if (op1->kind == OP_ADDRESS)
             create_InterCode_fourOp(t1, relop, op2, label_true, IR_IFGOTO);
         else
-            create_InterCode_fourOp(op1, relop, t1, label_true, IR_IFGOTO);
+            create_InterCode_fourOp(op1, relop, t2, label_true, IR_IFGOTO);
         create_InterCode_oneOp(label_false, IR_GOTO);
     }
     else if (second->type == AND)
